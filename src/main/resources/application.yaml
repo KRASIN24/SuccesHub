@@ -1,3 +1,46 @@
 spring:
   application:
     name: SuccesHub
+  datasource:
+    url: jdbc:postgresql://localhost:5432/succeshub
+    username: postgres
+    password: postgres
+  jpa:
+    properties:
+      hibernate:
+        default_schema: succeshub
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  liquibase:
+    default-schema: succeshub
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  mail:
+    host: smtp.mailserver.com
+    port: 587
+    username: mailuser
+    password: mailpass
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/succeshub
+server:
+  port: 8082
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+
+retry:
+  max-attempts: 3
+  backoff:
+    delay: 2000
