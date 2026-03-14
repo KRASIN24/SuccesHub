@@ -13,7 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./02-init-keycloak-db.sh:/docker-entrypoint-initdb.d/02-init-keycloak-db.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -23,15 +24,25 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:21.1.1
     container_name: succeshub-keycloak
-    command: start-dev
     environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
       KC_HTTP_PORT: 8080
       KC_METRICS_ENABLED: "true"
+      KEYCLOAK_IMPORT: /opt/keycloak/data/import/succeshub-realm-realm.json
     ports:
       - "8080:8080"
+    volumes:
+      - ./keycloak-export/succeshub-realm-realm.json:/opt/keycloak/data/import/succeshub-realm-realm.json
+    command: ["start-dev", "--import-realm"]
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
 
   adminer:
     image: adminer

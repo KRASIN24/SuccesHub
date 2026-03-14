@@ -1,0 +1,36 @@
+{
+  "id": "succeshub-realm",
+  "realm": "succeshub-realm",
+  "enabled": true,
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testpass"
+        }
+      ],
+      "realmRoles": ["USER"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "USER" },
+      { "name": "ADMIN" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "succeshub-backend",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "changeme",
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"]
+    }
+  ]
+}
