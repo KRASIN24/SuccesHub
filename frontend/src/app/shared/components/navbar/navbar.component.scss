@@ -1,0 +1,94 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--toolbar-height, 64px);
+  background: var(--color-sidebar-bg, #1e293b);
+  color: #fff;
+  box-shadow: var(--shadow-toolbar);
+  padding: 0 1rem;
+
+  .menu-btn {
+    color: #fff;
+    margin-right: 0.5rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+
+    .brand-icon {
+      color: #60a5fa;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .brand-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  button[mat-icon-button] {
+    color: #94a3b8;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  .avatar-btn {
+    width: 36px;
+    height: 36px;
+    margin-left: 0.25rem;
+  }
+
+  .avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .avatar-initials {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-primary, #1976d2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+}
+
+.user-menu-header {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+
+  .user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-text-primary, #1e293b);
+  }
+
+  .user-email {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #64748b);
+    margin-top: 2px;
+  }
+}

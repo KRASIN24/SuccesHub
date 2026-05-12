@@ -1,0 +1,34 @@
+<nav class="sidebar" aria-label="Main navigation">
+  <div class="nav-section">
+    <p class="nav-section-label">MAIN MENU</p>
+    @for (item of navItems; track item.route) {
+      <a
+        class="nav-link"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [attr.aria-label]="item.label"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </div>
+
+  <div class="nav-spacer"></div>
+
+  <mat-divider class="nav-divider"></mat-divider>
+
+  <div class="nav-section nav-bottom">
+    @for (item of bottomItems; track item.route) {
+      <a
+        class="nav-link"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [attr.aria-label]="item.label"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </div>
+</nav>

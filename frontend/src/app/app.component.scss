@@ -1,0 +1,20 @@
+.sidenav-container {
+  position: fixed;
+  top: var(--toolbar-height, 64px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(100% - var(--toolbar-height, 64px));
+  background: var(--color-app-bg, #f0f4f8);
+}
+
+.sidenav {
+  width: var(--sidenav-width, 260px);
+  border-right: none !important;
+  background: transparent;
+}
+
+.content-area {
+  background: var(--color-app-bg, #f0f4f8);
+  overflow-y: auto;
+}

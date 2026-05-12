@@ -1,33 +1,62 @@
-HELP.md
+# =========================
+# BACKEND (Spring Boot)
+# =========================
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# =========================
+# FRONTEND (Angular)
+# =========================
+node_modules/
+frontend/node_modules/
 
-### IntelliJ IDEA ###
-.idea
+dist/
+frontend/dist/
+
+.angular/
+frontend/.angular/
+
+out-tsc/
+
+# =========================
+# Logs
+# =========================
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# =========================
+# IDEs
+# =========================
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
-### VS Code ###
-.vscode/
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Misc
+# =========================
+coverage/
+.sass-cache/
+tmp/
+
+# =========================
+# Local env (optional)
+# =========================
+.env
+.env.local
+environment.local.ts
