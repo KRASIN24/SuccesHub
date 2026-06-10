@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
 
 interface NavItem {
   label: string;
@@ -12,16 +10,28 @@ interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, MatIconModule, MatDividerModule],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
+  host: {
+    '[class.collapsed]': 'collapsed()',
+  },
 })
 export class SidebarComponent {
+  readonly collapsed = input(false);
+  readonly closeRequested = output<void>();
+
+  readonly user = {
+    name: 'The Sovereign',
+    rank: 'Level 42 Productivity Explorer',
+  };
+
   readonly navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-    { label: 'Goals', icon: 'flag', route: '/goals' },
-    { label: 'Tasks', icon: 'task_alt', route: '/tasks' },
-    { label: 'Achievements', icon: 'emoji_events', route: '/achievements' },
+    { label: 'Dashboard', icon: 'grid_view', route: '/dashboard' },
+    { label: 'Tasks', icon: 'check_circle', route: '/tasks' },
+    { label: 'Goals', icon: 'my_location', route: '/goals' },
+    { label: 'Achievements', icon: 'military_tech', route: '/achievements' },
+    { label: 'Profile', icon: 'person', route: '/profile' },
   ];
 
   readonly bottomItems: NavItem[] = [
