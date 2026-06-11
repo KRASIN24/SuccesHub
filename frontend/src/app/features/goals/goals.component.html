@@ -1,0 +1,110 @@
+<div class="boss-battle">
+  <header class="page-head">
+    <span class="eyebrow">Current Campaigns</span>
+    <h1 class="page-title">Boss Battle <span class="gold">Mode</span></h1>
+    <p class="page-intro">
+      Visualize your long-term ambitions as celestial leviathans. Each strike brings you closer
+      to ultimate mastery. Conquer the void, one objective at a time.
+    </p>
+  </header>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Active Encounters</h2>
+      <span class="section-meta">3 Entities Detected</span>
+    </div>
+
+    <div class="boss-grid">
+      @for (boss of bosses; track boss.name) {
+        <article class="boss-card" [class.featured]="boss.featured">
+          <div class="boss-card-top">
+            <div>
+              <p class="boss-tier">{{ boss.tier }}</p>
+              <p class="boss-name">{{ boss.name }}</p>
+            </div>
+            <span class="xp-pill">XP +{{ boss.xp }}</span>
+          </div>
+
+          <div class="boss-portrait">
+            <div class="portrait-hex">
+              <span class="material-icons">{{ boss.icon }}</span>
+            </div>
+          </div>
+
+          <div class="boss-health">
+            <div class="health-labels">
+              <span class="health-key">Health (Progress)</span>
+              <span class="health-val">{{ boss.health }}% Remaining</span>
+            </div>
+            <div class="health-track">
+              <div class="health-fill" [style.width.%]="progress(boss)"></div>
+            </div>
+          </div>
+
+          <div class="boss-foot">
+            <span class="boss-target">Target: {{ boss.target }}</span>
+            <button
+              type="button"
+              class="attack-btn"
+              [class.final]="boss.featured"
+            >
+              {{ boss.action }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head line">
+      <h2 class="section-title">Conquered Foes</h2>
+    </div>
+
+    <div class="foes-grid">
+      @for (foe of conquered; track foe.name) {
+        <article class="foe-card">
+          <div class="foe-avatar">
+            <span class="material-icons">{{ foe.icon }}</span>
+          </div>
+          <p class="foe-slain">{{ foe.slain }}</p>
+          <p class="foe-name">{{ foe.name }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="insights">
+    <div class="insight-panel surface-card">
+      <h3 class="insight-title">Tactical Insights</h3>
+      <p class="insight-text">
+        You are dealing +15% more critical damage to Long-Term objectives this month. The
+        Financial Titan is particularly vulnerable to your “Consistency Strike”.
+      </p>
+      <div class="insight-stats">
+        <div class="stat-box">
+          <span class="stat-label">Current Streak</span>
+          <span class="stat-value">14 Days</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Global Rank</span>
+          <span class="stat-value">#402</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="campaign-panel">
+      <div
+        class="campaign-ring"
+        [style.background]="'conic-gradient(var(--color-gold) ' + grandCampaign + '%, rgba(255,255,255,0.08) 0)'"
+      >
+        <div class="ring-inner">
+          <span class="ring-pct">{{ grandCampaign }}%</span>
+          <span class="ring-cap">Completion</span>
+        </div>
+      </div>
+      <p class="campaign-title">Grand Campaign</p>
+      <p class="campaign-sub">3 / 4 bosses eliminated to achieve Paragon status</p>
+    </div>
+  </section>
+</div>

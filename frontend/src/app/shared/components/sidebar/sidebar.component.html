@@ -1,6 +1,24 @@
 <nav class="sidebar" aria-label="Main navigation">
+  <button
+    type="button"
+    class="sidebar-close"
+    (click)="closeRequested.emit()"
+    aria-label="Close navigation"
+  >
+    <span class="material-icons">close</span>
+  </button>
+
+  <div class="sidebar-profile">
+    <div class="avatar-shield" aria-hidden="true">
+      <span class="material-icons">shield</span>
+    </div>
+    <div class="profile-meta">
+      <p class="profile-name">{{ user.name }}</p>
+      <p class="profile-rank">{{ user.rank }}</p>
+    </div>
+  </div>
+
   <div class="nav-section">
-    <p class="nav-section-label">MAIN MENU</p>
     @for (item of navItems; track item.route) {
       <a
         class="nav-link"
@@ -8,27 +26,35 @@
         routerLinkActive="active"
         [attr.aria-label]="item.label"
       >
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
+        <span class="material-icons nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-marker" aria-hidden="true"></span>
       </a>
     }
   </div>
 
-  <div class="nav-spacer"></div>
+  <button type="button" class="gold-btn new-objective">
+    <span class="material-icons">add</span>
+    New Objective
+  </button>
 
-  <mat-divider class="nav-divider"></mat-divider>
+  <div class="nav-spacer"></div>
 
   <div class="nav-section nav-bottom">
     @for (item of bottomItems; track item.route) {
       <a
-        class="nav-link"
+        class="nav-link subtle"
         [routerLink]="item.route"
         routerLinkActive="active"
         [attr.aria-label]="item.label"
       >
-        <mat-icon>{{ item.icon }}</mat-icon>
-        <span>{{ item.label }}</span>
+        <span class="material-icons nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
       </a>
     }
+    <a class="nav-link subtle" routerLink="/dashboard" aria-label="Logout">
+      <span class="material-icons nav-icon">logout</span>
+      <span class="nav-label">Logout</span>
+    </a>
   </div>
 </nav>

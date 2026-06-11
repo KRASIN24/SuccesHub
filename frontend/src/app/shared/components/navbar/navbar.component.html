@@ -1,45 +1,34 @@
-<mat-toolbar class="navbar">
-  <button mat-icon-button class="menu-btn" aria-label="Toggle menu" (click)="onMenuToggle()">
-    <mat-icon>menu</mat-icon>
-  </button>
-
-  <span class="brand">
-    <mat-icon class="brand-icon">rocket_launch</mat-icon>
-    <span class="brand-name">SuccesHub</span>
-  </span>
-
-  <span class="spacer"></span>
-
-  <button mat-icon-button aria-label="Notifications">
-    <mat-icon>notifications_none</mat-icon>
-  </button>
-
-  <button mat-icon-button [matMenuTriggerFor]="userMenu" class="avatar-btn" aria-label="User menu">
-    @if (authService.currentUser()?.avatarUrl) {
-      <img [src]="authService.currentUser()!.avatarUrl" [alt]="authService.currentUser()!.name" class="avatar-img" />
-    } @else {
-      <span class="avatar-initials">{{ authService.userInitials() || 'U' }}</span>
+<header class="topbar">
+  <div class="topbar-left">
+    @if (!sidebarOpen()) {
+      <button
+        type="button"
+        class="icon-btn menu-btn"
+        (click)="onMenuToggle()"
+        aria-label="Open navigation"
+      >
+        <span class="material-icons">menu</span>
+      </button>
     }
-  </button>
+    <a class="brand" routerLink="/dashboard">SUCCESSHUB</a>
+  </div>
 
-  <mat-menu #userMenu="matMenu" xPosition="before">
-    <div class="user-menu-header">
-      <span class="user-name">{{ authService.currentUser()?.name || 'Guest' }}</span>
-      <span class="user-email">{{ authService.currentUser()?.email || '' }}</span>
+  <div class="topbar-right">
+    <div class="stat-chip">
+      <span class="stat-key">XP:</span>
+      <span class="stat-val gold">{{ stats.xp }}</span>
     </div>
-    <mat-divider></mat-divider>
-    <button mat-menu-item>
-      <mat-icon>person_outline</mat-icon>
-      <span>Profile</span>
+    <div class="stat-chip rank">
+      <span class="stat-key">RANK:</span>
+      <span class="stat-val">{{ stats.rank }}</span>
+    </div>
+
+    <button type="button" class="icon-btn" aria-label="Notifications">
+      <span class="material-icons">notifications_none</span>
+      <span class="dot" aria-hidden="true"></span>
     </button>
-    <button mat-menu-item>
-      <mat-icon>settings</mat-icon>
-      <span>Settings</span>
+    <button type="button" class="avatar-btn" aria-label="Account">
+      <span class="material-icons">person</span>
     </button>
-    <mat-divider></mat-divider>
-    <button mat-menu-item (click)="authService.logout()">
-      <mat-icon>logout</mat-icon>
-      <span>Sign out</span>
-    </button>
-  </mat-menu>
-</mat-toolbar>
+  </div>
+</header>

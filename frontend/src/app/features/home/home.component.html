@@ -1,90 +1,116 @@
-<div class="home-page">
-  <!-- Welcome Banner -->
-  <div class="welcome-banner">
-    <div class="welcome-text">
-      <h1 class="welcome-title">
-        {{ greeting }}, {{ authService.currentUser()?.name || 'there' }}! 👋
-      </h1>
-      <p class="welcome-sub">Here's what's happening with your goals today.</p>
+<div class="dashboard">
+  <section class="hero">
+    <div class="hex-level" [attr.aria-label]="'Current level ' + level">
+      <div class="hex-outer">
+        <div class="hex-inner">
+          <span class="hex-level-value">{{ level }}</span>
+          <span class="hex-level-label">Current Level</span>
+        </div>
+      </div>
     </div>
-    <div class="welcome-date">
-      <mat-icon class="date-icon">calendar_today</mat-icon>
-      <span>{{ today }}</span>
+
+    <div class="xp-block">
+      <div class="xp-head">
+        <span class="xp-title">XP Progression</span>
+        <span class="xp-count">
+          {{ currentXp | number }} <span class="muted">/ {{ nextLevelXp | number }}</span>
+        </span>
+      </div>
+      <div class="xp-track">
+        <div class="xp-fill" [style.width.%]="xpPercent"></div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    @for (stat of stats; track stat.label) {
-      <mat-card class="stat-card" appearance="outlined">
-        <mat-card-content>
-          <div class="stat-header">
-            <span class="stat-label">{{ stat.label }}</span>
-            <div class="stat-icon-wrapper" [style.background]="stat.color + '1a'">
-              <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
-            </div>
-          </div>
-          <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-trend" [class.trend-up]="stat.trendUp">
-            <mat-icon>{{ stat.trendUp ? 'trending_up' : 'trending_down' }}</mat-icon>
-            {{ stat.trend }}
-          </div>
-        </mat-card-content>
-      </mat-card>
-    }
-  </div>
+  <div class="grid">
+    <div class="col-main">
+      <section class="panel-block">
+        <div class="block-head">
+          <h2 class="block-title">Active Protocol</h2>
+          <span class="xp-pill subtle-pill">{{ tasksRemaining }} Tasks Remaining</span>
+        </div>
 
-  <div class="bottom-section">
-    <!-- Quick Actions -->
-    <mat-card class="quick-actions-card" appearance="outlined">
-      <mat-card-header>
-        <mat-card-title>Quick Actions</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="quick-actions-grid">
-          @for (action of quickActions; track action.label) {
-            <button mat-button class="quick-action-btn" matRipple>
-              <div class="action-icon-wrapper" [style.background]="action.color + '1a'">
-                <mat-icon [style.color]="action.color">{{ action.icon }}</mat-icon>
+        <ul class="task-list">
+          @for (task of tasks; track task.title) {
+            <li class="task-item" [class.is-done]="task.done">
+              <button
+                type="button"
+                class="checkbox"
+                [class.checked]="task.done"
+                (click)="toggleTask(task)"
+                [attr.aria-pressed]="task.done"
+                [attr.aria-label]="task.title"
+              >
+                @if (task.done) {
+                  <span class="material-icons">check</span>
+                }
+              </button>
+              <div class="task-body">
+                <p class="task-title">{{ task.title }}</p>
+                <p class="task-detail">{{ task.detail }}</p>
               </div>
-              <span class="action-label">{{ action.label }}</span>
-            </button>
+              <span class="xp-pill">+{{ task.xp }} XP</span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="panel-block">
+        <h3 class="merits-title">Earned Merits</h3>
+        <div class="merits">
+          @for (merit of merits; track merit.label) {
+            <div class="merit" [class.locked]="merit.locked">
+              <div class="merit-hex">
+                <span class="material-icons">{{ merit.icon }}</span>
+              </div>
+              <span class="merit-label">{{ merit.label }}</span>
+            </div>
           }
         </div>
-      </mat-card-content>
-    </mat-card>
+      </section>
+    </div>
 
-    <!-- Recent Activity -->
-    <mat-card class="activity-card" appearance="outlined">
-      <mat-card-header>
-        <mat-card-title>Recent Activity</mat-card-title>
-        <span class="spacer"></span>
-        <button mat-button color="primary" class="view-all-btn">View all</button>
-      </mat-card-header>
-      <mat-card-content>
-        @if (recentActivity.length === 0) {
-          <div class="empty-state">
-            <mat-icon>history</mat-icon>
-            <p>No recent activity yet</p>
-          </div>
-        } @else {
-          <mat-list>
-            @for (item of recentActivity; track item.title; let last = $last) {
-              <mat-list-item class="activity-item">
-                <div class="activity-icon-wrapper" [style.background]="item.color + '1a'" matListItemAvatar>
-                  <mat-icon [style.color]="item.color">{{ item.icon }}</mat-icon>
-                </div>
-                <div matListItemTitle class="activity-title">{{ item.title }}</div>
-                <div matListItemLine class="activity-desc">{{ item.description }}</div>
-                <span matListItemMeta class="activity-time">{{ item.time }}</span>
-              </mat-list-item>
-              @if (!last) {
-                <mat-divider></mat-divider>
-              }
-            }
-          </mat-list>
-        }
-      </mat-card-content>
-    </mat-card>
+    <aside class="col-aside">
+      <div class="widget surface-card">
+        <div class="widget-head">
+          <span class="eyebrow">Lunar Phase</span>
+          <span class="material-icons widget-icon">nightlight</span>
+        </div>
+        <p class="lunar-name">Waning Crescent</p>
+        <p class="lunar-meta">Illumination: 12% • Rise: 03:42</p>
+      </div>
+
+      <div class="widget surface-card">
+        <span class="eyebrow">Sovereign Index</span>
+        <div class="index-rows">
+          @for (row of indexRows; track row.pair) {
+            <div class="index-row">
+              <span class="index-pair">{{ row.pair }}</span>
+              <div class="index-vals">
+                <span class="index-price">{{ row.price }}</span>
+                <span class="index-change">{{ row.change }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="widget surface-card quote-card">
+        <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+        <p class="quote-text">
+          The void is not an empty space, but a canvas awaiting the curation of your will.
+        </p>
+        <p class="quote-author">— The Archivist</p>
+      </div>
+    </aside>
   </div>
+
+  <footer class="dash-footer">
+    <p class="foot-line">SUCCESSHUB V1.0 • THE SOVEREIGN INTERFACE</p>
+    <div class="foot-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Protocol</a>
+    </div>
+  </footer>
 </div>

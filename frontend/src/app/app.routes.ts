@@ -13,22 +13,16 @@ export const routes: Routes = [
     title: 'Dashboard — SuccesHub',
   },
   {
-    path: 'goals',
-    loadComponent: () =>
-      import('./features/placeholder/placeholder.component').then(
-        (m) => m.PlaceholderComponent
-      ),
-    title: 'Goals — SuccesHub',
-    data: { title: 'Goals', icon: 'flag' },
-  },
-  {
     path: 'tasks',
     loadComponent: () =>
-      import('./features/placeholder/placeholder.component').then(
-        (m) => m.PlaceholderComponent
-      ),
-    title: 'Tasks — SuccesHub',
-    data: { title: 'Tasks', icon: 'task_alt' },
+      import('./features/tasks/tasks.component').then((m) => m.TasksComponent),
+    title: 'Quest Log — SuccesHub',
+  },
+  {
+    path: 'goals',
+    loadComponent: () =>
+      import('./features/goals/goals.component').then((m) => m.GoalsComponent),
+    title: 'Boss Battle — SuccesHub',
   },
   {
     path: 'achievements',
@@ -37,7 +31,16 @@ export const routes: Routes = [
         (m) => m.PlaceholderComponent
       ),
     title: 'Achievements — SuccesHub',
-    data: { title: 'Achievements', icon: 'emoji_events' },
+    data: { title: 'Achievements', icon: 'military_tech' },
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./features/placeholder/placeholder.component').then(
+        (m) => m.PlaceholderComponent
+      ),
+    title: 'Profile — SuccesHub',
+    data: { title: 'Profile', icon: 'person' },
   },
   {
     path: 'settings',

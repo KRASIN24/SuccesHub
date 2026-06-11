@@ -1,0 +1,66 @@
+<div class="quest-log">
+  <header class="page-head">
+    <h1 class="page-title">Strategy Canvas</h1>
+    <p class="page-subtitle">Multi-dimensional task orchestration.</p>
+  </header>
+
+  <div class="board">
+    @for (column of columns; track column.name) {
+      <section class="column" [class.is-muted]="column.muted">
+        <div class="column-head">
+          <h2 class="column-title">{{ column.name }}</h2>
+          <button type="button" class="hex-add" [attr.aria-label]="'Add task to ' + column.name">
+            <span class="material-icons">add</span>
+          </button>
+        </div>
+
+        <div class="column-controls">
+          <button
+            type="button"
+            class="toggle"
+            [class.on]="column.grantXp"
+            (click)="toggleGrantXp(column)"
+            [attr.aria-pressed]="column.grantXp"
+          >
+            <span class="knob"></span>
+          </button>
+          <span class="toggle-label">Grant XP</span>
+          <span class="column-tag">{{ column.tag }}</span>
+        </div>
+
+        <div class="tasks">
+          @for (task of column.tasks; track task.title) {
+            <article class="quest-card" [class.is-done]="task.done">
+              <button
+                type="button"
+                class="checkbox"
+                [class.checked]="task.done"
+                (click)="toggleTask(task)"
+                [attr.aria-pressed]="task.done"
+                [attr.aria-label]="task.title"
+              >
+                @if (task.done) {
+                  <span class="material-icons">check</span>
+                }
+              </button>
+              <div class="quest-body">
+                <p class="quest-title">{{ task.title }}</p>
+                @if (task.desc) {
+                  <p class="quest-desc">{{ task.desc }}</p>
+                }
+                <div class="quest-meta">
+                  @if (task.meta) {
+                    <span class="meta-tag" [class]="task.metaType">{{ task.meta }}</span>
+                  }
+                  @if (task.xp) {
+                    <span class="quest-xp">+{{ task.xp }} XP</span>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>
