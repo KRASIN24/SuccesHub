@@ -1,28 +1,21 @@
-import { Component, inject, output } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
-import { AuthService } from '../../../core/services/auth.service';
+import { Component, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule,
-  ],
+  imports: [RouterLink],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
+  readonly sidebarOpen = input(false);
   menuToggled = output<void>();
 
-  protected readonly authService = inject(AuthService);
+  readonly stats = {
+    xp: '2,450',
+    rank: 'Gold III',
+  };
 
   onMenuToggle(): void {
     this.menuToggled.emit();

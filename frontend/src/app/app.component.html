@@ -1,16 +1,12 @@
-<app-navbar (menuToggled)="toggleSidenav()"></app-navbar>
+<div class="app-shell" [class.nav-closed]="!sidenavOpen()">
+  <app-sidebar [collapsed]="!sidenavOpen()" (closeRequested)="closeSidenav()"></app-sidebar>
 
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav
-    class="sidenav"
-    [opened]="sidenavOpen()"
-    mode="side"
-    position="start"
-  >
-    <app-sidebar></app-sidebar>
-  </mat-sidenav>
+  <div class="app-backdrop" (click)="closeSidenav()"></div>
 
-  <mat-sidenav-content class="content-area">
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  <div class="app-main">
+    <app-navbar [sidebarOpen]="sidenavOpen()" (menuToggled)="toggleSidenav()"></app-navbar>
+    <main class="app-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
