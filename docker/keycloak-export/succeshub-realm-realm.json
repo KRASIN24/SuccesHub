@@ -2,6 +2,9 @@
   "id": "succeshub-realm",
   "realm": "succeshub-realm",
   "enabled": true,
+  "displayName": "SuccessHub",
+  "displayNameHtml": "<b>SUCCESS</b>HUB",
+  "loginTheme": "successhub",
   "users": [
     {
       "username": "testuser",
