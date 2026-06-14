@@ -13,7 +13,7 @@
       <span class="material-icons">shield</span>
     </div>
     <div class="profile-meta">
-      <p class="profile-name">{{ user.name }}</p>
+      <p class="profile-name">{{ displayName() }}</p>
       <p class="profile-rank">{{ user.rank }}</p>
     </div>
   </div>
@@ -52,9 +52,9 @@
         <span class="nav-label">{{ item.label }}</span>
       </a>
     }
-    <a class="nav-link subtle" routerLink="/dashboard" aria-label="Logout">
+    <button type="button" class="nav-link subtle" (click)="logout()" aria-label="Logout">
       <span class="material-icons nav-icon">logout</span>
       <span class="nav-label">Logout</span>
-    </a>
+    </button>
   </div>
 </nav>
