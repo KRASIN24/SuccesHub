@@ -1,0 +1,607 @@
+/* ============================================================
+   SuccessHub login theme — "Sovereign Portal"
+   Adapted from the Figma design (node 11:5):
+     surface #141317 · card #211f23 · gold #f5be42
+     Space Grotesk (display) + Inter (body) + Material Symbols
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --sh-bg: #141317;
+  --sh-bg-2: #0f0d11;
+  --sh-card: #211f23;
+  --sh-surface-high: #2b292d;
+  --sh-surface-highest: #363438;
+  --sh-gold: #f5be42;
+  --sh-gold-dim: #d29f22;
+  --sh-on: #e7e1e6;
+  --sh-on-variant: #d3c5af;
+  --sh-outline: #9b8f7b;
+  --sh-outline-variant: #4f4635;
+  --sh-on-primary: #402d00;
+  --sh-error: #ffb4ab;
+  --sh-font: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --sh-font-display: "Space Grotesk", "Inter", sans-serif;
+}
+
+/* inline SVG icons */
+.sh-icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ---- Page layout: one centered column, fits viewport ---- */
+html {
+  height: 100%;
+}
+
+body.login-pf,
+.login-pf body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+}
+
+.login-pf-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1.25rem 1rem 1.5rem;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+#kc-header,
+.login-pf-page-header {
+  width: 100%;
+  max-width: 480px;
+  float: none !important;
+  text-align: center !important;
+  padding: 0 !important;
+  margin: 0 auto 0.75rem;
+}
+
+#kc-header-wrapper {
+  padding: 0 !important;
+  text-align: center !important;
+  color: var(--sh-on) !important;
+  font-family: var(--sh-font-display);
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+#kc-header-wrapper b {
+  color: var(--sh-gold);
+  font-weight: 700;
+}
+
+/* ---- Page background ---- */
+body {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(210, 159, 34, 0.10) 0%, transparent 60%),
+    linear-gradient(180deg, var(--sh-bg) 0%, var(--sh-bg-2) 100%) !important;
+  background-attachment: fixed !important;
+  color: var(--sh-on);
+  font-family: var(--sh-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.login-pf,
+.login-pf body {
+  background: var(--sh-bg) !important;
+}
+
+/* soft corner glows from the mockup */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 9999px;
+  background: rgba(245, 190, 66, 0.05);
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+body::before { top: -6rem; left: -6rem; }
+body::after { bottom: -6rem; right: -6rem; }
+
+/* ---- Login card ("Auth Vessel") ---- */
+.card-pf,
+.login-pf-page .card-pf {
+  position: relative;
+  background: var(--sh-card);
+  border: 1px solid rgba(79, 70, 53, 0.25);
+  border-top: 1px solid rgba(79, 70, 53, 0.25) !important;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: 2.25rem 2.5rem 2rem;
+  margin: 0 auto;
+  max-width: 480px;
+  width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* hexagonal accent in the top-right corner */
+.card-pf::after {
+  content: "";
+  position: absolute;
+  top: -1.25rem;
+  right: -1.25rem;
+  width: 3rem;
+  height: 3rem;
+  background: var(--sh-surface-high);
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  opacity: 0.55;
+}
+
+/* ---- Editorial heading ---- */
+.login-pf-page .login-pf-header,
+#kc-form-card header,
+header.login-pf-header {
+  margin-bottom: 0.5rem;
+}
+
+#kc-page-title {
+  font-family: var(--sh-font-display);
+  color: var(--sh-on);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 5vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.sh-eyebrow {
+  font-family: var(--sh-font);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--sh-on-variant);
+  opacity: 0.6;
+  margin-bottom: 0.75rem;
+}
+
+.sh-title-accent {
+  color: var(--sh-gold);
+  font-style: italic;
+}
+
+.sh-subtitle {
+  text-align: center;
+  color: var(--sh-on-variant);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  font-size: 0.875rem;
+  max-width: 18rem;
+  margin: 0 auto 1.5rem;
+  line-height: 1.45;
+}
+
+/* ---- Form layout ---- */
+#kc-form-login.sh-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sh-group,
+#kc-form-login .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 !important;
+}
+
+/* ---- Labels ---- */
+label,
+.control-label,
+.sh-label,
+#kc-form-login label {
+  color: var(--sh-on-variant) !important;
+  font-family: var(--sh-font);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sh-label {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sh-label-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  opacity: 0.6;
+}
+
+.sh-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sh-forgot {
+  font-size: 0.6875rem !important;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245, 190, 66, 0.6) !important;
+}
+.sh-forgot:hover {
+  color: var(--sh-gold) !important;
+  text-decoration: none !important;
+}
+
+/* ---- Inputs (underline / "minimalist portal") ---- */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+.form-control,
+.pf-c-form-control,
+.sh-input {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(79, 70, 53, 0.6) !important;
+  border-radius: 0 !important;
+  color: var(--sh-on) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0.55rem 0.1rem !important;
+  font-family: var(--sh-font);
+  font-weight: 300;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.02em;
+  box-shadow: none !important;
+  transition: border-color 0.3s ease;
+}
+
+input[type="password"].sh-input {
+  letter-spacing: 0.25em;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+.form-control:focus,
+.pf-c-form-control:focus,
+.sh-input:focus {
+  border-bottom-color: var(--sh-gold) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+input::placeholder,
+.sh-input::placeholder {
+  color: rgba(211, 197, 175, 0.4);
+}
+
+/* autofill — keep the dark look */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--sh-on);
+  transition: background-color 9999s ease-out;
+}
+
+/* ---- Options row (remember me + encrypted badge) ---- */
+.sh-options {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+.sh-options #kc-form-options {
+  margin: 0;
+}
+
+.sh-remember label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--sh-on-variant) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 300 !important;
+  font-size: 0.78rem !important;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* native checkbox -> pill toggle */
+.sh-remember input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 2.5rem;
+  height: 1.25rem;
+  margin: 0;
+  border-radius: 9999px;
+  background: var(--sh-surface-high);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+.sh-remember input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 0.21rem;
+  left: 0.25rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--sh-on-variant);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.sh-remember input[type="checkbox"]:checked {
+  background: var(--sh-gold);
+}
+.sh-remember input[type="checkbox"]:checked::before {
+  transform: translateX(1.2rem);
+  background: var(--sh-on-primary);
+}
+
+.sh-encrypted {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(211, 197, 175, 0.4);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.sh-encrypted .sh-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+/* ---- Primary button ("Authenticate") ---- */
+.btn-primary,
+#kc-login,
+.sh-submit,
+input[type="submit"].btn-primary,
+.pf-c-button.pf-m-primary {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  background: var(--sh-gold) !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+  color: var(--sh-on-primary) !important;
+  font-family: var(--sh-font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.85rem !important;
+  padding: 1rem 1.25rem !important;
+  margin-top: 0 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-primary:hover,
+#kc-login:hover,
+.sh-submit:hover,
+.pf-c-button.pf-m-primary:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 0 30px rgba(245, 190, 66, 0.3) !important;
+}
+
+.btn-primary:active,
+#kc-login:active,
+.sh-submit:active {
+  transform: scale(0.97);
+}
+
+.sh-submit .sh-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+/* secondary / default buttons */
+.btn-default,
+.pf-c-button.pf-m-secondary {
+  background: rgba(54, 52, 56, 0.5) !important;
+  border: 1px solid rgba(79, 70, 53, 0.6) !important;
+  color: var(--sh-on) !important;
+  border-radius: 0.75rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600 !important;
+}
+
+/* ---- Links ---- */
+a,
+#kc-registration a,
+#kc-info-message a,
+.login-pf-page a {
+  color: var(--sh-gold) !important;
+  text-decoration: none;
+  font-weight: 500;
+}
+a:hover {
+  color: var(--sh-gold) !important;
+  text-decoration: underline;
+}
+
+/* ---- Registration / info footer ---- */
+#kc-registration,
+#kc-info-message,
+.instruction,
+#kc-content-wrapper p {
+  color: var(--sh-on-variant);
+  text-align: center;
+  font-weight: 300;
+  font-size: 0.875rem;
+  margin-top: 1.5rem;
+}
+#kc-registration a {
+  color: var(--sh-on) !important;
+  border-bottom: 1px solid rgba(245, 190, 66, 0.4);
+  font-weight: 400;
+}
+#kc-registration a:hover {
+  border-bottom-color: var(--sh-gold);
+  text-decoration: none;
+}
+
+/* ---- Error / alert feedback ---- */
+.sh-error,
+.kc-feedback-text,
+#input-error {
+  display: flex !important;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--sh-error) !important;
+  font-size: 0.6875rem !important;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 0.35rem;
+}
+.sh-error .sh-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.alert,
+.pf-c-alert {
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(79, 70, 53, 0.6) !important;
+  background: var(--sh-surface-high) !important;
+  color: var(--sh-on) !important;
+}
+.alert-error,
+.pf-m-danger {
+  border-color: rgba(255, 180, 171, 0.4) !important;
+  color: var(--sh-error) !important;
+}
+
+.pf-c-form-control[aria-invalid="true"],
+.form-control.is-error,
+.sh-input[aria-invalid="true"] {
+  border-bottom-color: var(--sh-error) !important;
+}
+
+/* ---- Social providers ---- */
+#kc-social-providers a {
+  background: rgba(54, 52, 56, 0.5) !important;
+  border: 1px solid rgba(79, 70, 53, 0.6) !important;
+  border-radius: 0.75rem !important;
+  color: var(--sh-on) !important;
+}
+#kc-social-providers a:hover {
+  border-color: rgba(245, 190, 66, 0.5) !important;
+}
+#kc-social-providers h4 {
+  color: var(--sh-on-variant);
+  font-weight: 400;
+}
+
+#kc-form-buttons {
+  margin-top: 0 !important;
+}
+
+header.login-pf-header {
+  margin-bottom: 0.25rem;
+  padding: 0;
+}
+
+#kc-content,
+#kc-content-wrapper {
+  width: 100%;
+}
+
+/* ---- Overrides for Keycloak default login.css (mobile + desktop) ---- */
+@media (max-width: 767px) {
+  .login-pf body {
+    background: var(--sh-bg) !important;
+  }
+
+  #kc-header {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    text-align: center !important;
+  }
+
+  #kc-header-wrapper {
+    font-size: 0.8rem !important;
+    letter-spacing: 0.32em !important;
+    color: var(--sh-on) !important;
+    padding: 0 !important;
+  }
+
+  .login-pf-page .card-pf,
+  .card-pf {
+    padding: 1.5rem 1.25rem 1.25rem !important;
+    border-radius: 1.25rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .sh-eyebrow {
+    margin-bottom: 0.5rem;
+  }
+
+  .sh-subtitle {
+    margin-bottom: 1.25rem;
+    font-size: 0.8125rem;
+  }
+
+  #kc-form-login.sh-form {
+    gap: 1rem;
+  }
+
+  .btn-primary,
+  #kc-login,
+  .sh-submit {
+    padding: 0.9rem 1rem !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-pf-page {
+    justify-content: flex-start;
+    padding-top: 0.75rem;
+    padding-bottom: 1rem;
+  }
+
+  .card-pf,
+  .login-pf-page .card-pf {
+    padding: 1.25rem 1.25rem 1rem !important;
+  }
+
+  #kc-page-title {
+    font-size: 1.65rem;
+  }
+
+  .sh-subtitle {
+    margin-bottom: 1rem;
+  }
+}
