@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface NavItem {
   label: string;
@@ -18,13 +19,22 @@ interface NavItem {
   },
 })
 export class SidebarComponent {
+  private readonly auth = inject(AuthService);
+
   readonly collapsed = input(false);
   readonly closeRequested = output<void>();
 
+  readonly displayName = computed(
+    () => this.auth.currentUser()?.name ?? 'The Sovereign'
+  );
+
   readonly user = {
-    name: 'The Sovereign',
     rank: 'Level 42 Productivity Explorer',
   };
+
+  logout(): void {
+    this.auth.logout();
+  }
 
   readonly navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'grid_view', route: '/dashboard' },
