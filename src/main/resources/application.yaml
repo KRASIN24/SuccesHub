@@ -26,6 +26,23 @@ spring:
         smtp:
           auth: true
           starttls.enable: true
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: succeshub-backend
+            client-secret: changeme
+            authorization-grant-type: authorization_code
+            scope: openid,profile,email
+            redirect-uri: "http://localhost:4200/login/oauth2/code/keycloak"
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/auth
+            token-uri: http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/token
+            jwk-set-uri: http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/certs
+            user-info-uri: http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
 
 springdoc:
   swagger-ui:
