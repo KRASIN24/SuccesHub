@@ -1,113 +1,64 @@
 package com.succeshub.appdomain.service;
 
 import com.succeshub.appdomain.dto.GoalDto;
-import com.succeshub.appdomain.model.Goal;
-import com.succeshub.appdomain.repository.GoalRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
-public class GoalService {
+/**
+ * Application service for user goals, progress tracking, and completion rewards.
+ */
+public interface GoalService {
 
-    private final GoalRepository repository;
-    private final UserProfileService profileService;
+    /**
+     * Returns all active goals for the user, newest first.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @return active goals as API responses
+     */
+    List<GoalDto.Response> getActiveGoals(String userId);
 
-    @Transactional(readOnly = true)
-    public List<GoalDto.Response> getActiveGoals(String userId) {
-        return repository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, Goal.Status.ACTIVE).stream()
-                .map(this::toDto)
-                .toList();
-    }
+    /**
+     * Returns all completed goals for the user, newest first.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @return completed goals as API responses
+     */
+    List<GoalDto.Response> getCompletedGoals(String userId);
 
-    @Transactional(readOnly = true)
-    public List<GoalDto.Response> getCompletedGoals(String userId) {
-        return repository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, Goal.Status.COMPLETED).stream()
-                .map(this::toDto)
-                .toList();
-    }
+    /**
+     * Returns aggregate counts and completion percentage for the user's goals.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @return summary totals and completion percent
+     */
+    GoalDto.SummaryResponse getSummary(String userId);
 
-    @Transactional(readOnly = true)
-    public GoalDto.SummaryResponse getSummary(String userId) {
-        long total = repository.countTotal(userId);
-        long completed = repository.countCompleted(userId);
-        int percent = total == 0 ? 0 : (int) Math.round(((double) completed / total) * 100);
-        return new GoalDto.SummaryResponse(total, completed, percent);
-    }
+    /**
+     * Creates a new goal for the user.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @param req    creation payload from the client
+     * @return persisted goal as an API response
+     */
+    GoalDto.Response create(String userId, GoalDto.CreateRequest req);
 
-    @Transactional
-    public GoalDto.Response create(String userId, GoalDto.CreateRequest req) {
-        Goal goal = new Goal();
-        goal.setUserId(userId);
-        goal.setName(req.name());
-        goal.setTier(req.tier());
-        goal.setTargetDescription(req.targetDescription());
-        goal.setTargetValue(req.targetValue());
-        goal.setCurrentProgress(req.currentProgress());
-        goal.setXpReward(req.xpReward());
-        goal.setIcon(req.icon());
-        goal.setFeatured(req.featured());
-        return toDto(repository.save(goal));
-    }
+    /**
+     * Updates an existing goal owned by the user.
+     * Awards XP when status transitions to completed.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @param id     primary key of the goal to update
+     * @param req    update payload from the client
+     * @return updated goal as an API response
+     */
+    GoalDto.Response update(String userId, UUID id, GoalDto.UpdateRequest req);
 
-    @Transactional
-    public GoalDto.Response update(String userId, UUID id, GoalDto.UpdateRequest req) {
-        Goal goal = repository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Goal not found: " + id));
-
-        goal.setName(req.name());
-        goal.setTier(req.tier());
-        goal.setTargetDescription(req.targetDescription());
-        goal.setTargetValue(req.targetValue());
-        goal.setCurrentProgress(req.currentProgress());
-        goal.setXpReward(req.xpReward());
-        goal.setIcon(req.icon());
-        goal.setFeatured(req.featured());
-
-        if (req.status() != null) {
-            Goal.Status newStatus = Goal.Status.valueOf(req.status());
-            if (newStatus == Goal.Status.COMPLETED && goal.getStatus() != Goal.Status.COMPLETED) {
-                goal.setCompletedAt(Instant.now());
-                // Award XP on goal completion
-                if (goal.getXpReward() > 0) {
-                    profileService.addXp(userId, goal.getXpReward());
-                }
-            }
-            goal.setStatus(newStatus);
-        }
-
-        return toDto(repository.save(goal));
-    }
-
-    @Transactional
-    public void delete(String userId, UUID id) {
-        Goal goal = repository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Goal not found: " + id));
-        repository.delete(goal);
-    }
-
-    private GoalDto.Response toDto(Goal g) {
-        return new GoalDto.Response(
-                g.getId(),
-                g.getName(),
-                g.getTier(),
-                g.getTargetDescription(),
-                g.getTargetValue(),
-                g.getCurrentProgress(),
-                g.getHealthRemaining(),
-                g.getXpReward(),
-                g.getIcon(),
-                g.getStatus().name(),
-                g.isFeatured(),
-                g.getSlainLabel(),
-                g.getCompletedAt(),
-                g.getCreatedAt()
-        );
-    }
+    /**
+     * Deletes a goal owned by the user.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @param id     primary key of the goal to delete
+     */
+    void delete(String userId, UUID id);
 }

@@ -1,57 +1,29 @@
 package com.succeshub.appdomain.service;
 
 import com.succeshub.appdomain.dto.ProfileDto;
-import com.succeshub.appdomain.model.UserProfile;
-import com.succeshub.appdomain.repository.UserProfileRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-public class UserProfileService {
-
-    private final UserProfileRepository repository;
+/**
+ * Application service for user profiles, XP totals, and level progression.
+ */
+public interface UserProfileService {
 
     /**
      * Returns the profile for the given Keycloak subject ID.
-     * Creates a new profile row on first login.
+     * Creates a new profile row on first access.
+     *
+     * @param keycloakId  OIDC subject ({@code sub}) from the authenticated session
+     * @param displayName human-readable name synced from Keycloak; may be {@code null}
+     * @return current profile state exposed to the dashboard
      */
-    @Transactional
-    public ProfileDto getOrCreateProfile(String keycloakId, String displayName) {
-        UserProfile profile = repository.findByKeycloakId(keycloakId)
-                .orElseGet(() -> {
-                    UserProfile p = new UserProfile();
-                    p.setKeycloakId(keycloakId);
-                    p.setDisplayName(displayName);
-                    return repository.save(p);
-                });
+    ProfileDto getOrCreateProfile(String keycloakId, String displayName);
 
-        if (displayName != null && !displayName.equals(profile.getDisplayName())) {
-            profile.setDisplayName(displayName);
-            profile = repository.save(profile);
-        }
-
-        return toDto(profile);
-    }
-
-    @Transactional
-    public ProfileDto addXp(String keycloakId, int amount) {
-        UserProfile profile = repository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new IllegalStateException("Profile not found for user: " + keycloakId));
-        profile.addXp(amount);
-        return toDto(repository.save(profile));
-    }
-
-    private ProfileDto toDto(UserProfile p) {
-        return new ProfileDto(
-                p.getKeycloakId(),
-                p.getDisplayName(),
-                p.getLevel(),
-                p.getCurrentXp(),
-                p.getNextLevelXp(),
-                p.getCurrentStreak(),
-                p.getGlobalRank()
-        );
-    }
+    /**
+     * Adds XP to the user's profile and applies any resulting level-ups.
+     *
+     * @param keycloakId OIDC subject ({@code sub}) of the user receiving XP
+     * @param amount     XP points to add; must be positive in normal flows
+     * @return updated profile after persistence
+     * @throws IllegalStateException when no profile exists for the given user
+     */
+    ProfileDto addXp(String keycloakId, int amount);
 }

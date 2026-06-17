@@ -1,19 +1,16 @@
 package com.succeshub.appdomain.service;
 
 import com.succeshub.appdomain.dto.QuoteDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-public class QuoteService {
+/**
+ * Application service for the daily inspirational quote shown on the dashboard.
+ */
+public interface QuoteService {
 
-    @Transactional(readOnly = true)
-    public QuoteDto getDailyQuote() {
-        return new QuoteDto(
-                        "The void is not an empty space, but a canvas awaiting the curation of your will.",
-                        "The Archivist"
-                );
-    }
+    /**
+     * Returns the quote of the day for display in the UI.
+     *
+     * @return quote text and attributed author
+     */
+    QuoteDto getDailyQuote();
 }
