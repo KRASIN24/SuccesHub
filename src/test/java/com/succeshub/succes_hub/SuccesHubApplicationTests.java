@@ -23,6 +23,9 @@ class SuccesHubApplicationTests {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@org.springframework.boot.test.mock.mockito.MockBean
+	private com.succeshub.appdomain.repository.UserProfileRepository userProfileRepository;
+
 	@Test
 	void contextLoads() {
 	}
