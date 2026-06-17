@@ -29,6 +29,8 @@ class SuccesHubApplicationTests {
 	private com.succeshub.appdomain.repository.TaskCategoryRepository taskCategoryRepository;
 	@org.springframework.boot.test.mock.mockito.MockBean
 	private com.succeshub.appdomain.repository.TaskRepository taskRepository;
+	@org.springframework.boot.test.mock.mockito.MockBean
+	private com.succeshub.appdomain.repository.GoalRepository goalRepository;
 
 	@Test
 	void contextLoads() {

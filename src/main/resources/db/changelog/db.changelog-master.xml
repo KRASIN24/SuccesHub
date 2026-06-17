@@ -8,5 +8,6 @@ xsi:schemaLocation="
     <include file="db/changelog/2026-06-14-01-create-user-profile.xml"/>
     <include file="db/changelog/2026-06-14-02-create-task-category.xml"/>
     <include file="db/changelog/2026-06-14-03-create-task.xml"/>
+    <include file="db/changelog/2026-06-14-04-create-goal.xml"/>
 
 </databaseChangeLog>
