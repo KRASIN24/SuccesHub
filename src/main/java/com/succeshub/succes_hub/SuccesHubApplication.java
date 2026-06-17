@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = {
 		"com.succeshub.succes_hub",
 		"com.succeshub.config",
-		"com.succeshub.coreinfra"
+		"com.succeshub.coreinfra",
+		"com.succeshub.appdomain"
 })
 public class SuccesHubApplication {
 
