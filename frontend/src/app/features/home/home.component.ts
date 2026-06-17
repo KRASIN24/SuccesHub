@@ -1,78 +1,98 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-
-interface ProtocolTask {
-  title: string;
-  detail: string;
-  xp: number;
-  done: boolean;
-}
-
-interface Merit {
-  label: string;
-  icon: string;
-  locked: boolean;
-}
-
-interface IndexRow {
-  pair: string;
-  price: string;
-  change: string;
-}
+import { forkJoin } from 'rxjs';
+import { ProfileService } from '../../core/services/profile.service';
+import { TaskService } from '../../core/services/task.service';
+import { AchievementService } from '../../core/services/achievement.service';
+import { QuoteService } from '../../core/services/quote.service';
+import { MarketService } from '../../core/services/market.service';
+import { AstronomyService } from '../../core/services/astronomy.service';
+import { UserProfile } from '../../core/models/profile.model';
+import { Task } from '../../core/models/task.model';
+import { Achievement } from '../../core/models/achievement.model';
+import { MarketData } from '../../core/models/market.model';
+import { LunarData } from '../../core/models/lunar.model';
+import { DailyQuote } from '../../core/models/lunar.model';
+import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
+import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, LoadingSkeletonComponent, ErrorStateComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
-  readonly level = 42;
-  readonly currentXp = 2450;
-  readonly nextLevelXp = 3000;
+export class HomeComponent implements OnInit {
+  private readonly profileService = inject(ProfileService);
+  private readonly taskService = inject(TaskService);
+  private readonly achievementService = inject(AchievementService);
+  private readonly quoteService = inject(QuoteService);
+  private readonly marketService = inject(MarketService);
+  private readonly astronomyService = inject(AstronomyService);
+
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+
+  readonly profile = signal<UserProfile | null>(null);
+  readonly tasks = signal<Task[]>([]);
+  readonly merits = signal<Achievement[]>([]);
+  readonly marketData = signal<MarketData | null>(null);
+  readonly lunarData = signal<LunarData | null>(null);
+  readonly quote = signal<DailyQuote | null>(null);
+
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
+
+  loadDashboardData(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    forkJoin({
+      profile: this.profileService.getProfile(),
+      tasks: this.taskService.getTasks('TODO'),
+      merits: this.achievementService.getAchievements(),
+      market: this.marketService.getPrices(),
+      lunar: this.astronomyService.getLunarPhase(),
+      quote: this.quoteService.getDailyQuote()
+    }).subscribe({
+      next: (data) => {
+        this.profile.set(data.profile);
+        this.tasks.set(data.tasks);
+        this.merits.set(data.merits);
+        this.marketData.set(data.market);
+        this.lunarData.set(data.lunar);
+        this.quote.set(data.quote);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load dashboard data', err);
+        this.error.set('Could not synchronize dashboard state with the server.');
+        this.loading.set(false);
+      }
+    });
+  }
 
   get xpPercent(): number {
-    return Math.round((this.currentXp / this.nextLevelXp) * 100);
+    const p = this.profile();
+    if (!p || p.nextLevelXp === 0) return 0;
+    return Math.round((p.currentXp / p.nextLevelXp) * 100);
   }
-
-  readonly tasks: ProtocolTask[] = [
-    {
-      title: 'Deep Work: Interface Refinement',
-      detail: 'Focus on the editorial typography scale.',
-      xp: 450,
-      done: false,
-    },
-    {
-      title: 'Review Design System Guidelines',
-      detail: 'Apply the "No-Line" rule across all panels.',
-      xp: 200,
-      done: false,
-    },
-    {
-      title: 'Hydration & Movement Protocol',
-      detail: 'System maintenance required.',
-      xp: 50,
-      done: true,
-    },
-  ];
-
-  readonly merits: Merit[] = [
-    { label: 'Speedster', icon: 'bolt', locked: false },
-    { label: 'Pioneer', icon: 'explore', locked: false },
-    { label: 'Archivist', icon: 'diamond', locked: true },
-  ];
-
-  readonly indexRows: IndexRow[] = [
-    { pair: 'BTC/USD', price: '64,291.50', change: '+2.4%' },
-    { pair: 'ETH/USD', price: '3,412.12', change: '+0.8%' },
-  ];
 
   get tasksRemaining(): number {
-    return this.tasks.filter((t) => !t.done).length + 3;
+    return this.tasks().length;
   }
 
-  toggleTask(task: ProtocolTask): void {
-    task.done = !task.done;
+  toggleTask(task: Task): void {
+    this.taskService.completeTask(task.id).subscribe({
+      next: () => {
+        this.tasks.update((list) => list.filter((t) => t.id !== task.id));
+        this.profileService.getProfile().subscribe((prof) => this.profile.set(prof));
+      },
+      error: (err) => {
+        console.error('Failed to complete task', err);
+      }
+    });
   }
 }
