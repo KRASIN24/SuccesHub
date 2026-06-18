@@ -1,9 +1,17 @@
 package com.succeshub.succes_hub;
 
+import com.succeshub.appdomain.repository.AchievementDefinitionRepository;
+import com.succeshub.appdomain.repository.GoalRepository;
+import com.succeshub.appdomain.repository.TaskCategoryRepository;
+import com.succeshub.appdomain.repository.TaskRepository;
+import com.succeshub.appdomain.repository.UserAchievementRepository;
+import com.succeshub.appdomain.repository.UserProfileRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,11 +25,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 				"org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration",
 		"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:9999/fake-jwks"
 })
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 class SuccesHubApplicationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@MockitoBean
+	private UserProfileRepository userProfileRepository;
+	@MockitoBean
+	private TaskCategoryRepository taskCategoryRepository;
+	@MockitoBean
+	private TaskRepository taskRepository;
+	@MockitoBean
+	private GoalRepository goalRepository;
+	@MockitoBean
+	private AchievementDefinitionRepository achievementDefinitionRepository;
+	@MockitoBean
+	private UserAchievementRepository userAchievementRepository;
 
 	@Test
 	void contextLoads() {
