@@ -1,17 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { GoalService } from '../../core/services/goal.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { Goal, GoalSummary } from '../../core/models/goal.model';
 import { UserProfile } from '../../core/models/profile.model';
-import { DatePipe } from '@angular/common';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 
 @Component({
   selector: 'app-goals',
   standalone: true,
-  imports: [LoadingSkeletonComponent, ErrorStateComponent, DatePipe],
+  imports: [CommonModule, LoadingSkeletonComponent, ErrorStateComponent],
   templateUrl: './goals.component.html',
   styleUrl: './goals.component.scss',
 })
