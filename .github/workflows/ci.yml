@@ -11,7 +11,7 @@ concurrency:
 jobs:
   backend:
     name: Backend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,11 +24,11 @@ jobs:
           cache: maven
 
       - name: Run tests
-        run: ./mvnw test
+        run: chmod +x mvnw && ./mvnw test
 
   frontend:
     name: Frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: frontend
