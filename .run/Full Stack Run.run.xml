@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Full Stack Run" type="CompoundRunConfigurationType">
+    <toRun name="Angular Dev Server" type="js.build_tools.npm" />
+    <toRun name="Spring Boot (SuccesHub)" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>
