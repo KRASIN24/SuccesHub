@@ -14,21 +14,26 @@
   </div>
 
   <div class="topbar-right">
-    <div class="stat-chip">
-      <span class="stat-key">XP:</span>
-      <span class="stat-val gold">{{ stats.xp }}</span>
-    </div>
-    <div class="stat-chip rank">
-      <span class="stat-key">RANK:</span>
-      <span class="stat-val">{{ stats.rank }}</span>
-    </div>
+    @if (profileService.profile(); as prof) {
+      <div class="stat-chip">
+        <span class="stat-key">XP:</span>
+        <span class="stat-val gold">{{ prof.currentXp | number }}</span>
+      </div>
+      <div class="stat-chip rank">
+        <span class="stat-key">LVL:</span>
+        <span class="stat-val">{{ prof.level }}</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-key">STREAK:</span>
+        <span class="stat-val">{{ prof.currentStreak }}d</span>
+      </div>
+    }
 
     <button type="button" class="icon-btn" aria-label="Notifications">
       <span class="material-icons">notifications_none</span>
-      <span class="dot" aria-hidden="true"></span>
     </button>
-    <button type="button" class="avatar-btn" aria-label="Account">
+    <a class="avatar-btn" routerLink="/profile" aria-label="Account">
       <span class="material-icons">person</span>
-    </button>
+    </a>
   </div>
 </header>

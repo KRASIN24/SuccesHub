@@ -1,6 +1,7 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProfileService } from '../../../core/services/profile.service';
 
 interface NavItem {
   label: string;
@@ -18,8 +19,9 @@ interface NavItem {
     '[class.collapsed]': 'collapsed()',
   },
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   private readonly auth = inject(AuthService);
+  protected readonly profileService = inject(ProfileService);
 
   readonly collapsed = input(false);
   readonly closeRequested = output<void>();
@@ -28,9 +30,13 @@ export class SidebarComponent {
     () => this.auth.currentUser()?.name ?? 'The Sovereign'
   );
 
-  readonly user = {
-    rank: 'Level 42 Productivity Explorer',
-  };
+  ngOnInit(): void {
+    if (!this.profileService.profile()) {
+      this.profileService.getProfile().subscribe({
+        error: (err) => console.error('Failed to load sidebar profile', err),
+      });
+    }
+  }
 
   logout(): void {
     this.auth.logout();
