@@ -405,3 +405,92 @@
     padding: 2rem 1.25rem;
   }
 }
+
+.ritual-block {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.ritual-icon {
+  font-size: 1rem;
+  vertical-align: middle;
+  color: #ff9800;
+}
+
+.ritual-meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.daily-track {
+  opacity: 0.85;
+}
+
+.daily-fill {
+  background: linear-gradient(90deg, #ff9800, #f6cf63);
+}
+
+.celebrate-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(232, 179, 62, 0.35);
+  border-radius: 12px;
+  background: rgba(232, 179, 62, 0.08);
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.celebrate-btn,
+.schedule-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  background: var(--color-gold);
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.weekly-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(156, 39, 176, 0.25);
+  color: #ce93d8;
+}
+
+.link-muted {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-gold);
+  }
+}
+
+.forecast-line,
+.forecast-meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.forecast-meta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
