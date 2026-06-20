@@ -2,10 +2,15 @@ package com.succeshub.succes_hub;
 
 import com.succeshub.appdomain.repository.AchievementDefinitionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
+import com.succeshub.appdomain.repository.LootBoxContentRepository;
+import com.succeshub.appdomain.repository.RewardDefinitionRepository;
 import com.succeshub.appdomain.repository.TaskCategoryRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.repository.UserAchievementRepository;
+import com.succeshub.appdomain.repository.UserInventoryRepository;
+import com.succeshub.appdomain.repository.UserLootBoxRepository;
 import com.succeshub.appdomain.repository.UserProfileRepository;
+import com.succeshub.appdomain.repository.XpEventRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,6 +49,16 @@ class SuccesHubApplicationTests {
 	private AchievementDefinitionRepository achievementDefinitionRepository;
 	@MockitoBean
 	private UserAchievementRepository userAchievementRepository;
+	@MockitoBean
+	private UserInventoryRepository userInventoryRepository;
+	@MockitoBean
+	private RewardDefinitionRepository rewardDefinitionRepository;
+	@MockitoBean
+	private XpEventRepository xpEventRepository;
+	@MockitoBean
+	private UserLootBoxRepository userLootBoxRepository;
+	@MockitoBean
+	private LootBoxContentRepository lootBoxContentRepository;
 
 	@Test
 	void contextLoads() {

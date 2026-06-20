@@ -1,6 +1,8 @@
 package com.succeshub.coreinfra.exception_handler.base;
 
 import com.succeshub.coreinfra.exception_handler.domain.ValidationException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -59,6 +61,28 @@ public class GlobalExceptionHandler {
     }
 
     // ── 3. Spring: @Valid / @Validated failures ───────────────────────────────
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException ex) {
+        log.warn("Entity not found: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .errorCode("NOT_FOUND")
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException ex) {
+        log.warn("Malformed request body: {}", ex.getMostSpecificCause().getMessage());
+        ErrorResponse body = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .errorCode("MALFORMED_REQUEST")
+                .message("Request body is invalid")
+                .build();
+        return ResponseEntity.badRequest().body(body);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleBeanValidation(MethodArgumentNotValidException ex) {

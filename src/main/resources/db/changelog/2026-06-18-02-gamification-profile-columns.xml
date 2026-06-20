@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-06-18-02-gamification-profile-columns" author="cursor">
+        <addColumn tableName="user_profile" schemaName="succeshub">
+            <column name="streak_tier" type="VARCHAR(20)"/>
+            <column name="streak_shields" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="daily_xp_earned" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="daily_xp_date" type="DATE"/>
+            <column name="lifetime_xp" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_task_completed_today" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_processed_day" type="DATE"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

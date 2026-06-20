@@ -34,7 +34,6 @@ public class TaskCategoryServiceImpl implements TaskCategoryService {
         cat.setName(req.name());
         cat.setTag(req.tag());
         cat.setGrantXp(req.grantXp());
-        cat.setMuted(req.muted());
         cat.setSortOrder(req.sortOrder());
         return toDto(repository.save(cat));
     }
@@ -48,7 +47,6 @@ public class TaskCategoryServiceImpl implements TaskCategoryService {
         cat.setName(req.name());
         cat.setTag(req.tag());
         cat.setGrantXp(req.grantXp());
-        cat.setMuted(req.muted());
         cat.setSortOrder(req.sortOrder());
         return toDto(repository.save(cat));
     }
@@ -64,6 +62,6 @@ public class TaskCategoryServiceImpl implements TaskCategoryService {
 
     private TaskCategoryDto.Response toDto(TaskCategory c) {
         return new TaskCategoryDto.Response(c.getId(), c.getName(), c.getTag(),
-                c.isGrantXp(), c.isMuted(), c.getSortOrder());
+                c.isGrantXp(), c.getSortOrder());
     }
 }

@@ -1,14 +1,24 @@
-<databaseChangeLog
-xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="
-        http://www.liquibase.org/xml/ns/dbchangelog
-        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
-    <include file="db/changelog/2026-06-14-01-create-user-profile.xml"/>
-    <include file="db/changelog/2026-06-14-02-create-task-category.xml"/>
-    <include file="db/changelog/2026-06-14-03-create-task.xml"/>
-    <include file="db/changelog/2026-06-14-04-create-goal.xml"/>
-    <include file="db/changelog/2026-06-14-05-create-achievement.xml"/>
-
-</databaseChangeLog>
+<databaseChangeLog
+xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="db/changelog/2026-06-14-01-create-user-profile.xml"/>
+    <include file="db/changelog/2026-06-14-02-create-task-category.xml"/>
+    <include file="db/changelog/2026-06-14-03-create-task.xml"/>
+    <include file="db/changelog/2026-06-14-04-create-goal.xml"/>
+    <include file="db/changelog/2026-06-14-05-create-achievement.xml"/>
+    <include file="db/changelog/2026-06-14-02-seed-data.xml"/>
+
+    <include file="db/changelog/2026-06-18-01-gamification-task-columns.xml"/>
+    <include file="db/changelog/2026-06-18-02-gamification-profile-columns.xml"/>
+    <include file="db/changelog/2026-06-18-03-gamification-loot.xml"/>
+    <include file="db/changelog/2026-06-18-04-gamification-events.xml"/>
+    <include file="db/changelog/2026-06-18-05-seed-rewards.xml"/>
+    <include file="db/changelog/2026-06-20-01-task-xp-awarded.xml"/>
+    <include file="db/changelog/2026-06-20-02-drop-task-category-muted.xml"/>
+
+</databaseChangeLog>
+

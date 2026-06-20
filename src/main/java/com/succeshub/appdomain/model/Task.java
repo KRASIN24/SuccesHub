@@ -30,6 +30,10 @@ public class Task {
     @JoinColumn(name = "category_id")
     private TaskCategory category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "goal_id")
+    private Goal goal;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -39,9 +43,27 @@ public class Task {
     @Column(name = "xp_reward", nullable = false)
     private int xpReward = 0;
 
+    @Column(name = "difficulty", nullable = false)
+    private int difficulty = 3;
+
+    @Column(name = "duration_minutes", nullable = false)
+    private int durationMinutes = 30;
+
+    @Column(name = "priority", nullable = false)
+    private int priority = 2;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status = Status.TODO;
+
+    @Column(name = "scheduled_date")
+    private LocalDate scheduledDate;
+
+    @Column(name = "is_weekly_challenge", nullable = false)
+    private boolean weeklyChallenge = false;
+
+    @Column(name = "weekly_challenge_week")
+    private LocalDate weeklyChallengeWeek;
 
     @Column(name = "meta_label")
     private String metaLabel;
@@ -54,6 +76,9 @@ public class Task {
 
     @Column(name = "completed_at")
     private Instant completedAt;
+
+    @Column(name = "xp_awarded", nullable = false)
+    private boolean xpAwarded = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();

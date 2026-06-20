@@ -34,9 +34,6 @@ public class TaskCategory {
     @Column(name = "grant_xp", nullable = false)
     private boolean grantXp = true;
 
-    @Column(name = "muted", nullable = false)
-    private boolean muted = false;
-
     @Column(name = "sort_order", nullable = false)
     private int sortOrder = 0;
 

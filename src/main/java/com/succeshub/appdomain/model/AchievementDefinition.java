@@ -34,4 +34,10 @@ public class AchievementDefinition {
 
     @Column(name = "tasks_required")
     private int tasksRequired = 0;
+
+    @Column(name = "streak_required")
+    private int streakRequired = 0;
+
+    @Column(name = "goals_required")
+    private int goalsRequired = 0;
 }

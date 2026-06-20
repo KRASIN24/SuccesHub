@@ -5,6 +5,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/succeshub
     username: postgres
     password: postgres
+  jackson:
+    deserialization:
+      accept-empty-string-as-null-object: true
   jpa:
     properties:
       hibernate:
