@@ -21,32 +21,69 @@
 
     <div class="board">
       @for (column of columns(); track column.id) {
-        <section class="column" [class.is-muted]="column.muted">
-          <div class="column-head">
-            <h2 class="column-title">{{ column.name }}</h2>
-            <button
-              type="button"
-              class="hex-add"
-              [attr.aria-label]="'Add task to ' + column.name"
-              (click)="openAddTaskForm(column.id)"
-            >
-              <span class="material-icons">add</span>
-            </button>
-          </div>
+        <section class="column">
+          @if (editingCategoryId() === column.id) {
+            <form class="category-edit-form" (ngSubmit)="saveCategoryEdit(column.id)">
+              <div class="column-head">
+                <h2 class="column-title">Edit Category</h2>
+              </div>
+              <label class="field">
+                <span class="field-label">Name</span>
+                <input type="text" [(ngModel)]="editCategoryName" name="editCategoryName" required />
+              </label>
+              <label class="field">
+                <span class="field-label">Tag</span>
+                <input type="text" [(ngModel)]="editCategoryTag" name="editCategoryTag" />
+              </label>
+              <label class="field checkbox">
+                <input type="checkbox" [(ngModel)]="editCategoryGrantXp" name="editCategoryGrantXp" />
+                <span>Grant XP on completion</span>
+              </label>
+              @if (categorySaveError()) {
+                <p class="form-error">{{ categorySaveError() }}</p>
+              }
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="cancelEditCategory()">Cancel</button>
+                <button type="submit" class="btn-primary" [disabled]="!editCategoryName.trim()">Save</button>
+              </div>
+            </form>
+          } @else {
+            <div class="column-head">
+              <h2 class="column-title">{{ column.name }}</h2>
+              <div class="column-actions">
+                <button
+                  type="button"
+                  class="icon-btn"
+                  (click)="openEditCategoryForm(column)"
+                  [attr.aria-label]="'Edit ' + column.name"
+                >
+                  <span class="material-icons">edit</span>
+                </button>
+                <button
+                  type="button"
+                  class="hex-add"
+                  [attr.aria-label]="'Add task to ' + column.name"
+                  (click)="openAddTaskForm(column.id)"
+                >
+                  <span class="material-icons">add</span>
+                </button>
+              </div>
+            </div>
 
-          <div class="column-controls">
-            <button
-              type="button"
-              class="toggle"
-              [class.on]="column.grantXp"
-              (click)="toggleGrantXp(column)"
-              [attr.aria-pressed]="column.grantXp"
-            >
-              <span class="knob"></span>
-            </button>
-            <span class="toggle-label">Grant XP</span>
-            <span class="column-tag">{{ column.tag }}</span>
-          </div>
+            <div class="column-controls">
+              <button
+                type="button"
+                class="toggle"
+                [class.on]="column.grantXp"
+                (click)="toggleGrantXp(column)"
+                [attr.aria-pressed]="column.grantXp"
+              >
+                <span class="knob"></span>
+              </button>
+              <span class="toggle-label">Grant XP</span>
+              <span class="column-tag">{{ column.tag }}</span>
+            </div>
+          }
 
           <div class="tasks">
             @if (activeAddTaskId() === column.id) {
@@ -66,13 +103,32 @@
                   class="form-input"
                   style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px; font-size: 13px; font-family: inherit;"
                 />
-                <input
-                  type="number"
-                  placeholder="XP Reward..."
-                  [(ngModel)]="newTaskXp"
-                  class="form-input"
-                  style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px; font-size: 13px; font-family: inherit;"
-                />
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                  <label style="font-size: 11px; color: rgba(255,255,255,0.6);">
+                    Difficulty
+                    <input type="number" min="1" max="5" [(ngModel)]="newTaskDifficulty" (ngModelChange)="refreshXpPreview()" style="width: 100%; margin-top: 4px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px;" />
+                  </label>
+                  <label style="font-size: 11px; color: rgba(255,255,255,0.6);">
+                    Minutes
+                    <input type="number" min="15" step="15" [(ngModel)]="newTaskDuration" (ngModelChange)="refreshXpPreview()" style="width: 100%; margin-top: 4px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px;" />
+                  </label>
+                  <label style="font-size: 11px; color: rgba(255,255,255,0.6);">
+                    Priority
+                    <input type="number" min="1" max="3" [(ngModel)]="newTaskPriority" (ngModelChange)="refreshXpPreview()" style="width: 100%; margin-top: 4px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px;" />
+                  </label>
+                </div>
+                <select [(ngModel)]="newTaskGoalId" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px; border-radius: 4px; font-size: 13px;">
+                  <option [ngValue]="null">No boss link</option>
+                  @for (goal of goals(); track goal.id) {
+                    <option [ngValue]="goal.id">{{ goal.name }}</option>
+                  }
+                </select>
+                @if (xpPreview(); as preview) {
+                  <p style="margin: 0; font-size: 12px; color: var(--color-gold);">Est. +{{ preview.estimatedTotalXp }} XP ({{ preview.dailyXpRemaining }} remaining today)</p>
+                }
+                @if (saveError()) {
+                  <p style="margin: 0; font-size: 12px; color: #ff6b6b;">{{ saveError() }}</p>
+                }
                 <div style="display: flex; gap: 8px; justify-content: flex-end;">
                   <button (click)="cancelAddTask()" class="btn-cancel" style="background: transparent; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 12px; padding: 4px 8px;">Cancel</button>
                   <button (click)="saveTask(column.id)" class="btn-save" style="background: var(--color-gold); border: none; color: #000; font-weight: 600; cursor: pointer; font-size: 12px; padding: 4px 12px; border-radius: 4px;">Save</button>
@@ -86,7 +142,7 @@
                   type="button"
                   class="checkbox"
                   [class.checked]="task.status === 'DONE'"
-                  (click)="toggleTask(task)"
+                  (click)="toggleTask(task, column)"
                   [attr.aria-pressed]="task.status === 'DONE'"
                   [attr.aria-label]="task.title"
                 >
@@ -103,8 +159,12 @@
                     @if (task.metaLabel) {
                       <span class="meta-tag" [class]="task.metaType">{{ task.metaLabel }}</span>
                     }
-                    @if (task.xpReward) {
-                      <span class="quest-xp">+{{ task.xpReward }} XP</span>
+                    @if (task.weeklyChallenge) {
+                      <span class="meta-tag">Weekly</span>
+                    }
+                    <span class="quest-xp">D{{ task.difficulty }} · {{ task.durationMinutes }}m</span>
+                    @if (task.status !== 'DONE' && !task.scheduledDate) {
+                      <button type="button" class="schedule-inline" (click)="scheduleTask(task)">+ Today</button>
                     }
                   </div>
                 </div>
