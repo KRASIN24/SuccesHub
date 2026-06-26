@@ -1,9 +1,11 @@
 package com.succeshub.appdomain.service.impl;
 
+import com.succeshub.appdomain.dto.gamification.GamificationDto.BoxTypeDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.InventoryItemDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.LootBoxDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.RewardItemDto;
 import com.succeshub.appdomain.model.LootBoxContent;
+import com.succeshub.appdomain.model.LootBoxType;
 import com.succeshub.appdomain.model.RewardDefinition;
 import com.succeshub.appdomain.model.UserInventory;
 import com.succeshub.appdomain.model.UserLootBox;
@@ -19,13 +21,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
 public class LootBoxServiceImpl implements LootBoxService {
+
+    /** Each box opens as exactly 3 independent rolls in V1 (no guaranteed slot, no pity timer). */
+    private static final int SLOTS_PER_BOX = 3;
 
     private final UserLootBoxRepository lootBoxRepository;
     private final LootBoxContentRepository contentRepository;
@@ -35,11 +43,23 @@ public class LootBoxServiceImpl implements LootBoxService {
     @Override
     @Transactional
     public UUID grantLootBox(String userId, UserLootBox.Source source) {
-        UserLootBox box = new UserLootBox();
-        box.setUserId(userId);
-        box.setSource(source);
-        box.setStatus(UserLootBox.Status.PENDING);
-        return lootBoxRepository.save(box).getId();
+        return createBox(userId, source, defaultBoxType(source)).getId();
+    }
+
+    @Override
+    @Transactional
+    public LootBoxDto grantBox(String userId, LootBoxType boxType) {
+        UserLootBox box = createBox(userId, UserLootBox.Source.MANUAL, boxType);
+        return toDto(box, List.of());
+    }
+
+    @Override
+    public List<BoxTypeDto> getBoxTypes() {
+        return Arrays.stream(LootBoxType.values())
+                .map(t -> new BoxTypeDto(
+                        t.name(), t.getDisplayName(), t.getSource(), t.getFeel(), t.getBlurb(), t.getIcon(),
+                        t.getCommonWeight(), t.getRareWeight(), t.getLegendaryWeight()))
+                .toList();
     }
 
     @Override
@@ -54,11 +74,10 @@ public class LootBoxServiceImpl implements LootBoxService {
                     .toList());
         }
 
-        List<RewardDefinition> all = rewardDefinitionRepository.findAll();
+        Map<RewardDefinition.Rarity, List<RewardDefinition>> poolByRarity = poolsByRarity();
         List<RewardItemDto> rolled = new ArrayList<>();
-        int count = 3 + ThreadLocalRandom.current().nextInt(3);
-        for (int i = 0; i < count; i++) {
-            RewardDefinition reward = pickReward(all);
+        for (int slot = 0; slot < SLOTS_PER_BOX; slot++) {
+            RewardDefinition reward = roll(box.getBoxType(), poolByRarity);
             LootBoxContent content = new LootBoxContent();
             content.setLootBox(box);
             content.setRewardDefinition(reward);
@@ -91,22 +110,101 @@ public class LootBoxServiceImpl implements LootBoxService {
 
     @Override
     @Transactional
+    public InventoryItemDto toggleEquip(String userId, UUID inventoryId) {
+        UserInventory item = inventoryRepository.findById(inventoryId)
+                .filter(i -> i.getUserId().equals(userId))
+                .orElseThrow(() -> new EntityNotFoundException("Inventory item not found"));
+
+        RewardDefinition.Type type = item.getRewardDefinition().getType();
+        if (type != RewardDefinition.Type.TITLE && type != RewardDefinition.Type.FRAME) {
+            // Functional items are not equippable; return unchanged.
+            return new InventoryItemDto(item.getId(), toRewardItem(item.getRewardDefinition()), item.getQuantity(), item.isEquipped());
+        }
+
+        boolean willEquip = !item.isEquipped();
+        if (willEquip) {
+            for (UserInventory other : inventoryRepository.findByUserId(userId)) {
+                if (other.getRewardDefinition().getType() == type && other.isEquipped() && !other.getId().equals(item.getId())) {
+                    other.setEquipped(false);
+                    inventoryRepository.save(other);
+                }
+            }
+        }
+        item.setEquipped(willEquip);
+        inventoryRepository.save(item);
+        return new InventoryItemDto(item.getId(), toRewardItem(item.getRewardDefinition()), item.getQuantity(), item.isEquipped());
+    }
+
+    @Override
+    @Transactional
     public UUID checkStreakMilestone(String userId, int streak) {
-        if (streak == 7 || streak == 30 || streak == 100) {
-            return grantLootBox(userId, UserLootBox.Source.STREAK_MILESTONE);
+        if (streak == 7 || streak == 30) {
+            return createBox(userId, UserLootBox.Source.STREAK_MILESTONE, LootBoxType.IRON_CHEST).getId();
+        }
+        if (streak == 100) {
+            return createBox(userId, UserLootBox.Source.STREAK_MILESTONE, LootBoxType.SOVEREIGN_VAULT).getId();
         }
         return null;
     }
 
-    private RewardDefinition pickReward(List<RewardDefinition> all) {
-        if (ThreadLocalRandom.current().nextDouble() < 0.05) {
-            return all.stream().filter(r -> r.getRarity() == RewardDefinition.Rarity.LEGENDARY).findFirst()
-                    .orElse(all.getFirst());
+    private UserLootBox createBox(String userId, UserLootBox.Source source, LootBoxType boxType) {
+        UserLootBox box = new UserLootBox();
+        box.setUserId(userId);
+        box.setSource(source);
+        box.setBoxType(boxType);
+        box.setStatus(UserLootBox.Status.PENDING);
+        return lootBoxRepository.save(box);
+    }
+
+    private LootBoxType defaultBoxType(UserLootBox.Source source) {
+        return switch (source) {
+            case STREAK_MILESTONE, ACHIEVEMENT -> LootBoxType.IRON_CHEST;
+            case WEEKLY_RESET -> LootBoxType.SOVEREIGN_VAULT;
+            case MANUAL -> LootBoxType.ARCANE_ORB;
+        };
+    }
+
+    private Map<RewardDefinition.Rarity, List<RewardDefinition>> poolsByRarity() {
+        Map<RewardDefinition.Rarity, List<RewardDefinition>> pools = new EnumMap<>(RewardDefinition.Rarity.class);
+        for (RewardDefinition.Rarity rarity : RewardDefinition.Rarity.values()) {
+            pools.put(rarity, new ArrayList<>());
         }
-        List<RewardDefinition> pool = all.stream()
-                .filter(r -> r.getRarity() != RewardDefinition.Rarity.LEGENDARY)
-                .toList();
+        for (RewardDefinition reward : rewardDefinitionRepository.findAll()) {
+            pools.get(reward.getRarity()).add(reward);
+        }
+        return pools;
+    }
+
+    /** Roll a rarity by the box's weights, then pick uniformly from that rarity pool. */
+    private RewardDefinition roll(LootBoxType boxType, Map<RewardDefinition.Rarity, List<RewardDefinition>> pools) {
+        RewardDefinition.Rarity rarity = rollRarity(boxType);
+        List<RewardDefinition> pool = pools.get(rarity);
+        if (pool == null || pool.isEmpty()) {
+            // Defensive fallback: degrade to the nearest non-empty, rarer-to-common pool.
+            for (RewardDefinition.Rarity fallback : List.of(
+                    RewardDefinition.Rarity.RARE, RewardDefinition.Rarity.COMMON, RewardDefinition.Rarity.LEGENDARY)) {
+                List<RewardDefinition> candidate = pools.get(fallback);
+                if (candidate != null && !candidate.isEmpty()) {
+                    pool = candidate;
+                    break;
+                }
+            }
+        }
+        if (pool == null || pool.isEmpty()) {
+            throw new IllegalStateException("Reward catalog is empty");
+        }
         return pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+    }
+
+    private RewardDefinition.Rarity rollRarity(LootBoxType boxType) {
+        int roll = ThreadLocalRandom.current().nextInt(100);
+        if (roll < boxType.getCommonWeight()) {
+            return RewardDefinition.Rarity.COMMON;
+        }
+        if (roll < boxType.getCommonWeight() + boxType.getRareWeight()) {
+            return RewardDefinition.Rarity.RARE;
+        }
+        return RewardDefinition.Rarity.LEGENDARY;
     }
 
     private void addToInventory(String userId, RewardDefinition reward) {
@@ -118,17 +216,16 @@ public class LootBoxServiceImpl implements LootBoxService {
                     return inv;
                 });
         stack.setQuantity(stack.getQuantity() + 1);
-        if (reward.getType() == RewardDefinition.Type.SHIELD) {
-            stack.getRewardDefinition();
-        }
         inventoryRepository.save(stack);
     }
 
     private RewardItemDto toRewardItem(RewardDefinition r) {
-        return new RewardItemDto(r.getId(), r.getKey(), r.getLabel(), r.getType().name(), r.getRarity().name(), r.getIcon());
+        return new RewardItemDto(r.getId(), r.getKey(), r.getLabel(), r.getType().name(), r.getRarity().name(),
+                r.getIcon(), r.getEffect());
     }
 
     private LootBoxDto toDto(UserLootBox box, List<RewardItemDto> contents) {
-        return new LootBoxDto(box.getId(), box.getSource().name(), box.getStatus().name(), box.getCreatedAt(), contents);
+        return new LootBoxDto(box.getId(), box.getSource().name(), box.getBoxType().name(),
+                box.getStatus().name(), box.getCreatedAt(), contents);
     }
 }

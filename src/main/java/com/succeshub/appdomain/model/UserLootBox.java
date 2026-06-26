@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserLootBox {
 
-    public enum Source { STREAK_MILESTONE, ACHIEVEMENT, WEEKLY_RESET }
+    public enum Source { STREAK_MILESTONE, ACHIEVEMENT, WEEKLY_RESET, MANUAL }
     public enum Status { PENDING, OPENED }
 
     @Id
@@ -28,6 +28,10 @@ public class UserLootBox {
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false)
     private Source source;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "box_type", nullable = false)
+    private LootBoxType boxType = LootBoxType.ARCANE_ORB;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

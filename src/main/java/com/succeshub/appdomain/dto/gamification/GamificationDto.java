@@ -105,12 +105,14 @@ public final class GamificationDto {
             String label,
             String type,
             String rarity,
-            String icon
+            String icon,
+            String effect
     ) {}
 
     public record LootBoxDto(
             UUID id,
             String source,
+            String boxType,
             String status,
             Instant createdAt,
             List<RewardItemDto> contents
@@ -122,6 +124,22 @@ public final class GamificationDto {
             int quantity,
             boolean equipped
     ) {}
+
+    /** A selectable box type with its display metadata and rarity odds (percentages). */
+    public record BoxTypeDto(
+            String id,
+            String name,
+            String source,
+            String feel,
+            String blurb,
+            String icon,
+            int commonWeight,
+            int rareWeight,
+            int legendaryWeight
+    ) {}
+
+    /** Request body for manually granting (summoning) a pending box of a given type. */
+    public record GrantBoxRequest(String boxType) {}
 
     public record ScheduleTasksRequest(List<UUID> taskIds) {}
 }

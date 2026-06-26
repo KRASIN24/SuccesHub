@@ -36,4 +36,8 @@ public class RewardDefinition {
 
     @Column(name = "icon", nullable = false)
     private String icon;
+
+    /** Human-readable effect for functional rewards (SHIELD / XP_BOOST); null for cosmetics. */
+    @Column(name = "effect")
+    private String effect;
 }

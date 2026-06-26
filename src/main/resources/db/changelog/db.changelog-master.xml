@@ -17,5 +17,6 @@ xsi:schemaLocation="
     <include file="db/changelog/2026-06-18-04-gamification-events.xml"/>
     <include file="db/changelog/2026-06-18-05-seed-rewards.xml"/>
     <include file="db/changelog/2026-06-20-01-task-xp-awarded.xml"/>
+    <include file="db/changelog/2026-06-26-01-loot-box-types.xml"/>
 </databaseChangeLog>
 

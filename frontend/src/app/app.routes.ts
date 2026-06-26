@@ -38,6 +38,15 @@ export const routes: Routes = [
     title: 'Achievements — SuccesHub',
   },
   {
+    path: 'loot-boxes',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/loot-boxes/loot-boxes.component').then(
+        (m) => m.LootBoxesComponent
+      ),
+    title: 'The Vault — SuccesHub',
+  },
+  {
     path: 'profile',
     canActivate: [authGuard],
     loadComponent: () =>

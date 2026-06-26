@@ -94,14 +94,28 @@ export interface RewardItem {
   type: string;
   rarity: string;
   icon: string;
+  effect?: string | null;
 }
 
 export interface LootBox {
   id: string;
   source: string;
+  boxType: string;
   status: string;
   createdAt: string;
   contents: RewardItem[];
+}
+
+export interface BoxType {
+  id: string;
+  name: string;
+  source: string;
+  feel: string;
+  blurb: string;
+  icon: string;
+  commonWeight: number;
+  rareWeight: number;
+  legendaryWeight: number;
 }
 
 export interface InventoryItem {

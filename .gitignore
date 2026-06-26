@@ -53,6 +53,7 @@ Thumbs.db
 coverage/
 .sass-cache/
 tmp/
+.worktrees/
 
 # =========================
 # Local env (optional)

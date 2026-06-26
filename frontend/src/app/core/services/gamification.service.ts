@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
 import {
+  BoxType,
   CloseDayResult,
   DailyStatus,
   Forecast,
@@ -47,8 +48,16 @@ export class GamificationService {
     return this.api.get<WeeklyInsight>('/gamification/insights/weekly');
   }
 
+  getBoxTypes(): Observable<BoxType[]> {
+    return this.api.get<BoxType[]>('/gamification/loot-boxes/types');
+  }
+
   getPendingLootBoxes(): Observable<LootBox[]> {
     return this.api.get<LootBox[]>('/gamification/loot-boxes');
+  }
+
+  grantLootBox(boxType: string): Observable<LootBox> {
+    return this.api.post<LootBox>('/gamification/loot-boxes/grant', { boxType });
   }
 
   openLootBox(id: string): Observable<LootBox> {
@@ -57,5 +66,9 @@ export class GamificationService {
 
   getInventory(): Observable<InventoryItem[]> {
     return this.api.get<InventoryItem[]>('/gamification/inventory');
+  }
+
+  equipInventoryItem(id: string): Observable<InventoryItem> {
+    return this.api.post<InventoryItem>(`/gamification/inventory/${id}/equip`, {});
   }
 }

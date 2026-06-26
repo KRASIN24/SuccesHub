@@ -1,25 +1,53 @@
 package com.succeshub.appdomain.service;
 
+import com.succeshub.appdomain.dto.gamification.GamificationDto.BoxTypeDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.InventoryItemDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.LootBoxDto;
+import com.succeshub.appdomain.model.LootBoxType;
 import com.succeshub.appdomain.model.UserLootBox;
 
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Earn-only loot box lifecycle: grant, open, and inventory management.
+ * Loot box lifecycle: grant, open, and inventory management.
  */
 public interface LootBoxService {
 
     /**
-     * Grants a pending loot box to the user.
+     * Grants a pending loot box to the user, deriving the box type from the source.
      *
      * @param userId Keycloak subject ID
      * @param source earn trigger source
      * @return created loot box ID
      */
     UUID grantLootBox(String userId, UserLootBox.Source source);
+
+    /**
+     * Returns the static catalog of selectable box types with their rarity odds.
+     *
+     * @return ordered list of box type definitions
+     */
+    List<BoxTypeDto> getBoxTypes();
+
+    /**
+     * Grants a pending loot box of an explicit type (manual / earn-simulation).
+     *
+     * @param userId  Keycloak subject ID
+     * @param boxType box type to grant
+     * @return the newly created pending box
+     */
+    LootBoxDto grantBox(String userId, LootBoxType boxType);
+
+    /**
+     * Toggles the equipped state of a cosmetic inventory item (TITLE or FRAME).
+     * Equipping one item unequips any other equipped item of the same type.
+     *
+     * @param userId      Keycloak subject ID
+     * @param inventoryId inventory row to toggle
+     * @return the updated inventory item
+     */
+    InventoryItemDto toggleEquip(String userId, UUID inventoryId);
 
     /**
      * Opens a pending loot box and rolls rewards into inventory.
