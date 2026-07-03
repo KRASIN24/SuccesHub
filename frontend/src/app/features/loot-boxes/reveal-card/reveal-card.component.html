@@ -1,0 +1,24 @@
+<div class="loot-card__canvas">
+  @for (n of trackers; track n) {
+    <span class="loot-card__tracker tr-{{ n }}"></span>
+  }
+
+  <div class="loot-card__tilt">
+    <div class="loot-card__flip">
+      <div class="loot-card__face loot-card__face--back">
+        <span class="loot-card__lines"></span>
+        <div class="loot-card__cover">
+          <span class="material-symbols-outlined loot-card__cover-mark">question_mark</span>
+          <span class="loot-card__cover-label">Tap to reveal</span>
+        </div>
+      </div>
+
+      <div class="loot-card__face loot-card__face--front">
+        <span class="loot-card__rarity">{{ item().rarity }}</span>
+        <span class="material-symbols-outlined loot-card__icon">{{ item().icon }}</span>
+        <p class="loot-card__label">{{ item().label }}</p>
+        <p class="loot-card__meta">{{ item().effect || categoryLabel() }}</p>
+      </div>
+    </div>
+  </div>
+</div>

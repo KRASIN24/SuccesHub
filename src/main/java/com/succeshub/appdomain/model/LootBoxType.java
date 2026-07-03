@@ -9,26 +9,26 @@ package com.succeshub.appdomain.model;
 public enum LootBoxType {
 
     ARCANE_ORB(
-            "Arcane Orb",
+            "Glowing Orb",
             "Daily streak qualifier",
             "Common, frequent",
-            "A glowing sphere of accumulated focus. Earned every day you keep the streak alive.",
+            "Daily streak loot — core utility and small boosts.",
             "blur_on",
             70, 27, 3),
 
     IRON_CHEST(
-            "Iron Chest",
+            "Treasure Chest",
             "Streak milestones (7d, 30d) + achievement unlock",
-            "Uncommon, satisfying",
-            "An armored cache that snaps open with a satisfying clunk. Reserved for real milestones.",
+            "Rare, satisfying",
+            "Milestone cache — better odds and stronger drops.",
             "inventory_2",
             50, 44, 6),
 
     SOVEREIGN_VAULT(
-            "Sovereign Vault",
+            "Divine Vault",
             "100d streak, weekly reset, rare achievement",
-            "Rare, cinematic",
-            "An ornate dark vault that opens only for the truly relentless. The odds bend in your favor here.",
+            "Epic, cinematic",
+            "Peak-tier vault — titles and legendary rewards.",
             "diamond",
             25, 60, 15);
 

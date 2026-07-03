@@ -41,10 +41,13 @@ export const routes: Routes = [
     path: 'loot-boxes',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/loot-boxes/loot-boxes.component').then(
-        (m) => m.LootBoxesComponent
-      ),
-    title: 'The Vault — SuccesHub',
+      import('./features/loot-boxes/loot-boxes.component').then((m) => m.LootBoxesComponent),
+    title: 'The Celestial Cache — SuccesHub',
+  },
+  {
+    path: 'cache',
+    redirectTo: 'loot-boxes',
+    pathMatch: 'full',
   },
   {
     path: 'profile',

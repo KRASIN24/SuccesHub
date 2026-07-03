@@ -47,7 +47,7 @@ export class SidebarComponent implements OnInit {
     { label: 'Tasks', icon: 'check_circle', route: '/tasks' },
     { label: 'Goals', icon: 'my_location', route: '/goals' },
     { label: 'Achievements', icon: 'military_tech', route: '/achievements' },
-    { label: 'Vault', icon: 'inventory_2', route: '/loot-boxes' },
+    { label: 'Cache', icon: 'inventory_2', route: '/loot-boxes' },
     { label: 'Profile', icon: 'person', route: '/profile' },
   ];
 

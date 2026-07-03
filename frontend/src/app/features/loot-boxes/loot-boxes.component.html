@@ -1,259 +1,226 @@
 @if (loading()) {
-  <div class="px-6 md:px-16 py-12 md:py-20 max-w-7xl mx-auto">
-    <app-loading-skeleton height="420px"></app-loading-skeleton>
+  <div class="page page--state">
+    <app-loading-skeleton height="480px"></app-loading-skeleton>
   </div>
 } @else if (error()) {
-  <div class="px-6 md:px-16 py-12 md:py-20 max-w-7xl mx-auto">
+  <div class="page page--state">
     <app-error-state [message]="error() || ''" (retry)="load()"></app-error-state>
   </div>
-} @else {
-  <div class="px-6 md:px-16 py-12 md:py-20 max-w-7xl mx-auto space-y-24">
-    <!-- Hero -->
-    <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-      <div class="space-y-6 max-w-2xl">
-        <div class="flex items-center gap-4">
-          <span class="w-12 h-px bg-primary"></span>
-          <span class="text-[0.65rem] uppercase tracking-[0.4em] text-primary font-bold">The Vault</span>
-        </div>
-        <h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9]">
-          Open your<br /><span class="text-on-surface-variant/30">spoils of focus</span>
-        </h1>
-        <p class="text-on-surface-variant text-lg leading-relaxed font-light max-w-lg">
-          Every box pulls from the same reward pool — better boxes just tilt the odds. Three independent rolls, no
-          guarantees, all cinematic.
-        </p>
-      </div>
-      <div class="flex gap-12">
-        <div class="text-right">
-          <span class="block text-[0.65rem] uppercase tracking-[0.3em] text-on-surface-variant mb-2">Boxes Opened</span>
-          <span class="text-5xl font-headline font-bold">{{ boxesOpened() }}</span>
-        </div>
-        <div class="text-right">
-          <span class="block text-[0.65rem] uppercase tracking-[0.3em] text-on-surface-variant mb-2">Items Held</span>
-          <span class="text-5xl font-headline font-bold text-primary">{{ totalItems() }}</span>
-        </div>
-      </div>
-    </section>
+} @else if (selectedBox()) {
+  <div class="page">
+    <main class="main">
+      <section class="hero">
+        <div class="hero__orb">
+          <div class="hero__aura"></div>
+          <div class="hero__overlay-blur"></div>
 
-    <!-- Box selection -->
-    <section class="space-y-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        @for (box of boxTypes(); track box.id) {
-          <article
-            class="group relative overflow-hidden bg-surface-container border border-outline-variant/10 rounded-[2rem] p-8 flex flex-col items-center text-center transition-all duration-500 hover:border-primary/30"
+          <button
+            type="button"
+            class="hero__nav hero__nav--prev"
+            (click)="onPrevChest()"
+            [disabled]="phase() !== 'idle' || boxTypes().length < 2"
+            aria-label="Previous chest"
           >
-            <div
-              class="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 bg-primary/5 blur-[90px] rounded-full group-hover:bg-primary/15 transition-all duration-700"
-            ></div>
+            <img [src]="navPrevIcon" alt="" />
+            <span class="hero__nav-tooltip">Previous Chest</span>
+          </button>
 
-            <!-- Owned count -->
-            <div class="absolute top-5 right-5 z-10 flex items-center gap-1.5 text-xs font-bold">
-              <span class="material-symbols-outlined text-sm" [class.text-primary]="pendingCount(box.id) > 0" [class.text-on-surface-variant]="pendingCount(box.id) === 0">
-                {{ pendingCount(box.id) > 0 ? 'inventory_2' : 'block' }}
-              </span>
-              <span [class.text-primary]="pendingCount(box.id) > 0" [class.text-on-surface-variant]="pendingCount(box.id) === 0">
-                {{ pendingCount(box.id) }}
-              </span>
+          <div class="hero__hexagon">
+            <div class="hero__hexagon-inner">
+              <div class="hero__gradient"></div>
+              <div class="hero__chest-stage">
+                <app-animated-loot-chest [variant]="chestVariant()" />
+              </div>
+              <div class="hero__chest hero__chest--float" [ngClass]="heroChestClass()">
+                <img [src]="chestSrc()" [alt]="selectedBox()!.name" />
+              </div>
             </div>
+          </div>
 
-            <!-- Box visual -->
-            <div class="relative z-10 mb-8 mt-4 flex items-center justify-center h-44">
-              <div class="box-art" [attr.data-box]="box.id">
-                <span class="material-symbols-outlined filled-icon">{{ box.icon }}</span>
+          <div class="hero__accent">
+            <div class="hero__accent-inner">
+              <img [src]="accentIcon" alt="" />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="hero__nav hero__nav--next"
+            (click)="onNextChest()"
+            [disabled]="phase() !== 'idle' || boxTypes().length < 2"
+            aria-label="Next chest"
+          >
+            <img [src]="navNextIcon" alt="" />
+            <span class="hero__nav-tooltip">Next Chest</span>
+          </button>
+        </div>
+
+        <div class="hero__copy">
+          <p class="hero__eyebrow">The Celestial Cache</p>
+          <h1 class="hero__title">{{ selectedBox()!.name }}</h1>
+          <p class="hero__subtitle">{{ selectedBox()!.blurb }}</p>
+        </div>
+
+        <div class="hero__cta-wrap">
+          <button
+            type="button"
+            class="hero__cta"
+            [class.hero__cta--ready]="selectedPendingCount() > 0"
+            (click)="onOpenCache()"
+            [disabled]="!canOpen()"
+          >
+            {{ primaryLabel() }}
+            @if (selectedPendingCount() > 0) {
+              <span class="hero__cta-badge">{{ selectedPendingCount() }}</span>
+            }
+          </button>
+          <button
+            type="button"
+            class="hero__cta-secondary"
+            (click)="summon()"
+            [disabled]="!canOpen()"
+          >
+            + Summon a cache (no open)
+          </button>
+          <p class="hero__cta-hint">{{ ctaHint() }}</p>
+        </div>
+      </section>
+
+      <section class="history">
+        <div class="history__heading">
+          <p class="history__eyebrow">Latest Pulls</p>
+          <h2 class="history__title">Recent History</h2>
+        </div>
+
+        @if (recentHistory().length > 0) {
+          <div class="history__row">
+            @for (entry of recentHistory(); track entry.entryId) {
+              <div class="history__drop" [ngClass]="rarityClass(entry.item.rarity)">
+                <span class="material-symbols-outlined history__drop-icon">{{ entry.item.icon }}</span>
+                <div class="history__drop-text">
+                  <p class="history__drop-label">{{ entry.item.label }}</p>
+                  <p class="history__drop-meta">
+                    {{ entry.item.rarity }} · {{ entry.boxName }} · {{ formatPulledAt(entry.pulledAt) }}
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="history__empty">Open a cache to build your pull history.</p>
+        }
+      </section>
+
+      <section class="tiers">
+        <div class="tiers__heading">
+          <p class="tiers__eyebrow">Universal Tiers</p>
+          <h2 class="tiers__title">Available Artifacts</h2>
+        </div>
+
+        <div class="tiers__grid">
+          <article
+            class="tier-card"
+            *ngFor="let tier of rewardTiers; let i = index"
+            [class.tier-card--selected]="i === selectedIndex()"
+            [style.border-color]="tier.cardBorder"
+            (click)="select(i)"
+          >
+            <div class="tier-card__overlay" [style.background]="tier.cardOverlay"></div>
+
+            @if (pendingCountAt(i) > 0) {
+              <span class="tier-card__badge">{{ pendingCountAt(i) }}</span>
+            }
+
+            <div class="tier-card__icon-wrap">
+              <div class="tier-card__icon-glow" [style.background]="tier.glow"></div>
+              <div
+                class="tier-card__icon"
+                [class.tier-card__icon--rounded]="tier.shape === 'rounded'"
+                [style.border-color]="tier.iconBorder"
+                [style.background]="'linear-gradient(180deg, ' + tier.gradientFrom + ', ' + tier.gradientTo + ')'"
+              >
+                <img [src]="tier.icon" alt="" />
               </div>
             </div>
 
-            <div class="relative z-10 space-y-3 flex-1 flex flex-col">
-              <h3 class="font-headline text-2xl font-bold tracking-tight">{{ box.name }}</h3>
-              <p class="text-[0.6rem] uppercase tracking-[0.25em] text-primary font-bold">{{ box.feel }}</p>
-              <p class="text-sm text-on-surface-variant font-light leading-relaxed flex-1">{{ box.blurb }}</p>
+            <div class="tier-card__body">
+              <h3 class="tier-card__name">{{ tier.name }}</h3>
+              @if (pendingCountAt(i) > 0) {
+                <p class="tier-card__keys">{{ pendingCountAt(i) }} ready to open</p>
+              }
+              <p class="tier-card__desc">
+                <span *ngFor="let line of tier.description">{{ line }}<br /></span>
+              </p>
 
-              <!-- Odds -->
-              <div class="pt-4 space-y-2">
-                <span class="block text-[0.55rem] uppercase tracking-[0.25em] text-on-surface-variant/60 font-bold">
-                  Rarity odds
-                </span>
-                <div class="flex h-2 w-full overflow-hidden rounded-full bg-surface-container-lowest">
-                  <div class="bg-on-surface-variant/40" [style.width.%]="weightPct(box, 'COMMON')"></div>
-                  <div class="bg-slate-300/70" [style.width.%]="weightPct(box, 'RARE')"></div>
-                  <div class="bg-primary" [style.width.%]="weightPct(box, 'LEGENDARY')"></div>
+              @if (boxTypes()[i]; as box) {
+                <div class="tier-card__odds">
+                  <p class="tier-card__odds-label">Drop rates</p>
+                  <div class="tier-card__odds-bar">
+                    <span class="tier-card__odds-common" [style.width.%]="weightPct(box, 'COMMON')"></span>
+                    <span class="tier-card__odds-rare" [style.width.%]="weightPct(box, 'RARE')"></span>
+                    <span class="tier-card__odds-legendary" [style.width.%]="weightPct(box, 'LEGENDARY')"></span>
+                  </div>
+                  <div class="tier-card__odds-legend">
+                    <span>{{ weightPct(box, 'COMMON') }}% C</span>
+                    <span>{{ weightPct(box, 'RARE') }}% R</span>
+                    <span>{{ weightPct(box, 'LEGENDARY') }}% L</span>
+                  </div>
                 </div>
-                <div class="flex justify-between text-[0.6rem] font-bold tracking-wider">
-                  <span class="text-on-surface-variant">{{ weightPct(box, 'COMMON') }}% C</span>
-                  <span class="text-slate-200">{{ weightPct(box, 'RARE') }}% R</span>
-                  <span class="text-primary">{{ weightPct(box, 'LEGENDARY') }}% L</span>
-                </div>
-              </div>
-
-              <p class="text-[0.6rem] text-on-surface-variant/50 italic pt-2">{{ box.source }}</p>
+              }
             </div>
 
-            <div class="relative z-10 mt-7 w-full space-y-2.5">
-              <button
-                type="button"
-                (click)="open(box)"
-                [disabled]="phase() !== 'idle' || busy() || pendingCount(box.id) === 0"
-                class="w-full bg-primary text-on-primary py-4 rounded-full font-headline font-bold uppercase tracking-[0.2em] text-xs transition-all duration-500 flex items-center justify-center gap-3 hover:shadow-[0_0_40px_rgba(245,190,66,0.5)] hover:scale-[1.03] disabled:opacity-40 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-not-allowed"
-              >
-                <span class="material-symbols-outlined text-base">lock_open</span>
-                {{ pendingCount(box.id) > 0 ? 'Open' : 'None earned' }}
-              </button>
-              <button
-                type="button"
-                (click)="summon(box)"
-                [disabled]="phase() !== 'idle' || busy()"
-                class="w-full border border-outline-variant/30 text-on-surface-variant py-2.5 rounded-full font-label font-semibold uppercase tracking-[0.2em] text-[0.6rem] transition-all duration-300 flex items-center justify-center gap-2 hover:border-primary/40 hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <span class="material-symbols-outlined text-sm">add_circle</span>
-                Summon
-              </button>
+            <div class="tier-card__footer">
+              <p class="tier-card__tier-label" [style.color]="tier.softAccent">{{ tier.tierLabel }}</p>
             </div>
           </article>
-        }
-      </div>
-    </section>
-
-    <!-- Inventory -->
-    <section class="space-y-12">
-      <div class="flex justify-between items-baseline border-b border-outline-variant/10 pb-6">
-        <h2 class="font-headline text-3xl font-medium tracking-tight">Your Inventory</h2>
-        <span class="text-[0.65rem] uppercase tracking-[0.2em] text-on-surface-variant font-bold">
-          {{ totalItems() }} Items
-        </span>
-      </div>
-
-      @if (totalItems() === 0) {
-        <div class="flex flex-col items-center justify-center py-20 text-center space-y-4">
-          <span class="material-symbols-outlined text-6xl text-on-surface-variant/20">inventory_2</span>
-          <p class="text-on-surface-variant font-light">Nothing here yet. Summon and open a box to start your collection.</p>
         </div>
-      } @else {
-        <!-- Utility -->
-        @if (utilityStacks().length > 0) {
-          <div class="space-y-6">
-            <h3 class="text-[0.7rem] uppercase tracking-[0.3em] text-on-surface-variant font-bold">Utility</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              @for (stack of utilityStacks(); track stack.id) {
-                <div
-                  class="flex items-center gap-4 bg-surface-container border rounded-2xl p-5 transition-all"
-                  [class]="rarityCardClass(stack.reward.rarity)"
-                >
-                  <span class="material-symbols-outlined text-3xl filled-icon" [class]="rarityLabelClass(stack.reward.rarity)">
-                    {{ stack.reward.icon }}
-                  </span>
-                  <div class="flex-1 min-w-0">
-                    <p class="font-bold text-sm tracking-wide truncate">{{ stack.reward.label }}</p>
-                    <p class="text-[0.65rem] text-on-surface-variant leading-snug">{{ stack.reward.effect }}</p>
-                  </div>
-                  <span class="shrink-0 text-xs font-bold bg-surface-container-lowest px-2.5 py-1 rounded-full">
-                    ×{{ stack.quantity }}
-                  </span>
-                </div>
-              }
-            </div>
-          </div>
-        }
+      </section>
 
-        <!-- Titles -->
-        @if (titleStacks().length > 0) {
-          <div class="space-y-6">
-            <h3 class="text-[0.7rem] uppercase tracking-[0.3em] text-on-surface-variant font-bold">Titles</h3>
-            <div class="flex flex-wrap gap-3">
-              @for (stack of titleStacks(); track stack.id) {
-                <button
-                  type="button"
-                  (click)="equip(stack)"
-                  [disabled]="busy()"
-                  class="group flex items-center gap-3 border rounded-full pl-4 pr-5 py-2.5 transition-all disabled:opacity-50"
-                  [class]="rarityCardClass(stack.reward.rarity)"
-                  [class.bg-primary]="stack.equipped"
-                  [class.text-on-primary]="stack.equipped"
-                >
-                  <span class="material-symbols-outlined text-lg" [class]="stack.equipped ? '' : rarityLabelClass(stack.reward.rarity)">
-                    {{ stack.equipped ? 'check_circle' : stack.reward.icon }}
-                  </span>
-                  <span class="font-bold text-sm tracking-wide">{{ stack.reward.label }}</span>
-                  @if (stack.quantity > 1) {
-                    <span class="text-[0.6rem] opacity-70">×{{ stack.quantity }}</span>
-                  }
-                </button>
-              }
-            </div>
-          </div>
-        }
-
-        <!-- Avatar Frames -->
-        @if (frameStacks().length > 0) {
-          <div class="space-y-6">
-            <h3 class="text-[0.7rem] uppercase tracking-[0.3em] text-on-surface-variant font-bold">Avatar Frames</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              @for (stack of frameStacks(); track stack.id) {
-                <button
-                  type="button"
-                  (click)="equip(stack)"
-                  [disabled]="busy()"
-                  class="group relative flex flex-col items-center gap-4 bg-surface-container border rounded-2xl p-6 transition-all disabled:opacity-50"
-                  [class]="rarityCardClass(stack.reward.rarity)"
-                >
-                  <div class="relative w-24 h-28 hexagon-clip p-[2px] transition-all" [class]="stack.equipped ? 'bg-primary' : 'bg-outline-variant/40'">
-                    <div class="w-full h-full hexagon-clip bg-surface-container-lowest flex items-center justify-center">
-                      <span class="material-symbols-outlined text-4xl filled-icon" [class]="rarityLabelClass(stack.reward.rarity)">
-                        {{ stack.reward.icon }}
-                      </span>
-                    </div>
-                  </div>
-                  <span class="font-bold text-xs tracking-wide text-center">{{ stack.reward.label }}</span>
-                  <span
-                    class="text-[0.55rem] uppercase tracking-[0.2em] font-bold"
-                    [class]="stack.equipped ? 'text-primary' : 'text-on-surface-variant/50'"
-                  >
-                    {{ stack.equipped ? 'Equipped' : 'Tap to equip' }}
-                  </span>
-                </button>
-              }
-            </div>
-          </div>
-        }
-      }
-    </section>
+      <footer class="footer">
+        <p class="footer__version">SuccessHub Reward Ecosystem v4.2.0</p>
+        <nav class="footer__links">
+          <a href="javascript:void(0)" *ngFor="let link of footerLinks">{{ link.label }}</a>
+        </nav>
+      </footer>
+    </main>
   </div>
 }
 
-<!-- Opening overlay -->
 @if (phase() !== 'idle') {
-  <div class="loot-overlay" [class]="glowClass()">
+  <div class="loot-overlay" [ngClass]="glowClass()">
     <div class="loot-overlay__inner">
       @if (phase() === 'charging') {
         <div class="charging">
           <div class="charging__halo"></div>
-          <div class="box-art box-art--xl charging__box" [attr.data-box]="activeBox()?.id">
-            <span class="material-symbols-outlined filled-icon">{{ activeBox()?.icon }}</span>
-          </div>
+          @if (activeBox()) {
+            <div
+              class="charging__box charging__box-img"
+              [ngClass]="activeChargingChestClass()"
+            >
+              <img [src]="activeBoxImageUrl()" [alt]="activeBox()!.name" />
+            </div>
+          }
           <p class="charging__label">Unsealing the {{ activeBox()?.name }}…</p>
         </div>
       } @else {
-        <div class="reveal">
-          <p class="reveal__eyebrow" [class]="rarityLabelClass(glowRarity())">{{ glowHeadline() }}</p>
+        <div class="reveal" [class.reveal--complete]="allRevealed()">
+          <p class="reveal__eyebrow" [ngClass]="revealEyebrowClass()">{{ glowHeadline() }}</p>
+          <p class="reveal__hint">Tap each card to reveal your reward</p>
           <div class="reveal__cards">
-            @for (item of rolled(); track $index; let i = $index) {
-              <div
-                class="reveal-card"
-                [class]="rarityCardClass(item.rarity)"
-                [style.animation-delay.ms]="i * 450"
-              >
-                <span class="reveal-card__rarity" [class]="rarityLabelClass(item.rarity)">{{ item.rarity }}</span>
-                <span class="material-symbols-outlined reveal-card__icon filled-icon" [class]="rarityLabelClass(item.rarity)">
-                  {{ item.icon }}
-                </span>
-                <span class="reveal-card__label">{{ item.label }}</span>
-                <span class="reveal-card__meta">{{ item.effect || categoryLabel(item) }}</span>
-              </div>
+            @for (item of rolled(); track item) {
+              <app-reveal-card
+                [item]="item"
+                [categoryLabel]="categoryLabel(item)"
+                [style.animation-delay.ms]="$index * 140"
+                (revealed)="onCardRevealed()"
+              />
             }
           </div>
-          <button type="button" class="reveal__collect" (click)="collect()">
-            <span class="material-symbols-outlined text-base">inventory_2</span>
-            Collect
-          </button>
+          <div class="reveal__footer">
+            @if (allRevealed()) {
+              <button type="button" class="reveal__collect" (click)="collect()">Collect</button>
+            }
+          </div>
         </div>
       }
     </div>

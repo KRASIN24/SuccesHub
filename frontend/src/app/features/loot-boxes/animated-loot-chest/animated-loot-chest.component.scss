@@ -1,0 +1,160 @@
+:host {
+  --loot-chest-gold: #d3a410;
+  --loot-chest-glow: #d3a51054;
+  --loot-chest-accent: #b7870f;
+  --loot-chest-bounce: var(--loot-chest-gold);
+  --loot-chest-umbral: var(--loot-chest-gold);
+  --loot-chest-spark-warm: #ffe4a1;
+  --loot-chest-spark-mid: #ccb069;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--loot-chest-gold);
+}
+
+.animated-loot-chest__accent {
+  fill: var(--loot-chest-accent);
+}
+
+.animated-loot-chest__spark--warm {
+  fill: var(--loot-chest-spark-warm);
+}
+
+.animated-loot-chest__spark--mid {
+  fill: var(--loot-chest-spark-mid);
+}
+
+.animated-loot-chest__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.animated-loot-chest__bounce {
+  color: var(--loot-chest-bounce);
+  stroke-width: 1.25;
+  animation: loot-chest-bounce var(--loot-sync-duration, 4s) ease-in-out infinite;
+}
+
+.animated-loot-chest__bounce--1 {
+  translate: 0 36px;
+}
+
+.animated-loot-chest__bounce--2 {
+  translate: 0 46px;
+  animation-name: loot-chest-bounce2;
+  animation-delay: 0.5s;
+}
+
+.animated-loot-chest__particle {
+  animation: loot-chest-particles var(--loot-sync-duration, 4s) ease-in-out infinite;
+}
+
+.animated-loot-chest__particle--delay {
+  animation-delay: 0.15s;
+}
+
+.animated-loot-chest__particle--delay2 {
+  animation-delay: 0.3s;
+}
+
+.animated-loot-chest__glow-stop {
+  animation: loot-chest-umbral var(--loot-sync-duration, 4s) ease-in-out infinite;
+}
+
+:host(.animated-loot-chest--iron) {
+  --loot-chest-gold: #9ca3af;
+  --loot-chest-glow: #9ca3af44;
+  --loot-chest-accent: #6b7280;
+  --loot-chest-spark-warm: #d4d4d4;
+  --loot-chest-spark-mid: #a3a3a3;
+  filter: drop-shadow(0 0 18px rgba(163, 163, 163, 0.45));
+}
+
+:host(.animated-loot-chest--sovereign) {
+  --loot-chest-gold: #f5be42;
+  --loot-chest-glow: #f5be4266;
+  --loot-chest-accent: #d3a410;
+  --loot-chest-spark-warm: #ffe4a1;
+  --loot-chest-spark-mid: #ccb069;
+  filter: drop-shadow(0 0 28px rgba(245, 190, 66, 0.65));
+}
+
+:host(.animated-loot-chest--vault) {
+  --loot-chest-gold: #872334;
+  --loot-chest-glow: #5d001899;
+  --loot-chest-accent: #5d0018;
+  --loot-chest-bounce: #ffb2b7;
+  --loot-chest-umbral: #ffb2b7;
+  --loot-chest-spark-warm: #ffb2b7;
+  --loot-chest-spark-mid: #d64d62;
+  filter: drop-shadow(0 0 32px rgba(93, 0, 24, 0.85))
+    drop-shadow(0 0 14px rgba(255, 178, 183, 0.35));
+
+  .animated-loot-chest__bounce {
+    stroke-width: 1.5;
+    opacity: 0.95;
+  }
+}
+
+@keyframes loot-chest-bounce {
+  0%,
+  100% {
+    translate: 0 36px;
+  }
+  50% {
+    translate: 0 46px;
+  }
+}
+
+@keyframes loot-chest-bounce2 {
+  0%,
+  100% {
+    translate: 0 46px;
+  }
+  50% {
+    translate: 0 56px;
+  }
+}
+
+@keyframes loot-chest-umbral {
+  0%,
+  100% {
+    stop-color: color-mix(in srgb, var(--loot-chest-umbral) 18%, transparent);
+  }
+  50% {
+    stop-color: color-mix(in srgb, var(--loot-chest-umbral) 52%, transparent);
+  }
+}
+
+:host(.animated-loot-chest--vault) .animated-loot-chest__glow-stop {
+  animation-name: loot-chest-umbral-vault;
+}
+
+@keyframes loot-chest-umbral-vault {
+  0%,
+  100% {
+    stop-color: color-mix(in srgb, #ffb2b7 32%, transparent);
+  }
+  50% {
+    stop-color: color-mix(in srgb, #ffb2b7 72%, transparent);
+  }
+}
+
+@keyframes loot-chest-particles {
+  0%,
+  100% {
+    translate: 0 16px;
+  }
+  50% {
+    translate: 0 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-loot-chest__bounce,
+  .animated-loot-chest__particle,
+  .animated-loot-chest__glow-stop {
+    animation: none !important;
+  }
+}
