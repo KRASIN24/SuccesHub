@@ -1,6 +1,7 @@
 package com.succeshub.appdomain.controller;
 
 import com.succeshub.appdomain.dto.gamification.GamificationDto.BoxTypeDto;
+import com.succeshub.appdomain.dto.gamification.GamificationDto.ClientConfigDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.CloseDayResultDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.DailyStatusDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.ForecastDto;
@@ -14,6 +15,7 @@ import com.succeshub.appdomain.service.DailyRitualService;
 import com.succeshub.appdomain.service.GamificationService;
 import com.succeshub.appdomain.service.InsightService;
 import com.succeshub.appdomain.service.LootBoxService;
+import com.succeshub.config.LootProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,6 +42,21 @@ public class GamificationController {
     private final DailyRitualService dailyRitualService;
     private final InsightService insightService;
     private final LootBoxService lootBoxService;
+    private final LootProperties lootProperties;
+
+    /**
+     * Returns client-safe feature flags for the gamification UI.
+     */
+    @Operation(summary = "Client config", description = "Feature flags for the SPA (loot dev grants, etc.).")
+    @ApiResponse(responseCode = "200", description = "Config returned")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @GetMapping("/config")
+    public ResponseEntity<ClientConfigDto> getClientConfig(@AuthenticationPrincipal OidcUser principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(new ClientConfigDto(lootProperties.isEnableDevGrants()));
+    }
 
     /**
      * Estimates XP for a task configuration without persisting.
@@ -146,18 +163,40 @@ public class GamificationController {
     }
 
     /**
+     * Lists recently opened loot boxes with their rolled contents.
+     */
+    @Operation(summary = "Loot box history",
+            description = "Returns recently opened boxes and rewards, ordered by open time descending.")
+    @ApiResponse(responseCode = "200", description = "History returned")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @GetMapping("/loot-boxes/history")
+    public ResponseEntity<List<LootBoxDto>> getLootBoxHistory(
+            @AuthenticationPrincipal OidcUser principal,
+            @Parameter(description = "Maximum opened boxes to return (1–10, default 3)")
+            @RequestParam(defaultValue = "3") int limit) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(lootBoxService.getLootBoxHistory(principal.getSubject(), limit));
+    }
+
+    /**
      * Grants (summons) a pending loot box of the requested type to the user.
      */
     @Operation(summary = "Grant loot box", description = "Creates a pending box of the requested type for the user.")
     @ApiResponse(responseCode = "200", description = "Loot box granted")
     @ApiResponse(responseCode = "400", description = "Unknown box type")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Manual grants disabled")
     @PostMapping("/loot-boxes/grant")
     public ResponseEntity<LootBoxDto> grantLootBox(
             @AuthenticationPrincipal OidcUser principal,
             @RequestBody GrantBoxRequest request) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
+        }
+        if (!lootProperties.isEnableDevGrants()) {
+            return ResponseEntity.status(403).build();
         }
         LootBoxType type;
         try {

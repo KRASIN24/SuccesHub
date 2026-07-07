@@ -74,14 +74,16 @@
               <span class="hero__cta-badge">{{ selectedPendingCount() }}</span>
             }
           </button>
-          <button
-            type="button"
-            class="hero__cta-secondary"
-            (click)="summon()"
-            [disabled]="!canOpen()"
-          >
-            + Summon a cache (no open)
-          </button>
+          @if (enableLootDevGrants()) {
+            <button
+              type="button"
+              class="hero__cta-secondary"
+              (click)="summon()"
+              [disabled]="!canOpen()"
+            >
+              + Summon a cache (no open)
+            </button>
+          }
           <p class="hero__cta-hint">{{ ctaHint() }}</p>
         </div>
       </section>

@@ -6,6 +6,7 @@ import {
   CloseDayResult,
   DailyStatus,
   Forecast,
+  GamificationClientConfig,
   InventoryItem,
   LootBox,
   WeeklyInsight,
@@ -48,12 +49,20 @@ export class GamificationService {
     return this.api.get<WeeklyInsight>('/gamification/insights/weekly');
   }
 
+  getClientConfig(): Observable<GamificationClientConfig> {
+    return this.api.get<GamificationClientConfig>('/gamification/config');
+  }
+
   getBoxTypes(): Observable<BoxType[]> {
     return this.api.get<BoxType[]>('/gamification/loot-boxes/types');
   }
 
   getPendingLootBoxes(): Observable<LootBox[]> {
     return this.api.get<LootBox[]>('/gamification/loot-boxes');
+  }
+
+  getLootBoxHistory(limit = 3): Observable<LootBox[]> {
+    return this.api.get<LootBox[]>('/gamification/loot-boxes/history', { limit });
   }
 
   grantLootBox(boxType: string): Observable<LootBox> {

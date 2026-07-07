@@ -16,6 +16,7 @@ import com.succeshub.appdomain.repository.UserLootBoxRepository;
 import com.succeshub.appdomain.service.LootBoxService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,6 +98,21 @@ public class LootBoxServiceImpl implements LootBoxService {
     public List<LootBoxDto> getPendingLootBoxes(String userId) {
         return lootBoxRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, UserLootBox.Status.PENDING).stream()
                 .map(b -> toDto(b, List.of()))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LootBoxDto> getLootBoxHistory(String userId, int limit) {
+        int capped = Math.max(1, Math.min(limit, 10));
+        return lootBoxRepository
+                .findByUserIdAndStatusOrderByOpenedAtDesc(
+                        userId, UserLootBox.Status.OPENED, PageRequest.of(0, capped))
+                .stream()
+                .map(box -> toDto(box, contentRepository.findByLootBox_Id(box.getId()).stream()
+                        .map(LootBoxContent::getRewardDefinition)
+                        .map(this::toRewardItem)
+                        .toList()))
                 .toList();
     }
 
@@ -226,6 +242,6 @@ public class LootBoxServiceImpl implements LootBoxService {
 
     private LootBoxDto toDto(UserLootBox box, List<RewardItemDto> contents) {
         return new LootBoxDto(box.getId(), box.getSource().name(), box.getBoxType().name(),
-                box.getStatus().name(), box.getCreatedAt(), contents);
+                box.getStatus().name(), box.getCreatedAt(), box.getOpenedAt(), contents);
     }
 }

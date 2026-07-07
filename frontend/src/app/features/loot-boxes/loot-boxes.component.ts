@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { forkJoin, switchMap } from 'rxjs';
 import { GamificationService } from '../../core/services/gamification.service';
 import { LootAudioService } from '../../core/services/loot-audio.service';
-import { BoxType, InventoryItem, LootBox, RewardItem } from '../../core/models/gamification.model';
+import { LootPendingService } from '../../core/services/loot-pending.service';
+import { BoxType, LootBox, RewardItem } from '../../core/models/gamification.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import {
@@ -51,8 +52,8 @@ const LOOT_ART: Record<string, string> = {
   SOVEREIGN_VAULT: 'loot/divine_vault.png',
 };
 
-const RECENT_HISTORY_KEY = 'succes-hub:loot-recent-history';
 const RECENT_HISTORY_MAX = 8;
+const HISTORY_BOX_LIMIT = 3;
 
 const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
   {
@@ -118,6 +119,10 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
 export class LootBoxesComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
   private readonly lootAudio = inject(LootAudioService);
+  private readonly lootPending = inject(LootPendingService);
+
+  /** Loaded from backend {@code GET /gamification/config}. */
+  readonly enableLootDevGrants = signal(false);
 
   readonly navPrevIcon = 'https://www.figma.com/api/mcp/asset/c32ac360-fb11-43c3-8a87-8987a3ddb081';
   readonly navNextIcon = 'https://www.figma.com/api/mcp/asset/58580b05-b667-4c70-86a2-93d7ba92670c';
@@ -134,8 +139,6 @@ export class LootBoxesComponent implements OnInit {
   readonly busy = signal(false);
 
   readonly boxTypes = signal<BoxType[]>([]);
-  readonly pendingBoxes = signal<LootBox[]>([]);
-  readonly inventory = signal<InventoryItem[]>([]);
 
   readonly selectedIndex = signal(0);
 
@@ -143,7 +146,6 @@ export class LootBoxesComponent implements OnInit {
   readonly activeBox = signal<BoxType | null>(null);
   readonly rolled = signal<RewardItem[]>([]);
   readonly glow = signal<GlowTier>('default');
-  readonly boxesOpened = signal(0);
   readonly flippedCount = signal(0);
   readonly allRevealed = computed(
     () => this.rolled().length > 0 && this.flippedCount() >= this.rolled().length
@@ -164,7 +166,7 @@ export class LootBoxesComponent implements OnInit {
     return box ? this.pendingCount(box.id) : 0;
   });
 
-  /** Recent pulls, newest first — persisted in localStorage across visits. */
+  /** Recent pulls, newest first — loaded from server history. */
   readonly recentHistory = signal<RecentHistoryEntry[]>([]);
 
   readonly primaryLabel = computed(() => 'Open Cache');
@@ -174,10 +176,21 @@ export class LootBoxesComponent implements OnInit {
     if (pending > 0) {
       return `${pending} cache${pending === 1 ? '' : 's'} ready to open`;
     }
-    return 'Summons a cache and opens instantly';
+    if (this.enableLootDevGrants()) {
+      return 'Summons a cache and opens instantly';
+    }
+    return 'Complete tasks or streak milestones to earn caches';
   });
 
-  readonly canOpen = computed(() => !this.busy() && this.phase() === 'idle' && !!this.selectedBox());
+  readonly canOpen = computed(() => {
+    if (this.busy() || this.phase() !== 'idle' || !this.selectedBox()) {
+      return false;
+    }
+    if (this.selectedPendingCount() > 0) {
+      return true;
+    }
+    return this.enableLootDevGrants();
+  });
 
   readonly heroChestClass = computed(() => this.chestClassForBox(this.selectedBox()));
 
@@ -222,14 +235,14 @@ export class LootBoxesComponent implements OnInit {
     this.flippedCount.update((n) => n + 1);
   }
 
-  private beginOpening(box: BoxType, contents: RewardItem[]): void {
+  private beginOpening(box: BoxType, opened: LootBox): void {
+    const contents = opened.contents;
     this.activeBox.set(box);
     this.rolled.set(contents);
     this.flippedCount.set(0);
     this.glow.set(this.glowTierFor(contents));
-    this.pushRecentHistory(box, contents);
+    this.prependRecentHistory(box, opened);
     this.phase.set('charging');
-    this.boxesOpened.update((n) => n + 1);
     this.busy.set(false);
     this.lootAudio.playChestOpen();
     setTimeout(() => {
@@ -239,7 +252,6 @@ export class LootBoxesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.recentHistory.set(this.loadRecentHistory());
     this.load();
   }
 
@@ -249,12 +261,14 @@ export class LootBoxesComponent implements OnInit {
     forkJoin({
       types: this.gamification.getBoxTypes(),
       pending: this.gamification.getPendingLootBoxes(),
-      inventory: this.gamification.getInventory(),
+      history: this.gamification.getLootBoxHistory(HISTORY_BOX_LIMIT),
+      config: this.gamification.getClientConfig(),
     }).subscribe({
-      next: ({ types, pending, inventory }) => {
+      next: ({ types, pending, history, config }) => {
         this.boxTypes.set(types);
-        this.pendingBoxes.set(pending);
-        this.inventory.set(inventory);
+        this.lootPending.pendingBoxes.set(pending);
+        this.recentHistory.set(this.mapHistoryFromApi(history, types));
+        this.enableLootDevGrants.set(config.enableLootDevGrants);
         this.loading.set(false);
       },
       error: () => {
@@ -278,38 +292,46 @@ export class LootBoxesComponent implements OnInit {
     document.querySelector('.app-main')?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  private pushRecentHistory(box: BoxType, contents: RewardItem[]): void {
-    const now = Date.now();
-    const entries: RecentHistoryEntry[] = contents.map((item, i) => ({
-      entryId: `${now}-${i}-${item.key}`,
+  private prependRecentHistory(box: BoxType, opened: LootBox): void {
+    const pulledAt = opened.openedAt ? Date.parse(opened.openedAt) : Date.now();
+    const entries: RecentHistoryEntry[] = opened.contents.map((item, i) => ({
+      entryId: `${opened.id}-${i}-${item.key}`,
       item,
       boxName: box.name,
-      pulledAt: now,
+      pulledAt,
     }));
     const next = [...entries, ...this.recentHistory()].slice(0, RECENT_HISTORY_MAX);
     this.recentHistory.set(next);
-    this.saveRecentHistory(next);
   }
 
-  private loadRecentHistory(): RecentHistoryEntry[] {
-    if (typeof localStorage === 'undefined') return [];
-    try {
-      const raw = localStorage.getItem(RECENT_HISTORY_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw) as RecentHistoryEntry[];
-      return Array.isArray(parsed) ? parsed.slice(0, RECENT_HISTORY_MAX) : [];
-    } catch {
-      return [];
+  private mapHistoryFromApi(boxes: LootBox[], boxTypes: BoxType[]): RecentHistoryEntry[] {
+    const nameByType = new Map(boxTypes.map((b) => [b.id, b.name]));
+    const entries: RecentHistoryEntry[] = [];
+
+    for (const box of boxes) {
+      const boxName = nameByType.get(box.boxType) ?? box.boxType;
+      const pulledAt = box.openedAt ? Date.parse(box.openedAt) : Date.parse(box.createdAt);
+      box.contents.forEach((item, i) => {
+        entries.push({
+          entryId: `${box.id}-${i}-${item.key}`,
+          item,
+          boxName,
+          pulledAt,
+        });
+      });
     }
+
+    return entries
+      .sort((a, b) => b.pulledAt - a.pulledAt)
+      .slice(0, RECENT_HISTORY_MAX);
   }
 
-  private saveRecentHistory(entries: RecentHistoryEntry[]): void {
-    if (typeof localStorage === 'undefined') return;
-    try {
-      localStorage.setItem(RECENT_HISTORY_KEY, JSON.stringify(entries));
-    } catch {
-      // ignore quota / private mode
-    }
+  private refreshHistory(): void {
+    this.gamification.getLootBoxHistory(HISTORY_BOX_LIMIT).subscribe({
+      next: (history) => {
+        this.recentHistory.set(this.mapHistoryFromApi(history, this.boxTypes()));
+      },
+    });
   }
 
   formatPulledAt(pulledAt: number): string {
@@ -344,13 +366,13 @@ export class LootBoxesComponent implements OnInit {
     this.primaryAction();
   }
 
-  /** Opens a held cache, or grants one and opens immediately when none are held. */
+  /** Opens a held cache, or grants one and opens immediately when dev grants are enabled. */
   primaryAction(): void {
     const box = this.selectedBox();
     if (!box) return;
     if (this.selectedPendingCount() > 0) {
       this.open(box);
-    } else {
+    } else if (this.enableLootDevGrants()) {
       this.grantAndOpen(box);
     }
   }
@@ -362,7 +384,7 @@ export class LootBoxesComponent implements OnInit {
     this.busy.set(true);
     this.gamification.grantLootBox(box.id).subscribe({
       next: (created) => {
-        this.pendingBoxes.update((list) => [created, ...list]);
+        this.lootPending.pendingBoxes.update((list) => [created, ...list]);
         this.busy.set(false);
       },
       error: () => {
@@ -379,13 +401,14 @@ export class LootBoxesComponent implements OnInit {
       .grantLootBox(box.id)
       .pipe(
         switchMap((created) => {
-          this.pendingBoxes.update((list) => [created, ...list]);
+          this.lootPending.pendingBoxes.update((list) => [created, ...list]);
           return this.gamification.openLootBox(created.id);
         })
       )
       .subscribe({
         next: (opened) => {
-          this.beginOpening(box, opened.contents);
+          this.lootPending.removeOpened(opened.id);
+          this.beginOpening(box, opened);
         },
         error: () => {
           this.error.set('Could not open the cache.');
@@ -395,7 +418,7 @@ export class LootBoxesComponent implements OnInit {
   }
 
   pendingCount(boxTypeId: string): number {
-    return this.pendingBoxes().filter((b) => b.boxType === boxTypeId).length;
+    return this.lootPending.pendingCountFor(boxTypeId);
   }
 
   pendingCountAt(index: number): number {
@@ -405,13 +428,14 @@ export class LootBoxesComponent implements OnInit {
 
   open(box: BoxType): void {
     if (this.busy() || this.phase() !== 'idle') return;
-    const pending = this.pendingBoxes().find((b) => b.boxType === box.id);
+    const pending = this.lootPending.pendingBoxes().find((b) => b.boxType === box.id);
     if (!pending) return;
 
     this.busy.set(true);
     this.gamification.openLootBox(pending.id).subscribe({
       next: (opened) => {
-        this.beginOpening(box, opened.contents);
+        this.lootPending.removeOpened(pending.id);
+        this.beginOpening(box, opened);
       },
       error: () => {
         this.error.set('Could not open the box.');
@@ -426,15 +450,8 @@ export class LootBoxesComponent implements OnInit {
     this.rolled.set([]);
     this.flippedCount.set(0);
     this.glow.set('default');
-    forkJoin({
-      pending: this.gamification.getPendingLootBoxes(),
-      inventory: this.gamification.getInventory(),
-    }).subscribe({
-      next: ({ pending, inventory }) => {
-        this.pendingBoxes.set(pending);
-        this.inventory.set(inventory);
-      },
-    });
+    this.lootPending.refresh();
+    this.refreshHistory();
   }
 
   categoryOf(reward: RewardItem): Category {

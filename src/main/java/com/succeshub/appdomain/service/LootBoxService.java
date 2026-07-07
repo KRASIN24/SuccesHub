@@ -67,6 +67,15 @@ public interface LootBoxService {
     List<LootBoxDto> getPendingLootBoxes(String userId);
 
     /**
+     * Returns recently opened loot boxes with their rolled contents.
+     *
+     * @param userId Keycloak subject ID
+     * @param limit  maximum number of opened boxes to return
+     * @return opened boxes ordered by {@code openedAt} descending
+     */
+    List<LootBoxDto> getLootBoxHistory(String userId, int limit);
+
+    /**
      * Returns the user's inventory stacks.
      *
      * @param userId Keycloak subject ID

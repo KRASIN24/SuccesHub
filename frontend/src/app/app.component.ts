@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
@@ -6,7 +6,10 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
 import { XpTickComponent } from './shared/components/gamification/xp-tick.component';
 import { LevelUpOverlayComponent } from './shared/components/gamification/level-up-overlay.component';
 import { AchievementSlamComponent } from './shared/components/gamification/achievement-slam.component';
+import { CacheEarnedToastComponent } from './shared/components/gamification/cache-earned-toast.component';
 import { GamificationCelebrationService } from './core/services/gamification-celebration.service';
+import { LootPendingService } from './core/services/loot-pending.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -18,13 +21,16 @@ import { GamificationCelebrationService } from './core/services/gamification-cel
     XpTickComponent,
     LevelUpOverlayComponent,
     AchievementSlamComponent,
+    CacheEarnedToastComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private readonly mobileBreakpoint = 960;
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly lootPending = inject(LootPendingService);
   readonly celebrations = inject(GamificationCelebrationService);
 
   readonly sidenavOpen = signal(this.isDesktop());
@@ -37,6 +43,12 @@ export class AppComponent {
           this.sidenavOpen.set(false);
         }
       });
+  }
+
+  ngOnInit(): void {
+    if (this.auth.isLoggedIn()) {
+      this.lootPending.refresh();
+    }
   }
 
   toggleSidenav(): void {

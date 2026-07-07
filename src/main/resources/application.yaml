@@ -1,6 +1,8 @@
 spring:
   application:
     name: SuccesHub
+  profiles:
+    default: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/succeshub
     username: postgres
@@ -14,7 +16,6 @@ spring:
         default_schema: succeshub
     hibernate:
       ddl-auto: validate
-    show-sql: true
   liquibase:
     default-schema: succeshub
     enabled: true
@@ -61,8 +62,6 @@ server:
 logging:
   level:
     root: INFO
-    org.springframework.security: TRACE
-    org.springframework.security.web.FilterChainProxy: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
 

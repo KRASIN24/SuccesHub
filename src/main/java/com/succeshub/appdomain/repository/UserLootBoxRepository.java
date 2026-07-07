@@ -1,6 +1,7 @@
 package com.succeshub.appdomain.repository;
 
 import com.succeshub.appdomain.model.UserLootBox;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,6 +21,17 @@ public interface UserLootBoxRepository extends JpaRepository<UserLootBox, UUID> 
      * @return matching boxes
      */
     List<UserLootBox> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, UserLootBox.Status status);
+
+    /**
+     * Returns opened loot boxes for a user, most recently opened first.
+     *
+     * @param userId Keycloak subject ID
+     * @param status box status filter (typically OPENED)
+     * @param pageable pagination / limit
+     * @return matching boxes
+     */
+    List<UserLootBox> findByUserIdAndStatusOrderByOpenedAtDesc(
+            String userId, UserLootBox.Status status, Pageable pageable);
 
     /**
      * Finds a loot box owned by the given user.

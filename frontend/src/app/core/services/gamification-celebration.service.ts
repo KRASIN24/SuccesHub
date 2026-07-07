@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Achievement } from '../models/achievement.model';
 import { CloseDayResult, RewardEvent, TaskCompletion } from '../models/gamification.model';
 import { ProfileService } from './profile.service';
+import { LootPendingService } from './loot-pending.service';
 
 /**
  * Global celebration overlays (XP tick, level-up, achievements).
@@ -13,11 +14,13 @@ import { ProfileService } from './profile.service';
 })
 export class GamificationCelebrationService {
   private readonly profileService = inject(ProfileService);
+  private readonly lootPending = inject(LootPendingService);
   private sequence = 0;
 
   readonly xpTrigger = signal<{ xp: number; tick: number } | null>(null);
   readonly levelUpTrigger = signal<{ level: number; tick: number } | null>(null);
   readonly achievementTrigger = signal<{ achievement: Achievement; tick: number } | null>(null);
+  readonly cacheEarnedTrigger = signal<{ count: number; tick: number } | null>(null);
 
   handleTaskCompletion(completion: TaskCompletion): void {
     if (completion.updatedProfile) {
@@ -40,7 +43,11 @@ export class GamificationCelebrationService {
         this.achievementTrigger.set({ achievement, tick: ++this.sequence });
       }, index * 1200);
     });
-    // lootBoxesEarned: boxes remain PENDING — user opens on /loot-boxes
+    if (result.lootBoxesEarned.length > 0) {
+      const count = result.lootBoxesEarned.length;
+      this.cacheEarnedTrigger.set({ count, tick: ++this.sequence });
+      this.lootPending.notifyEarned(count);
+    }
   }
 
   private playReward(reward: RewardEvent): void {
@@ -59,6 +66,9 @@ export class GamificationCelebrationService {
         this.achievementTrigger.set({ achievement, tick: ++this.sequence });
       }, 800 + index * 1200);
     });
-    // lootBoxEarned: box remains PENDING — user opens on /loot-boxes
+    if (reward.lootBoxEarned) {
+      this.cacheEarnedTrigger.set({ count: 1, tick: ++this.sequence });
+      this.lootPending.notifyEarned(1);
+    }
   }
 }

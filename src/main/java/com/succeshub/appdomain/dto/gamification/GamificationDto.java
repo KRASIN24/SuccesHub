@@ -115,6 +115,7 @@ public final class GamificationDto {
             String boxType,
             String status,
             Instant createdAt,
+            Instant openedAt,
             List<RewardItemDto> contents
     ) {}
 
@@ -140,6 +141,9 @@ public final class GamificationDto {
 
     /** Request body for manually granting (summoning) a pending box of a given type. */
     public record GrantBoxRequest(String boxType) {}
+
+    /** Client-safe gamification feature flags for the SPA. */
+    public record ClientConfigDto(boolean enableLootDevGrants) {}
 
     public record ScheduleTasksRequest(List<UUID> taskIds) {}
 }

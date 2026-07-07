@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Spring Boot (SuccesHub)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="dev" />
+  <configuration default="false" name="Spring Boot (SuccesHub) - Prod" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <option name="ACTIVE_PROFILES" value="prod" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.succeshub.succes_hub.SuccesHubApplication" />
     <module name="succes-hub" />
     <method v="2">

@@ -34,6 +34,11 @@
       >
         <span class="material-icons nav-icon">{{ item.icon }}</span>
         <span class="nav-label">{{ item.label }}</span>
+        @if (item.showPendingBadge && lootPending.totalPendingCount() > 0) {
+          <span class="nav-badge" aria-label="Pending caches">
+            {{ lootPending.totalPendingCount() }}
+          </span>
+        }
         <span class="nav-marker" aria-hidden="true"></span>
       </a>
     }

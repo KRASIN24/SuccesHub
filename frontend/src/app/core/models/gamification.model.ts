@@ -103,6 +103,7 @@ export interface LootBox {
   boxType: string;
   status: string;
   createdAt: string;
+  openedAt?: string | null;
   contents: RewardItem[];
 }
 
@@ -123,4 +124,8 @@ export interface InventoryItem {
   reward: RewardItem;
   quantity: number;
   equipped: boolean;
+}
+
+export interface GamificationClientConfig {
+  enableLootDevGrants: boolean;
 }

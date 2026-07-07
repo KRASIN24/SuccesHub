@@ -1,0 +1,19 @@
+# Local development defaults (activate explicitly or rely on spring.profiles.default in application.yaml).
+succeshub:
+  loot:
+    enable-dev-grants: true
+
+spring:
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.security.web.FilterChainProxy: DEBUG
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
