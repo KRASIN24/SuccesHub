@@ -1,11 +1,14 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProfileService } from '../../../core/services/profile.service';
+import { LootPendingService } from '../../../core/services/loot-pending.service';
 
 interface NavItem {
   label: string;
   icon: string;
   route: string;
+  showPendingBadge?: boolean;
 }
 
 @Component({
@@ -18,8 +21,10 @@ interface NavItem {
     '[class.collapsed]': 'collapsed()',
   },
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   private readonly auth = inject(AuthService);
+  protected readonly profileService = inject(ProfileService);
+  protected readonly lootPending = inject(LootPendingService);
 
   readonly collapsed = input(false);
   readonly closeRequested = output<void>();
@@ -28,9 +33,13 @@ export class SidebarComponent {
     () => this.auth.currentUser()?.name ?? 'The Sovereign'
   );
 
-  readonly user = {
-    rank: 'Level 42 Productivity Explorer',
-  };
+  ngOnInit(): void {
+    if (!this.profileService.profile()) {
+      this.profileService.getProfile().subscribe({
+        error: (err) => console.error('Failed to load sidebar profile', err),
+      });
+    }
+  }
 
   logout(): void {
     this.auth.logout();
@@ -41,6 +50,7 @@ export class SidebarComponent {
     { label: 'Tasks', icon: 'check_circle', route: '/tasks' },
     { label: 'Goals', icon: 'my_location', route: '/goals' },
     { label: 'Achievements', icon: 'military_tech', route: '/achievements' },
+    { label: 'Cache', icon: 'inventory_2', route: '/loot-boxes', showPendingBadge: true },
     { label: 'Profile', icon: 'person', route: '/profile' },
   ];
 

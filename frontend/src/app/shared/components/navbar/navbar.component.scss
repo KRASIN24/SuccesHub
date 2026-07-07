@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 2.5rem;
-  background: rgba(10, 10, 12, 0.82);
+  background: color-mix(in srgb, var(--color-app-bg), transparent 15%);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--color-border);
 }
@@ -48,10 +48,10 @@
 
 .stat-val {
   color: var(--color-text);
+}
 
-  &.gold {
-    color: var(--color-gold);
-  }
+.stat-val.gold {
+  color: var(--color-gold);
 }
 
 .icon-btn,
@@ -67,15 +67,17 @@
   color: var(--color-text-muted);
   cursor: pointer;
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
 
-  .material-icons {
-    font-size: 20px;
-  }
+.icon-btn .material-icons,
+.avatar-btn .material-icons {
+  font-size: 20px;
+}
 
-  &:hover {
-    color: var(--color-text);
-    background: var(--color-surface-2);
-  }
+.icon-btn:hover,
+.avatar-btn:hover {
+  color: var(--color-text);
+  background: var(--color-surface-2);
 }
 
 .avatar-btn {
@@ -83,25 +85,8 @@
   background: var(--color-surface-2);
 }
 
-.dot {
-  position: absolute;
-  top: 8px;
-  right: 9px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-gold);
-}
-
-.menu-btn {
-  display: grid;
-}
-
 @media (max-width: 960px) {
   .topbar {
     padding: 0 1.25rem;
-  }
-  .stat-chip.rank {
-    display: none;
   }
 }

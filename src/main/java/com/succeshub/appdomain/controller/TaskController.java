@@ -1,6 +1,7 @@
 package com.succeshub.appdomain.controller;
 
 import com.succeshub.appdomain.dto.TaskDto;
+import com.succeshub.appdomain.dto.gamification.GamificationDto.TaskCompletionDto;
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,20 +90,38 @@ public class TaskController {
     }
 
     /**
-     * Marks a task as done and awards XP when the category allows it.
+     * Marks a task as done and runs the gamification reward engine when the category grants XP.
      */
-    @Operation(summary = "Complete task", description = "Sets status to DONE and awards XP. Idempotent when already completed.")
-    @ApiResponse(responseCode = "200", description = "Task completed")
+    @Operation(summary = "Complete task", description = "Sets status to DONE, awards calculated XP, boss damage, and achievements. Idempotent when already completed or XP was previously awarded for this task.")
+    @ApiResponse(responseCode = "200", description = "Task completed with reward payload")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @ApiResponse(responseCode = "404", description = "Task not found")
     @PatchMapping("/{id}/complete")
-    public ResponseEntity<TaskDto.Response> completeTask(
+    public ResponseEntity<TaskCompletionDto> completeTask(
             @AuthenticationPrincipal OidcUser principal,
             @Parameter(description = "Task ID") @PathVariable UUID id) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.ok(service.complete(principal.getSubject(), id));
+    }
+
+    /**
+     * Commits selected tasks to today's daily ritual schedule.
+     */
+    @Operation(summary = "Schedule tasks for today", description = "Sets scheduled_date to today for the given task IDs.")
+    @ApiResponse(responseCode = "204", description = "Tasks scheduled")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "404", description = "Task not found")
+    @PatchMapping("/schedule")
+    public ResponseEntity<Void> scheduleTasks(
+            @AuthenticationPrincipal OidcUser principal,
+            @Valid @RequestBody TaskDto.ScheduleRequest req) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        service.scheduleTasks(principal.getSubject(), req.taskIds());
+        return ResponseEntity.noContent().build();
     }
 
     /**

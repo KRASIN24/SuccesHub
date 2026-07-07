@@ -1,0 +1,266 @@
+:host {
+  --panel: #211f23;
+  --panel-alt: #2b292d;
+  --text-white: #ffffff;
+  --text-dim: #d3c5af;
+  --rc-accent: #d3c5af;
+  --rc-glow: rgba(211, 197, 175, 0.22);
+
+  position: relative;
+  display: block;
+  width: 190px;
+  height: 254px;
+  cursor: pointer;
+  outline: none;
+  animation: loot-card-deal 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+:host(.loot-card--legendary) {
+  --rc-accent: #f5be42;
+  --rc-glow: rgba(245, 190, 66, 0.45);
+}
+
+:host(.loot-card--rare) {
+  --rc-accent: #cbd5e1;
+  --rc-glow: rgba(203, 213, 225, 0.32);
+}
+
+:host(.loot-card--common) {
+  --rc-accent: #d3c5af;
+  --rc-glow: rgba(211, 197, 175, 0.22);
+}
+
+.loot-card__canvas {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  perspective: 1000px;
+}
+
+.loot-card__tracker {
+  position: relative;
+  z-index: 5;
+}
+
+.loot-card__tilt {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 18px;
+  transform-style: preserve-3d;
+  transition: transform 150ms ease, box-shadow 250ms ease;
+}
+
+.loot-card__flip {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+:host(.loot-card--flipped) .loot-card__flip {
+  transform: rotateY(180deg);
+}
+
+.loot-card__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--panel);
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Covered back */
+.loot-card__lines {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    115deg,
+    transparent 40%,
+    var(--rc-line, rgba(210, 212, 224, 0.85)) 50%,
+    transparent 60%
+  );
+  background-size: 250% 250%;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+  transition: opacity 250ms ease;
+  animation: loot-card-sweep 3s linear infinite;
+}
+
+.loot-card__cover {
+  position: absolute;
+  inset: 3px;
+  z-index: 1;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: radial-gradient(circle at 50% 32%, var(--panel-alt), var(--panel));
+}
+
+.loot-card__cover-mark {
+  font-size: 46px;
+  color: #c7cad3;
+  opacity: 0.85;
+  transition: opacity 250ms ease;
+}
+
+.loot-card__cover-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.7;
+}
+
+/* Reward front */
+.loot-card__face--front {
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transform: rotateY(180deg);
+  border-color: color-mix(in srgb, var(--rc-accent) 55%, transparent);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--panel-alt) 60%, transparent), transparent 70%),
+    #17161a;
+  box-shadow: inset 0 0 42px var(--rc-glow);
+}
+
+.loot-card__rarity {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rc-accent);
+}
+
+.loot-card__icon {
+  font-size: 60px;
+  color: var(--rc-accent);
+}
+
+.loot-card__label {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-white);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+}
+
+.loot-card__meta {
+  margin: 0;
+  font-size: 0.65rem;
+  line-height: 1.3;
+  color: #e6ddce;
+  text-transform: capitalize;
+}
+
+/* Hover / focus: light up rarity colour + glow */
+:host(:hover) .loot-card__lines,
+:host(:focus-visible) .loot-card__lines {
+  --rc-line: var(--rc-accent);
+  opacity: 0.95;
+}
+
+:host(:hover) .loot-card__tilt,
+:host(:focus-visible) .loot-card__tilt {
+  box-shadow: 0 0 30px 1px var(--rc-glow);
+}
+
+:host(:hover) .loot-card__cover-mark {
+  opacity: 1;
+}
+
+/* Pure-CSS mouse tracker: each cell tilts the card toward it */
+.tr-1:hover ~ .loot-card__tilt { transform: rotateX(20deg) rotateY(-10deg); }
+.tr-2:hover ~ .loot-card__tilt { transform: rotateX(20deg) rotateY(-5deg); }
+.tr-3:hover ~ .loot-card__tilt { transform: rotateX(20deg) rotateY(0deg); }
+.tr-4:hover ~ .loot-card__tilt { transform: rotateX(20deg) rotateY(5deg); }
+.tr-5:hover ~ .loot-card__tilt { transform: rotateX(20deg) rotateY(10deg); }
+.tr-6:hover ~ .loot-card__tilt { transform: rotateX(10deg) rotateY(-10deg); }
+.tr-7:hover ~ .loot-card__tilt { transform: rotateX(10deg) rotateY(-5deg); }
+.tr-8:hover ~ .loot-card__tilt { transform: rotateX(10deg) rotateY(0deg); }
+.tr-9:hover ~ .loot-card__tilt { transform: rotateX(10deg) rotateY(5deg); }
+.tr-10:hover ~ .loot-card__tilt { transform: rotateX(10deg) rotateY(10deg); }
+.tr-11:hover ~ .loot-card__tilt { transform: rotateX(0deg) rotateY(-10deg); }
+.tr-12:hover ~ .loot-card__tilt { transform: rotateX(0deg) rotateY(-5deg); }
+.tr-13:hover ~ .loot-card__tilt { transform: rotateX(0deg) rotateY(0deg); }
+.tr-14:hover ~ .loot-card__tilt { transform: rotateX(0deg) rotateY(5deg); }
+.tr-15:hover ~ .loot-card__tilt { transform: rotateX(0deg) rotateY(10deg); }
+.tr-16:hover ~ .loot-card__tilt { transform: rotateX(-10deg) rotateY(-10deg); }
+.tr-17:hover ~ .loot-card__tilt { transform: rotateX(-10deg) rotateY(-5deg); }
+.tr-18:hover ~ .loot-card__tilt { transform: rotateX(-10deg) rotateY(0deg); }
+.tr-19:hover ~ .loot-card__tilt { transform: rotateX(-10deg) rotateY(5deg); }
+.tr-20:hover ~ .loot-card__tilt { transform: rotateX(-10deg) rotateY(10deg); }
+.tr-21:hover ~ .loot-card__tilt { transform: rotateX(-20deg) rotateY(-10deg); }
+.tr-22:hover ~ .loot-card__tilt { transform: rotateX(-20deg) rotateY(-5deg); }
+.tr-23:hover ~ .loot-card__tilt { transform: rotateX(-20deg) rotateY(0deg); }
+.tr-24:hover ~ .loot-card__tilt { transform: rotateX(-20deg) rotateY(5deg); }
+.tr-25:hover ~ .loot-card__tilt { transform: rotateX(-20deg) rotateY(10deg); }
+
+/* Keep the flip readable while tilting once revealed */
+:host(.loot-card--flipped) .tr-1:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-2:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-3:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-4:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-5:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-6:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-7:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-8:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-9:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-10:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-11:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-12:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-13:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-14:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-15:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-16:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-17:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-18:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-19:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-20:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-21:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-22:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-23:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-24:hover ~ .loot-card__tilt,
+:host(.loot-card--flipped) .tr-25:hover ~ .loot-card__tilt {
+  box-shadow: 0 0 34px 2px var(--rc-glow);
+}
+
+@keyframes loot-card-deal {
+  0% { opacity: 0; transform: translateY(26px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes loot-card-sweep {
+  0% { background-position: 150% 150%; }
+  100% { background-position: -50% -50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    animation: none;
+  }
+
+  .loot-card__lines {
+    animation: none;
+  }
+
+  .loot-card__tilt,
+  .loot-card__flip {
+    transition: none;
+  }
+}

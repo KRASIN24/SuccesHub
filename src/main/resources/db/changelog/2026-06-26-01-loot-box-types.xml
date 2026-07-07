@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-06-26-01-loot-box-type-column" author="cursor">
+        <addColumn tableName="user_loot_box" schemaName="succeshub">
+            <column name="box_type" type="VARCHAR(30)" defaultValue="ARCANE_ORB">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2026-06-26-01-reward-effect-column" author="cursor">
+        <addColumn tableName="reward_definition" schemaName="succeshub">
+            <column name="effect" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2026-06-26-01-reseed-v1-rewards" author="cursor">
+        <comment>Replace the placeholder reward catalog with the V1 reward table.</comment>
+        <delete tableName="reward_definition" schemaName="succeshub">
+            <where>key IN ('STREAK_SHIELD','XP_BOOST','TITLE_VETERAN','FRAME_GOLD','BADGE_LEGENDARY')</where>
+        </delete>
+
+        <!-- Utility -->
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000001"/>
+            <column name="key" value="STREAK_SHIELD"/>
+            <column name="label" value="Streak Shield"/>
+            <column name="type" value="SHIELD"/>
+            <column name="rarity" value="COMMON"/>
+            <column name="icon" value="shield"/>
+            <column name="effect" value="Absorbs 1 missed day."/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000002"/>
+            <column name="key" value="DOUBLE_STRIKE"/>
+            <column name="label" value="Double Strike"/>
+            <column name="type" value="XP_BOOST"/>
+            <column name="rarity" value="COMMON"/>
+            <column name="icon" value="bolt"/>
+            <column name="effect" value="Next task completion gives 2x XP."/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000003"/>
+            <column name="key" value="SURGE_TOKEN"/>
+            <column name="label" value="Surge Token"/>
+            <column name="type" value="XP_BOOST"/>
+            <column name="rarity" value="RARE"/>
+            <column name="icon" value="flash_on"/>
+            <column name="effect" value="+50 flat XP on next task, ignores daily cap."/>
+        </insert>
+
+        <!-- Titles -->
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000011"/>
+            <column name="key" value="TITLE_INITIATED"/>
+            <column name="label" value="The Initiated"/>
+            <column name="type" value="TITLE"/>
+            <column name="rarity" value="COMMON"/>
+            <column name="icon" value="verified"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000012"/>
+            <column name="key" value="TITLE_SOVEREIGN_MIND"/>
+            <column name="label" value="Sovereign Mind"/>
+            <column name="type" value="TITLE"/>
+            <column name="rarity" value="RARE"/>
+            <column name="icon" value="psychology"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000013"/>
+            <column name="key" value="TITLE_APEX_OPERATOR"/>
+            <column name="label" value="Apex Operator"/>
+            <column name="type" value="TITLE"/>
+            <column name="rarity" value="RARE"/>
+            <column name="icon" value="rocket_launch"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000014"/>
+            <column name="key" value="TITLE_RELENTLESS"/>
+            <column name="label" value="The Relentless"/>
+            <column name="type" value="TITLE"/>
+            <column name="rarity" value="LEGENDARY"/>
+            <column name="icon" value="whatshot"/>
+        </insert>
+
+        <!-- Avatar Frames -->
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000021"/>
+            <column name="key" value="FRAME_BRONZE_CIRCUIT"/>
+            <column name="label" value="Bronze Circuit"/>
+            <column name="type" value="FRAME"/>
+            <column name="rarity" value="COMMON"/>
+            <column name="icon" value="hexagon"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000022"/>
+            <column name="key" value="FRAME_SILVER_SIGIL"/>
+            <column name="label" value="Silver Sigil"/>
+            <column name="type" value="FRAME"/>
+            <column name="rarity" value="RARE"/>
+            <column name="icon" value="shield_moon"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="c2000000-0000-0000-0000-000000000023"/>
+            <column name="key" value="FRAME_GOLD_SOVEREIGN"/>
+            <column name="label" value="Gold Sovereign"/>
+            <column name="type" value="FRAME"/>
+            <column name="rarity" value="LEGENDARY"/>
+            <column name="icon" value="workspace_premium"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

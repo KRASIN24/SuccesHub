@@ -10,7 +10,7 @@ export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
 
-  get<T>(path: string, params?: Record<string, string | number>): Observable<T> {
+  get<T>(path: string, params?: Record<string, string | number | boolean>): Observable<T> {
     let httpParams = new HttpParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {

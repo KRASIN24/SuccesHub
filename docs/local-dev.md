@@ -20,7 +20,8 @@ Bundled IntelliJ plugins used: **Shell Script**, **Java**, **JavaScript/TypeScri
 | **Start Infrastructure** | `docker compose up -d --wait` — Postgres (healthy), Keycloak, Adminer |
 | **Stop Infrastructure** | `docker compose down` |
 | **Reset Dev DB (wipes volumes)** | `docker compose down -v` then `up -d --wait` — destroys the containerized Postgres volume |
-| **Spring Boot (SuccesHub)** | Starts backend on http://localhost:8082 (runs **Start Infrastructure** first) |
+| **Spring Boot (SuccesHub)** | Starts backend on http://localhost:8082 with profile **`dev`** (runs **Start Infrastructure** first) |
+| **Spring Boot (SuccesHub) - Prod** | Same as above with profile **`prod`** (no loot dev grants, quieter logs, Swagger off) |
 | **Angular Dev Server** | `npm start` in `frontend/` → http://localhost:4200 |
 | **Full Stack** | Spring Boot + Angular in parallel (infra starts via Spring Boot’s before-launch hook) |
 
@@ -52,9 +53,43 @@ Do **not** use Reset as a before-launch step on Spring Boot; it is destructive a
 | Spring Boot API | 8082 |
 | Postgres | 5432 |
 
-Swagger UI: http://localhost:8082/swagger-ui/index.html
+Swagger UI (dev profile only): http://localhost:8082/swagger-ui/index.html
 
 Test user (Keycloak seed): `testuser` / `testpass`
+
+## Spring profiles
+
+Runtime flags (e.g. loot dev grants) are controlled **only on the Spring side** via profiles. The Angular app reads `GET /api/gamification/config` at runtime — no frontend profile switch.
+
+| Profile | When to use | Notable settings |
+|---------|-------------|------------------|
+| **`dev`** (default) | Local development | `succeshub.loot.enable-dev-grants: true`, SQL logging, Swagger on |
+| **`prod`** | Production-like runs | Dev grants off, WARN logging, Swagger off |
+
+### Activate a profile
+
+**IntelliJ:** use **Spring Boot (SuccesHub)** (`dev`) or **Spring Boot (SuccesHub) - Prod** (`prod`).
+
+**Maven:**
+
+```bash
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=dev
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+```
+
+**JAR:**
+
+```bash
+java -jar target/succes-hub-*.jar --spring.profiles.active=prod
+```
+
+**Environment variable:**
+
+```bash
+set SPRING_PROFILES_ACTIVE=prod
+```
+
+If you omit the profile, Spring uses **`dev`** (`spring.profiles.default` in `application.yaml`).
 
 ## Maintaining shared run configurations
 

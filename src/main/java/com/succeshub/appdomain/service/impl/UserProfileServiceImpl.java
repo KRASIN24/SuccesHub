@@ -42,6 +42,31 @@ public class UserProfileServiceImpl implements UserProfileService {
         return toDto(repository.save(profile));
     }
 
+    @Override
+    @Transactional
+    public UserProfile requireProfile(String keycloakId) {
+        return repository.findByKeycloakId(keycloakId)
+                .orElseGet(() -> {
+                    UserProfile profile = new UserProfile();
+                    profile.setKeycloakId(keycloakId);
+                    return repository.save(profile);
+                });
+    }
+
+    @Override
+    public void resetDailyCountersIfNeeded(UserProfile profile, java.time.LocalDate today) {
+        if (profile.getDailyXpDate() == null || !profile.getDailyXpDate().equals(today)) {
+            profile.setDailyXpDate(today);
+            profile.setDailyXpEarned(0);
+            profile.setFirstTaskCompletedToday(false);
+        }
+    }
+
+    @Override
+    public ProfileDto mapToDto(UserProfile profile) {
+        return toDto(profile);
+    }
+
     private ProfileDto toDto(UserProfile p) {
         return new ProfileDto(
                 p.getKeycloakId(),

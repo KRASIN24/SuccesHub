@@ -1,0 +1,19 @@
+# Production overrides — activate with: --spring.profiles.active=prod
+succeshub:
+  loot:
+    enable-dev-grants: false
+
+spring:
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    org.springframework.security: WARN
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false

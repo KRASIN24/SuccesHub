@@ -1,0 +1,230 @@
+@if (loading()) {
+  <div class="page page--state">
+    <app-loading-skeleton height="480px"></app-loading-skeleton>
+  </div>
+} @else if (error()) {
+  <div class="page page--state">
+    <app-error-state [message]="error() || ''" (retry)="load()"></app-error-state>
+  </div>
+} @else if (selectedBox()) {
+  <div class="page">
+    <main class="main">
+      <section class="hero">
+        <div class="hero__orb">
+          <div class="hero__aura"></div>
+          <div class="hero__overlay-blur"></div>
+
+          <button
+            type="button"
+            class="hero__nav hero__nav--prev"
+            (click)="onPrevChest()"
+            [disabled]="phase() !== 'idle' || boxTypes().length < 2"
+            aria-label="Previous chest"
+          >
+            <img [src]="navPrevIcon" alt="" />
+            <span class="hero__nav-tooltip">Previous Chest</span>
+          </button>
+
+          <div class="hero__hexagon">
+            <div class="hero__hexagon-inner">
+              <div class="hero__gradient"></div>
+              <div class="hero__chest-stage">
+                <app-animated-loot-chest [variant]="chestVariant()" />
+              </div>
+              <div class="hero__chest hero__chest--float" [ngClass]="heroChestClass()">
+                <img [src]="chestSrc()" [alt]="selectedBox()!.name" />
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__accent">
+            <div class="hero__accent-inner">
+              <img [src]="accentIcon" alt="" />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="hero__nav hero__nav--next"
+            (click)="onNextChest()"
+            [disabled]="phase() !== 'idle' || boxTypes().length < 2"
+            aria-label="Next chest"
+          >
+            <img [src]="navNextIcon" alt="" />
+            <span class="hero__nav-tooltip">Next Chest</span>
+          </button>
+        </div>
+
+        <div class="hero__copy">
+          <p class="hero__eyebrow">The Celestial Cache</p>
+          <h1 class="hero__title">{{ selectedBox()!.name }}</h1>
+          <p class="hero__subtitle">{{ selectedBox()!.blurb }}</p>
+        </div>
+
+        <div class="hero__cta-wrap">
+          <button
+            type="button"
+            class="hero__cta"
+            [class.hero__cta--ready]="selectedPendingCount() > 0"
+            (click)="onOpenCache()"
+            [disabled]="!canOpen()"
+          >
+            {{ primaryLabel() }}
+            @if (selectedPendingCount() > 0) {
+              <span class="hero__cta-badge">{{ selectedPendingCount() }}</span>
+            }
+          </button>
+          @if (enableLootDevGrants()) {
+            <button
+              type="button"
+              class="hero__cta-secondary"
+              (click)="summon()"
+              [disabled]="!canOpen()"
+            >
+              + Summon a cache (no open)
+            </button>
+          }
+          <p class="hero__cta-hint">{{ ctaHint() }}</p>
+        </div>
+      </section>
+
+      <section class="history">
+        <div class="history__heading">
+          <p class="history__eyebrow">Latest Pulls</p>
+          <h2 class="history__title">Recent History</h2>
+        </div>
+
+        @if (recentHistory().length > 0) {
+          <div class="history__row">
+            @for (entry of recentHistory(); track entry.entryId) {
+              <div class="history__drop" [ngClass]="rarityClass(entry.item.rarity)">
+                <span class="material-symbols-outlined history__drop-icon">{{ entry.item.icon }}</span>
+                <div class="history__drop-text">
+                  <p class="history__drop-label">{{ entry.item.label }}</p>
+                  <p class="history__drop-meta">
+                    {{ entry.item.rarity }} · {{ entry.boxName }} · {{ formatPulledAt(entry.pulledAt) }}
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="history__empty">Open a cache to build your pull history.</p>
+        }
+      </section>
+
+      <section class="tiers">
+        <div class="tiers__heading">
+          <p class="tiers__eyebrow">Universal Tiers</p>
+          <h2 class="tiers__title">Available Artifacts</h2>
+        </div>
+
+        <div class="tiers__grid">
+          <article
+            class="tier-card"
+            *ngFor="let tier of rewardTiers; let i = index"
+            [class.tier-card--selected]="i === selectedIndex()"
+            [style.border-color]="tier.cardBorder"
+            (click)="select(i)"
+          >
+            <div class="tier-card__overlay" [style.background]="tier.cardOverlay"></div>
+
+            @if (pendingCountAt(i) > 0) {
+              <span class="tier-card__badge">{{ pendingCountAt(i) }}</span>
+            }
+
+            <div class="tier-card__icon-wrap">
+              <div class="tier-card__icon-glow" [style.background]="tier.glow"></div>
+              <div
+                class="tier-card__icon"
+                [class.tier-card__icon--rounded]="tier.shape === 'rounded'"
+                [style.border-color]="tier.iconBorder"
+                [style.background]="'linear-gradient(180deg, ' + tier.gradientFrom + ', ' + tier.gradientTo + ')'"
+              >
+                <img [src]="tier.icon" alt="" />
+              </div>
+            </div>
+
+            <div class="tier-card__body">
+              <h3 class="tier-card__name">{{ tier.name }}</h3>
+              @if (pendingCountAt(i) > 0) {
+                <p class="tier-card__keys">{{ pendingCountAt(i) }} ready to open</p>
+              }
+              <p class="tier-card__desc">
+                <span *ngFor="let line of tier.description">{{ line }}<br /></span>
+              </p>
+
+              @if (boxTypes()[i]; as box) {
+                <div class="tier-card__odds">
+                  <p class="tier-card__odds-label">Drop rates</p>
+                  <div class="tier-card__odds-bar">
+                    <span class="tier-card__odds-common" [style.width.%]="weightPct(box, 'COMMON')"></span>
+                    <span class="tier-card__odds-rare" [style.width.%]="weightPct(box, 'RARE')"></span>
+                    <span class="tier-card__odds-legendary" [style.width.%]="weightPct(box, 'LEGENDARY')"></span>
+                  </div>
+                  <div class="tier-card__odds-legend">
+                    <span>{{ weightPct(box, 'COMMON') }}% C</span>
+                    <span>{{ weightPct(box, 'RARE') }}% R</span>
+                    <span>{{ weightPct(box, 'LEGENDARY') }}% L</span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="tier-card__footer">
+              <p class="tier-card__tier-label" [style.color]="tier.softAccent">{{ tier.tierLabel }}</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p class="footer__version">SuccessHub Reward Ecosystem v4.2.0</p>
+        <nav class="footer__links">
+          <a href="javascript:void(0)" *ngFor="let link of footerLinks">{{ link.label }}</a>
+        </nav>
+      </footer>
+    </main>
+  </div>
+}
+
+@if (phase() !== 'idle') {
+  <div class="loot-overlay" [ngClass]="glowClass()">
+    <div class="loot-overlay__inner">
+      @if (phase() === 'charging') {
+        <div class="charging">
+          <div class="charging__halo"></div>
+          @if (activeBox()) {
+            <div
+              class="charging__box charging__box-img"
+              [ngClass]="activeChargingChestClass()"
+            >
+              <img [src]="activeBoxImageUrl()" [alt]="activeBox()!.name" />
+            </div>
+          }
+          <p class="charging__label">Unsealing the {{ activeBox()?.name }}…</p>
+        </div>
+      } @else {
+        <div class="reveal" [class.reveal--complete]="allRevealed()">
+          <p class="reveal__eyebrow" [ngClass]="revealEyebrowClass()">{{ glowHeadline() }}</p>
+          <p class="reveal__hint">Tap each card to reveal your reward</p>
+          <div class="reveal__cards">
+            @for (item of rolled(); track item) {
+              <app-reveal-card
+                [item]="item"
+                [categoryLabel]="categoryLabel(item)"
+                [style.animation-delay.ms]="$index * 140"
+                (revealed)="onCardRevealed()"
+              />
+            }
+          </div>
+          <div class="reveal__footer">
+            @if (allRevealed()) {
+              <button type="button" class="reveal__collect" (click)="collect()">Collect</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

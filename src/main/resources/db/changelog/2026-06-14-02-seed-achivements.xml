@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Seed: Achievement Definitions -->
+    <changeSet id="2026-06-14-07-seed-achievements" author="krasin">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM succeshub.achievement_definition</sqlCheck>
+        </preConditions>
+        <insert tableName="achievement_definition" schemaName="succeshub">
+            <column name="id" value="a1000000-0000-0000-0000-000000000001"/>
+            <column name="key" value="SPEEDSTER"/>
+            <column name="label" value="Speedster"/>
+            <column name="icon" value="bolt"/>
+            <column name="description" value="Complete 10 tasks in a single day."/>
+            <column name="tasks_required" valueNumeric="10"/>
+        </insert>
+        <insert tableName="achievement_definition" schemaName="succeshub">
+            <column name="id" value="a1000000-0000-0000-0000-000000000002"/>
+            <column name="key" value="PIONEER"/>
+            <column name="label" value="Pioneer"/>
+            <column name="icon" value="explore"/>
+            <column name="description" value="Complete your first goal."/>
+            <column name="tasks_required" valueNumeric="1"/>
+        </insert>
+        <insert tableName="achievement_definition" schemaName="succeshub">
+            <column name="id" value="a1000000-0000-0000-0000-000000000003"/>
+            <column name="key" value="ARCHIVIST"/>
+            <column name="label" value="Archivist"/>
+            <column name="icon" value="diamond"/>
+            <column name="description" value="Accumulate 10,000 total XP."/>
+            <column name="xp_required" valueNumeric="10000"/>
+        </insert>
+        <insert tableName="achievement_definition" schemaName="succeshub">
+            <column name="id" value="a1000000-0000-0000-0000-000000000004"/>
+            <column name="key" value="CONSISTENT"/>
+            <column name="label" value="Consistent"/>
+            <column name="icon" value="local_fire_department"/>
+            <column name="description" value="Maintain a 7-day task streak."/>
+            <column name="tasks_required" valueNumeric="7"/>
+        </insert>
+        <insert tableName="achievement_definition" schemaName="succeshub">
+            <column name="id" value="a1000000-0000-0000-0000-000000000005"/>
+            <column name="key" value="SOVEREIGN"/>
+            <column name="label" value="Sovereign"/>
+            <column name="icon" value="military_tech"/>
+            <column name="description" value="Reach level 50."/>
+            <column name="xp_required" valueNumeric="50000"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

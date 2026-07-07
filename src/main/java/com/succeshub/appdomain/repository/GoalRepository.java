@@ -49,4 +49,13 @@ public interface GoalRepository extends JpaRepository<Goal, UUID> {
      */
     @Query("SELECT COUNT(g) FROM Goal g WHERE g.userId = :userId AND g.status = 'COMPLETED'")
     long countCompleted(@Param("userId") String userId);
+
+    /**
+     * Counts goals for a user in a given lifecycle status.
+     *
+     * @param userId Keycloak subject ID of the goal owner
+     * @param status goal status to count
+     * @return number of matching goals
+     */
+    long countByUserIdAndStatus(String userId, Goal.Status status);
 }

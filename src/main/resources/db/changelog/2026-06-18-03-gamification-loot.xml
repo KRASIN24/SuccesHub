@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-06-18-03-gamification-loot" author="cursor">
+        <createTable tableName="reward_definition" schemaName="succeshub">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="key" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rarity" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="icon" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_loot_box" schemaName="succeshub">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="opened_at" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+
+        <createTable tableName="loot_box_content" schemaName="succeshub">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="loot_box_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reward_definition_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="succeshub"
+                baseTableName="loot_box_content"
+                baseColumnNames="loot_box_id"
+                referencedTableSchemaName="succeshub"
+                referencedTableName="user_loot_box"
+                referencedColumnNames="id"
+                constraintName="fk_loot_box_content_box"
+                onDelete="CASCADE"/>
+        <addForeignKeyConstraint
+                baseTableSchemaName="succeshub"
+                baseTableName="loot_box_content"
+                baseColumnNames="reward_definition_id"
+                referencedTableSchemaName="succeshub"
+                referencedTableName="reward_definition"
+                referencedColumnNames="id"
+                constraintName="fk_loot_box_content_reward"
+                onDelete="CASCADE"/>
+
+        <createTable tableName="user_inventory" schemaName="succeshub">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reward_definition_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INTEGER" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="equipped" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="succeshub"
+                baseTableName="user_inventory"
+                baseColumnNames="reward_definition_id"
+                referencedTableSchemaName="succeshub"
+                referencedTableName="reward_definition"
+                referencedColumnNames="id"
+                constraintName="fk_user_inventory_reward"
+                onDelete="CASCADE"/>
+        <createIndex tableName="user_loot_box" schemaName="succeshub" indexName="idx_user_loot_box_user">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="user_inventory" schemaName="succeshub" indexName="idx_user_inventory_user">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-06-18-05-achievement-columns" author="cursor">
+        <addColumn tableName="achievement_definition" schemaName="succeshub">
+            <column name="streak_required" type="INTEGER" defaultValueNumeric="0"/>
+            <column name="goals_required" type="INTEGER" defaultValueNumeric="0"/>
+        </addColumn>
+        <update tableName="achievement_definition" schemaName="succeshub">
+            <column name="streak_required" valueNumeric="7"/>
+            <where>key = 'CONSISTENT'</where>
+        </update>
+        <update tableName="achievement_definition" schemaName="succeshub">
+            <column name="goals_required" valueNumeric="1"/>
+            <where>key = 'PIONEER'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="2026-06-18-05-seed-rewards" author="cursor">
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="b1000000-0000-0000-0000-000000000001"/>
+            <column name="key" value="STREAK_SHIELD"/>
+            <column name="label" value="Streak Shield"/>
+            <column name="type" value="SHIELD"/>
+            <column name="rarity" value="RARE"/>
+            <column name="icon" value="shield"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="b1000000-0000-0000-0000-000000000002"/>
+            <column name="key" value="XP_BOOST"/>
+            <column name="label" value="XP Boost"/>
+            <column name="type" value="XP_BOOST"/>
+            <column name="rarity" value="COMMON"/>
+            <column name="icon" value="bolt"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="b1000000-0000-0000-0000-000000000003"/>
+            <column name="key" value="TITLE_VETERAN"/>
+            <column name="label" value="Veteran Title"/>
+            <column name="type" value="TITLE"/>
+            <column name="rarity" value="COMMON"/>
+            <column name="icon" value="military_tech"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="b1000000-0000-0000-0000-000000000004"/>
+            <column name="key" value="FRAME_GOLD"/>
+            <column name="label" value="Gold Frame"/>
+            <column name="type" value="FRAME"/>
+            <column name="rarity" value="RARE"/>
+            <column name="icon" value="filter_frames"/>
+        </insert>
+        <insert tableName="reward_definition" schemaName="succeshub">
+            <column name="id" value="b1000000-0000-0000-0000-000000000005"/>
+            <column name="key" value="BADGE_LEGENDARY"/>
+            <column name="label" value="Legendary Badge"/>
+            <column name="type" value="BADGE"/>
+            <column name="rarity" value="LEGENDARY"/>
+            <column name="icon" value="stars"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

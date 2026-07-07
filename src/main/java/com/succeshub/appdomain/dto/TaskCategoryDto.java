@@ -12,7 +12,6 @@ public class TaskCategoryDto {
             String name,
             String tag,
             boolean grantXp,
-            boolean muted,
             int sortOrder
     ) {}
 
@@ -20,7 +19,6 @@ public class TaskCategoryDto {
             @NotBlank @Size(max = 100) String name,
             @Size(max = 50) String tag,
             boolean grantXp,
-            boolean muted,
             int sortOrder
     ) {}
 
@@ -28,7 +26,6 @@ public class TaskCategoryDto {
             @NotBlank @Size(max = 100) String name,
             @Size(max = 50) String tag,
             boolean grantXp,
-            boolean muted,
             int sortOrder
     ) {}
 }

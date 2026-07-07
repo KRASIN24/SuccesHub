@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
-import { Goal, GoalSummary } from '../models/goal.model';
+import { Goal, GoalCreateRequest, GoalSummary } from '../models/goal.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +18,7 @@ export class GoalService {
     return this.api.get<GoalSummary>('/goals/summary');
   }
 
-  createGoal(goal: Partial<Goal>): Observable<Goal> {
+  createGoal(goal: GoalCreateRequest): Observable<Goal> {
     return this.api.post<Goal>('/goals', goal);
   }
 

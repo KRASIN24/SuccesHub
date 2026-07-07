@@ -20,3 +20,14 @@ export interface GoalSummary {
   completedGoals: number;
   overallPercent: number;
 }
+
+export interface GoalCreateRequest {
+  name: string;
+  tier?: string;
+  targetDescription?: string;
+  targetValue: number;
+  currentProgress?: number;
+  xpReward: number;
+  icon?: string;
+  featured?: boolean;
+}

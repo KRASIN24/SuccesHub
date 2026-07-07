@@ -14,7 +14,13 @@
     </div>
     <div class="profile-meta">
       <p class="profile-name">{{ displayName() }}</p>
-      <p class="profile-rank">{{ user.rank }}</p>
+      <p class="profile-rank">
+        @if (profileService.profile(); as prof) {
+          Level {{ prof.level }} · {{ prof.currentStreak }}d streak
+        } @else {
+          Loading profile…
+        }
+      </p>
     </div>
   </div>
 
@@ -28,15 +34,20 @@
       >
         <span class="material-icons nav-icon">{{ item.icon }}</span>
         <span class="nav-label">{{ item.label }}</span>
+        @if (item.showPendingBadge && lootPending.totalPendingCount() > 0) {
+          <span class="nav-badge" aria-label="Pending caches">
+            {{ lootPending.totalPendingCount() }}
+          </span>
+        }
         <span class="nav-marker" aria-hidden="true"></span>
       </a>
     }
   </div>
 
-  <button type="button" class="gold-btn new-objective">
+  <a routerLink="/goals" class="gold-btn new-objective">
     <span class="material-icons">add</span>
     New Objective
-  </button>
+  </a>
 
   <div class="nav-spacer"></div>
 

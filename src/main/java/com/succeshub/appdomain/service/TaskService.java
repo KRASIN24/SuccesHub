@@ -1,6 +1,7 @@
 package com.succeshub.appdomain.service;
 
 import com.succeshub.appdomain.dto.TaskDto;
+import com.succeshub.appdomain.dto.gamification.GamificationDto.TaskCompletionDto;
 import com.succeshub.appdomain.model.Task;
 
 import java.util.List;
@@ -48,13 +49,21 @@ public interface TaskService {
     TaskDto.Response update(String userId, UUID id, TaskDto.UpdateRequest req);
 
     /**
-     * Marks a task as done and awards XP when the category allows it.
+     * Marks a task as done and runs the gamification engine when the category grants XP.
      *
      * @param userId Keycloak subject ID of the task owner
      * @param id     primary key of the task to complete
-     * @return completed task as an API response; idempotent when already done
+     * @return task, reward payload, and updated profile; idempotent when already done or XP was previously awarded
      */
-    TaskDto.Response complete(String userId, UUID id);
+    TaskCompletionDto complete(String userId, UUID id);
+
+    /**
+     * Commits tasks to today's daily ritual schedule.
+     *
+     * @param userId  Keycloak subject ID of the task owner
+     * @param taskIds task IDs to schedule for today
+     */
+    void scheduleTasks(String userId, List<UUID> taskIds);
 
     /**
      * Deletes a task owned by the user.

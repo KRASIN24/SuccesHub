@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-06-18-01-gamification-task-columns" author="cursor">
+        <addColumn tableName="task" schemaName="succeshub">
+            <column name="difficulty" type="INTEGER" defaultValueNumeric="3">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration_minutes" type="INTEGER" defaultValueNumeric="30">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="INTEGER" defaultValueNumeric="2">
+                <constraints nullable="false"/>
+            </column>
+            <column name="goal_id" type="UUID"/>
+            <column name="scheduled_date" type="DATE"/>
+            <column name="is_weekly_challenge" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weekly_challenge_week" type="DATE"/>
+        </addColumn>
+        <addForeignKeyConstraint
+                baseTableSchemaName="succeshub"
+                baseTableName="task"
+                baseColumnNames="goal_id"
+                referencedTableSchemaName="succeshub"
+                referencedTableName="goal"
+                referencedColumnNames="id"
+                constraintName="fk_task_goal"
+                onDelete="SET NULL"/>
+    </changeSet>
+
+</databaseChangeLog>

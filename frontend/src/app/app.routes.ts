@@ -32,11 +32,22 @@ export const routes: Routes = [
     path: 'achievements',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/placeholder/placeholder.component').then(
-        (m) => m.PlaceholderComponent
+      import('./features/achievements/achievements.component').then(
+        (m) => m.AchievementsComponent
       ),
     title: 'Achievements — SuccesHub',
-    data: { title: 'Achievements', icon: 'military_tech' },
+  },
+  {
+    path: 'loot-boxes',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/loot-boxes/loot-boxes.component').then((m) => m.LootBoxesComponent),
+    title: 'The Celestial Cache — SuccesHub',
+  },
+  {
+    path: 'cache',
+    redirectTo: 'loot-boxes',
+    pathMatch: 'full',
   },
   {
     path: 'profile',

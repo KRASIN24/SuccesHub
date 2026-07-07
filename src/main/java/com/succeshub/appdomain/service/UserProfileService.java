@@ -1,6 +1,7 @@
 package com.succeshub.appdomain.service;
 
 import com.succeshub.appdomain.dto.ProfileDto;
+import com.succeshub.appdomain.model.UserProfile;
 
 /**
  * Application service for user profiles, XP totals, and level progression.
@@ -26,4 +27,28 @@ public interface UserProfileService {
      * @throws IllegalStateException when no profile exists for the given user
      */
     ProfileDto addXp(String keycloakId, int amount);
+
+    /**
+     * Loads the profile entity for gamification flows, creating a row on first access.
+     *
+     * @param keycloakId OIDC subject ({@code sub}) of the user
+     * @return persisted profile entity
+     */
+    UserProfile requireProfile(String keycloakId);
+
+    /**
+     * Resets daily XP counters when the calendar day changes (server timezone in V1).
+     *
+     * @param profile profile entity to update in memory
+     * @param today   current local date used for day boundaries
+     */
+    void resetDailyCountersIfNeeded(UserProfile profile, java.time.LocalDate today);
+
+    /**
+     * Maps a persisted profile entity to the API DTO.
+     *
+     * @param profile profile entity
+     * @return dashboard profile snapshot
+     */
+    ProfileDto mapToDto(UserProfile profile);
 }
