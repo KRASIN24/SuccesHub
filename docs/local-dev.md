@@ -126,3 +126,8 @@ Do not commit `.idea/runConfigurations/` — use `.run/` at the repo root so eve
 3. **Angular Dev Server** — http://localhost:4200 loads.
 4. **Full Stack** — all of the above without typing compose/mvn/npm commands.
 5. **Reset Dev DB (wipes volumes)** then **Spring Boot** — empty DB, Liquibase migrations applied.
+
+## Related docs
+
+- [Gamification reward loop](gamification.md) — task completion, daily close, celebrations, and loot lifecycle
+- [Continuous Integration](ci.md) — CI jobs and local reproduction
