@@ -22,7 +22,7 @@ Dashboard or Strategy Canvas
      -> LootPendingService updates the sidebar badge
 ```
 
-Daily streak processing is separate. `GET /api/gamification/daily` first closes unprocessed days, then returns the current dashboard state. `POST /api/gamification/close-day` invokes the same close logic only to provide an explicit celebration response; streak correctness does not depend on pressing **Celebrate**.
+Daily streak processing is separate. `GET /api/gamification/daily` first closes unprocessed days, then returns the current dashboard state. `POST /api/gamification/close-day` invokes the same close logic, but the dashboard has already called the daily endpoint by the time the user can press **Celebrate**. It therefore normally returns `alreadyClosed: true` with no new rewards. Streak correctness does not depend on that button, and the current API does not replay rewards that were produced by the earlier lazy close.
 
 ## Canonical user workflow
 
@@ -45,8 +45,8 @@ All routes require an authenticated BFF session unless noted otherwise.
 | `PATCH` | `/api/tasks/schedule` | Sets `scheduled_date` to today for the supplied task IDs. Returns `204`. |
 | `GET` | `/api/gamification/xp-preview` | Estimates XP from `difficulty`, `durationMinutes`, `priority`, and `weeklyChallenge`; does not persist or roll the variable bonus. |
 | `GET` | `/api/gamification/daily` | Lazy-closes pending days, then returns daily missions, XP remaining, streak, challenges, and scheduled tasks. |
-| `POST` | `/api/gamification/close-day` | Returns streak, achievement, and loot changes from the same idempotent close logic. |
-| `GET` | `/api/gamification/forecast` | Returns the next streak milestone and weekly challenge settings. |
+| `POST` | `/api/gamification/close-day` | Runs the same idempotent close logic. After the dashboard's daily-status load, this normally returns `alreadyClosed: true` and empty reward lists. |
+| `GET` | `/api/gamification/forecast` | Returns the configured milestone teaser and weekly challenge settings. At streak 100 or above, the milestone remains 100. |
 | `GET` | `/api/gamification/loot-boxes` | Lists unopened boxes, newest first. |
 | `GET` | `/api/gamification/loot-boxes/history?limit=3` | Lists opened boxes and contents; `limit` is clamped to 1–10. |
 | `POST` | `/api/gamification/loot-boxes/{id}/open` | Performs exactly three independent rolls and adds the results to inventory. Reopening returns the stored contents without rerolling. |
@@ -104,9 +104,9 @@ Task completion is currently initiated from `/dashboard` and `/tasks`. Pending l
 - **Do not complete reward-bearing tasks with `PUT /api/tasks/{id}` and `status: "DONE"`.** That updates task state but bypasses the gamification engine.
 - **Completion is idempotent.** A task already done or represented in `xp_event` returns `reward: null`; clients must not treat that as a failed request.
 - **Category settings are authoritative.** A category with `grantXp: false` intentionally produces no XP or celebration.
-- **Earn is not open.** Achievement and streak rewards create pending caches. Never call the open endpoint automatically from a completion handler.
+- **Earn is not open.** Task-completion achievement unlocks and streak milestones can create pending caches. Achievements unlocked during daily close currently do not grant a cache. Never call the open endpoint automatically from a completion handler.
 - **Day boundaries use the server timezone.** Streaks, grace-period checks, daily counters, and the Monday challenge scheduler do not use a per-user timezone in V1.
-- **Daily close is lazy and idempotent.** Loading daily status can update streak state. The Celebrate button is presentation, not a required write.
+- **Daily close is lazy and idempotent.** Loading daily status can update streak state and consumes the close result internally. The later Celebrate request normally has no rewards to animate; it is not a required write and currently cannot replay the lazy-close result.
 - **Preview is not a promise.** The completion total can differ because the preview excludes the random variable bonus and available daily XP can change.
 - **Manual grants are profile-gated.** The Angular app reads the backend config; do not add a separate frontend environment flag.
 - **Some seeded utility effects are descriptive only.** `DOUBLE_STRIKE` and `SURGE_TOKEN` have no consumption logic. `weeklyLootMinQualifyingDays` and the `WEEKLY_RESET` source also have no active caller.
