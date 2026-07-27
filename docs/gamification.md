@@ -121,7 +121,8 @@ Handled application errors use:
 {
   "status": 404,
   "errorCode": "NOT_FOUND",
-  "message": "Task not found: <uuid>"
+  "message": "Task not found: <uuid>",
+  "timestamp": "2026-07-27T16:00:00Z"
 }
 ```
 
