@@ -33,12 +33,12 @@ server-backed Recent History
 | Streak reaches 100 | `SOVEREIGN_VAULT` (Divine Vault) | Lazy/manual day-close |
 | Manual dev grant | Caller selects any type | `POST /loot-boxes/grant`, when dev grants are enabled |
 
-Current constraints:
+Current constraints for boxes granted after the V1 catalog migration:
 
-- `ARCANE_ORB` (Glowing Orb) is available through the manual dev grant only. Its catalog label says “Daily streak qualifier,” but qualifying days do not currently grant it.
+- `ARCANE_ORB` (Glowing Orb) is available through the manual dev grant only. Its catalog label says “Daily streak qualifier,” but qualifying days do not currently grant it. The migration backfills every pre-existing box as `ARCANE_ORB`, regardless of its original source.
 - `WEEKLY_RESET` exists in the backend enum, but no workflow calls it.
 - Every achievement granted by task completion uses `IRON_CHEST`; there is no separate rare-achievement mapping.
-- Achievements first unlocked during day-close are returned for celebration but do not currently grant a box.
+- Achievements first unlocked during day-close do not currently grant a box. An explicit `POST /close-day` returns them for celebration; lazy close through `GET /daily` discards the close result, so those unlocks are silent.
 
 Treat the box catalog’s `source` strings as display copy, not as proof that a grant workflow is implemented.
 
@@ -116,7 +116,9 @@ The inventory and equip endpoints exist, and the Angular service exposes them, b
 
 ### Catalog or column errors after pulling the loot migration
 
-`2026-06-26-01-loot-box-types.xml` adds `box_type` and `effect`, removes the placeholder rewards, and seeds the V1 catalog. Restart Spring Boot so Liquibase applies it. For disposable local data only, follow [Reset Dev DB](local-dev.md#clear-the-database-and-re-apply-migrations).
+`2026-06-26-01-loot-box-types.xml` adds `box_type` and `effect`, deletes the placeholder reward definitions, and seeds the V1 catalog. The reward foreign keys use `ON DELETE CASCADE`, so this migration also removes inventory stacks and opened-box content that reference the deleted placeholder rows. It also backfills all existing boxes as `ARCANE_ORB`.
+
+Back up a database before applying this migration if its loot history must be preserved. For disposable local data, the safest path is [Reset Dev DB](local-dev.md#clear-the-database-and-re-apply-migrations), then restart Spring Boot so Liquibase builds the catalog from scratch.
 
 ### Recent History looks shorter than expected
 
