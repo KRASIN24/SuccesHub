@@ -12,15 +12,15 @@ pending user_loot_box ---> subsequent pending refresh ---> sidebar badge / Cache
         |
         | POST /api/gamification/loot-boxes/{id}/open
         v
-3 persisted reward rolls ---> stacked user_inventory
+3 rolls on a normal first open ---> stacked user_inventory
         |
         v
 server-backed Recent History
 ```
 
 - Task-completion rewards and an explicit close-day response can show an earn toast. The toast does not open a box; it directs the user to the Cache.
-- `GET /gamification/daily` runs lazy day-close but discards its close result. A streak-milestone box created there may not update the already-loaded badge or show a toast until pending boxes are refreshed.
-- Opening is idempotent: reopening an `OPENED` box returns its stored contents without rerolling or incrementing inventory.
+- `GET /api/gamification/daily` runs lazy day-close but discards its close result. A streak-milestone box created there may not update the already-loaded badge or show a toast until pending boxes are refreshed.
+- A sequential retry after a box reaches `OPENED` returns its stored contents without rerolling or incrementing inventory. Concurrent first-open requests are not serialized; see [Troubleshooting](#duplicate-rewards-after-concurrent-open-requests).
 - The Cache loads the box catalog, pending boxes, the last three opened boxes, and the client config together.
 - The reveal waits 950 ms, then presents three face-down cards. **Collect** appears after every card is revealed and refreshes pending state and history.
 
@@ -44,7 +44,7 @@ Treat the box catalog’s `source` strings as display copy, not as proof that a 
 
 ## Roll rules and catalog
 
-Each box makes exactly **three independent rolls**:
+For a normal, non-concurrent first open, each box makes exactly **three independent rolls**:
 
 1. Select a rarity using the box weights.
 2. Select uniformly from rewards of that rarity.
@@ -123,6 +123,10 @@ Back up a database before applying this migration if its loot history must be pr
 ### Recent History looks shorter than expected
 
 The Cache requests three opened boxes and flattens at most eight reward entries for display. The API accepts a maximum box limit of 10.
+
+### Duplicate rewards after concurrent open requests
+
+The open service uses an unlocked read-then-write flow. Two simultaneous requests can both observe a `PENDING` box and each persist three rolls before either marks it `OPENED`. The Cache UI serializes its own action, but other clients must not issue concurrent open requests for the same ID. Sequential retries after the first transaction commits are safe.
 
 ## Verification
 
