@@ -6,8 +6,8 @@ Achievements are persistent, per-user milestones. The backend owns the catalog a
 
 1. The Dashboard and Achievements page call `GET /api/achievements`.
 2. Locked and unlocked merits use the same catalog metadata. Locked cards are dimmed; descriptions remain visible.
-3. Task completion and pending-day processing evaluate achievement rules.
-4. Task-completion responses include newly unlocked achievements and trigger the global achievement overlay.
+3. A first, XP-eligible task completion and pending-day processing evaluate achievement rules.
+4. Eligible task-completion responses include newly unlocked achievements under `reward.achievementsUnlocked` and trigger the global achievement overlay.
 5. Future catalog reads return `locked: false` and the persisted `unlockedAt` timestamp.
 
 The current UI does not render `unlockedAt`, and reading the catalog does not evaluate or unlock achievements. A lazy unlock during `GET /api/gamification/daily` is persisted silently because the daily-status response does not include achievement results.
@@ -28,9 +28,9 @@ Day boundaries use the backend server timezone. `SPEEDSTER` does not use the cat
 
 ### Task completion
 
-`PATCH /api/tasks/{id}/complete` evaluates achievements after XP, goal damage, and any goal-completion XP have been applied. This means one completion can unlock multiple merits.
+`PATCH /api/tasks/{id}/complete` invokes the gamification engine only when the task is not already done, has not already received XP, and its category grants XP (or it has no category). The engine evaluates achievements after XP, goal damage, and any goal-completion XP have been applied. This means one eligible completion can unlock multiple merits.
 
-For every achievement unlocked on this path, the backend creates one pending loot box with source `ACHIEVEMENT`. The response contains the unlocked achievement list but only one `lootBoxEarned` UUID: when several merits unlock together, it is the last granted box ID. The pending-box list remains authoritative.
+Duplicate, previously rewarded, and non-XP completions return `reward: null` and do not evaluate achievements. For every achievement unlocked on the engine path, the backend creates one pending loot box with source `ACHIEVEMENT`. The response contains the unlocked list at `reward.achievementsUnlocked` but only one `reward.lootBoxEarned` UUID: when several merits unlock together, it is the last granted box ID. The pending-box list remains authoritative.
 
 ### Pending-day close
 
@@ -41,6 +41,8 @@ This path can unlock streak-dependent achievements, but it does **not** grant an
 - Lazy close through `GET /daily` discards the close result, so the unlock is persisted without an overlay.
 - Explicit `POST /close-day` returns unlocks in `achievementsUnlocked` when it actually processes a pending day.
 - `lootBoxesEarned` contains only boxes created by streak-milestone processing.
+
+The Dashboard loads `GET /daily` before enabling its Celebrate action. That initial request normally consumes pending-day work, so a later `POST /close-day` returns `alreadyClosed: true` with empty achievement and loot lists.
 
 ### Catalog reads
 
@@ -116,11 +118,6 @@ The schema indexes `user_id` but has no unique constraint on `(user_id, achievem
 - Trigger evaluation through canonical task completion or a pending-day close; a catalog read is insufficient.
 - For `SPEEDSTER`, inspect `speedster-task-threshold`, task completion timestamps, and the server timezone.
 
-### The unlock appears but no cache was earned
-
-- Unlocks found during pending-day close do not grant achievement caches.
-- For task-completion unlocks, refresh `GET /api/gamification/loot-boxes`; the completion response exposes only one box ID even if several were granted.
-
 ### The Dashboard fails while the dedicated page can retry
 
 The Dashboard loads achievements inside a `forkJoin` with its other widgets, so one failed request fails the whole Dashboard load. The dedicated route shows its own error state and retry action. A `401` from `/api/achievements` indicates that the OIDC session is missing or expired.
@@ -130,8 +127,10 @@ The Dashboard loads achievements inside a `forkJoin` with its other widgets, so 
 - API: [`AchievementController.java`](../src/main/java/com/succeshub/appdomain/controller/AchievementController.java)
 - Read model: [`AchievementServiceImpl.java`](../src/main/java/com/succeshub/appdomain/service/impl/AchievementServiceImpl.java)
 - Rule engine: [`AchievementEvaluatorImpl.java`](../src/main/java/com/succeshub/appdomain/service/impl/AchievementEvaluatorImpl.java)
+- Completion gate: [`TaskServiceImpl.java`](../src/main/java/com/succeshub/appdomain/service/impl/TaskServiceImpl.java)
 - Task trigger: [`GamificationEngineImpl.java`](../src/main/java/com/succeshub/appdomain/service/impl/GamificationEngineImpl.java)
 - Day-close trigger: [`DailyRitualServiceImpl.java`](../src/main/java/com/succeshub/appdomain/service/impl/DailyRitualServiceImpl.java)
+- Runtime threshold: [`GamificationProperties.java`](../src/main/java/com/succeshub/config/GamificationProperties.java)
 - Catalog migration: [`2026-06-14-02-seed-achivements.xml`](../src/main/resources/db/changelog/2026-06-14-02-seed-achivements.xml)
 - Threshold migration: [`2026-06-18-05-seed-rewards.xml`](../src/main/resources/db/changelog/2026-06-18-05-seed-rewards.xml)
 - Angular page: [`achievements.component.ts`](../frontend/src/app/features/achievements/achievements.component.ts)
