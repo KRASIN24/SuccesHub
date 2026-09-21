@@ -54,6 +54,20 @@
   color: var(--color-gold);
 }
 
+.stat-chip.rank {
+  /* keep existing layout */
+}
+
+.title-chip {
+  max-width: 160px;
+
+  .stat-val {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .icon-btn,
 .avatar-btn {
   position: relative;
@@ -83,6 +97,12 @@
 .avatar-btn {
   border: 1px solid var(--color-border-strong);
   background: var(--color-surface-2);
+}
+
+.avatar-btn--framed {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 1px rgba(232, 179, 62, 0.35), 0 0 12px rgba(232, 179, 62, 0.25);
+  color: var(--color-gold);
 }
 
 @media (max-width: 960px) {

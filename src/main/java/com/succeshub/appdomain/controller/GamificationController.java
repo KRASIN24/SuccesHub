@@ -93,17 +93,19 @@ public class GamificationController {
     }
 
     /**
-     * Optional celebration endpoint; streak integrity does not depend on this call.
+     * Optional celebration endpoint; settles pending days and seals today's Celebrate CTA.
      */
-    @Operation(summary = "Close day", description = "Optional celebration trigger; same logic as lazy close on GET /daily.")
-    @ApiResponse(responseCode = "200", description = "Close result returned")
+    @Operation(summary = "Celebrate / seal day",
+            description = "Settles any unprocessed days (same as lazy close) and marks today as celebrated "
+                    + "so the dashboard shows a sealed-day state instead of a no-op Celebrate button.")
+    @ApiResponse(responseCode = "200", description = "Close / celebrate result returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @PostMapping("/close-day")
     public ResponseEntity<CloseDayResultDto> closeDay(@AuthenticationPrincipal OidcUser principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.ok(dailyRitualService.closePendingDays(principal.getSubject()));
+        return ResponseEntity.ok(dailyRitualService.celebrateDay(principal.getSubject()));
     }
 
     /**

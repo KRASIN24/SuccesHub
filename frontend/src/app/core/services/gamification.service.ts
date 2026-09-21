@@ -9,6 +9,9 @@ import {
   GamificationClientConfig,
   InventoryItem,
   LootBox,
+  StreakActionResult,
+  StreakCalendar,
+  UseItemResult,
   WeeklyInsight,
   XpPreview,
 } from '../models/gamification.model';
@@ -79,5 +82,35 @@ export class GamificationService {
 
   equipInventoryItem(id: string): Observable<InventoryItem> {
     return this.api.post<InventoryItem>(`/gamification/inventory/${id}/equip`, {});
+  }
+
+  /** Consumes a utility card (banks a shield or grants XP from a boost). */
+  useInventoryItem(id: string): Observable<UseItemResult> {
+    return this.api.post<UseItemResult>(`/gamification/inventory/${id}/use`, {});
+  }
+
+  /** Fetches the streak activity calendar for a month (yyyy-MM); defaults to current month. */
+  getStreakCalendar(month?: string): Observable<StreakCalendar> {
+    return this.api.get<StreakCalendar>(
+      '/gamification/streak/calendar',
+      month ? { month } : undefined
+    );
+  }
+
+  adjustStreak(delta: number): Observable<StreakActionResult> {
+    return this.api.post<StreakActionResult>('/gamification/streak/adjust', { delta });
+  }
+
+  setStreak(value: number): Observable<StreakActionResult> {
+    return this.api.post<StreakActionResult>('/gamification/streak/set', { value });
+  }
+
+  resetStreak(): Observable<StreakActionResult> {
+    return this.api.post<StreakActionResult>('/gamification/streak/reset', {});
+  }
+
+  /** Spends a streak shield to protect a specific missed day (yyyy-MM-dd). */
+  shieldDay(date: string): Observable<StreakActionResult> {
+    return this.api.post<StreakActionResult>('/gamification/streak/shield', { date });
   }
 }

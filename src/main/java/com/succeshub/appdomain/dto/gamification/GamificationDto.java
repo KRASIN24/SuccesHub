@@ -66,7 +66,13 @@ public final class GamificationDto {
             int currentStreak,
             String streakTier,
             int streakShields,
+            /**
+             * True when today qualifies and the user has not yet pressed Celebrate.
+             * Distinct from streak settlement — {@code GET /daily} already lazy-closes past days.
+             */
             boolean pendingCelebrations,
+            /** True when today qualifies and Celebrate has already been acknowledged. */
+            boolean daySealed,
             List<TaskDto.Response> weeklyChallenges,
             List<TaskDto.Response> scheduledToday
     ) {}
@@ -146,4 +152,60 @@ public final class GamificationDto {
     public record ClientConfigDto(boolean enableLootDevGrants) {}
 
     public record ScheduleTasksRequest(List<UUID> taskIds) {}
+
+    /**
+     * A single calendar day within a streak calendar month.
+     *
+     * @param date   the calendar day
+     * @param status one of {@code COMPLETED}, {@code MISSED}, {@code SHIELDED}, {@code TODAY}, {@code FUTURE}
+     * @param completedTasks number of tasks completed on that day
+     */
+    public record StreakDayDto(LocalDate date, String status, int completedTasks) {}
+
+    /**
+     * A month of streak activity plus live streak headline figures.
+     *
+     * @param month             first day of the rendered month
+     * @param currentStreak     active consecutive-day streak
+     * @param streakTier        current tier ({@code NONE}/{@code BRONZE}/{@code SILVER}/{@code GOLD})
+     * @param streakShields     shields banked on the profile (auto-protection)
+     * @param shieldsAvailable  total shields the user can spend (banked + inventory stacks)
+     * @param minTasksPerDay    tasks required for a day to qualify
+     * @param days              per-day statuses for the month
+     */
+    public record StreakCalendarDto(
+            LocalDate month,
+            int currentStreak,
+            String streakTier,
+            int streakShields,
+            int shieldsAvailable,
+            int minTasksPerDay,
+            List<StreakDayDto> days
+    ) {}
+
+    /** Result of a streak mutation (manual adjust, reset, or shield application). */
+    public record StreakActionResultDto(
+            int currentStreak,
+            String streakTier,
+            int streakShields,
+            int shieldsAvailable,
+            String message
+    ) {}
+
+    /** Request to change the streak by a signed delta (dev/testing tool). */
+    public record AdjustStreakRequest(int delta) {}
+
+    /** Request to set the streak to an absolute non-negative value (dev/testing tool). */
+    public record SetStreakRequest(int value) {}
+
+    /** Request to protect a specific missed day by spending a streak shield. */
+    public record ShieldDayRequest(LocalDate date) {}
+
+    /** Result of consuming (using) a utility inventory card. */
+    public record UseItemResultDto(
+            String rewardKey,
+            String message,
+            int quantityRemaining,
+            ProfileDto updatedProfile
+    ) {}
 }

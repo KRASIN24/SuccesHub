@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProfileService } from '../../../core/services/profile.service';
+import { EquippedCosmeticsService } from '../../../core/services/equipped-cosmetics.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +13,7 @@ import { ProfileService } from '../../../core/services/profile.service';
 })
 export class NavbarComponent implements OnInit {
   protected readonly profileService = inject(ProfileService);
+  protected readonly cosmetics = inject(EquippedCosmeticsService);
 
   readonly sidebarOpen = input(false);
   menuToggled = output<void>();

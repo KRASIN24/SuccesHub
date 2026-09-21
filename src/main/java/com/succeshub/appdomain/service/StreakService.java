@@ -20,11 +20,21 @@ public interface StreakService {
     boolean applyDayOutcome(UserProfile profile, LocalDate day, boolean qualifying);
 
     /**
-     * Attempts to consume one streak shield from inventory, falling back to profile counter.
+     * Attempts to consume one streak shield: unbanked inventory stack first, then banked
+     * {@code profile.streakShields}. Inventory consumption does not also decrement the banked counter.
      *
      * @param userId  Keycloak subject ID
      * @param profile user profile
      * @return {@code true} when a shield was available and consumed
      */
     boolean consumeShield(String userId, UserProfile profile);
+
+    /**
+     * Total spendable shields = banked profile counter + shield inventory quantity.
+     *
+     * @param userId  Keycloak subject ID
+     * @param profile user profile
+     * @return combined available shields
+     */
+    int shieldsAvailable(String userId, UserProfile profile);
 }

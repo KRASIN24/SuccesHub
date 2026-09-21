@@ -93,6 +93,27 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("end") Instant end);
 
     /**
+     * Returns the completion timestamps of all tasks completed within an instant range.
+     * Used to bucket completions into calendar days for the streak calendar.
+     *
+     * @param userId Keycloak subject ID of the task owner
+     * @param start  inclusive lower bound on {@code completedAt}
+     * @param end    exclusive upper bound on {@code completedAt}
+     * @return completion instants within the range
+     */
+    @Query("""
+            SELECT t.completedAt FROM Task t
+            WHERE t.userId = :userId
+              AND t.status = com.succeshub.appdomain.model.Task.Status.DONE
+              AND t.completedAt >= :start
+              AND t.completedAt < :end
+            """)
+    List<Instant> findCompletedAtInRange(
+            @Param("userId") String userId,
+            @Param("start") Instant start,
+            @Param("end") Instant end);
+
+    /**
      * Finds weekly challenge flags from prior weeks that should be cleared.
      *
      * @param userId Keycloak subject ID of the task owner

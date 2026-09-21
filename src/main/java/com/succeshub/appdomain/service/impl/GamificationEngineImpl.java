@@ -31,6 +31,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GamificationEngineImpl implements GamificationEngine {
 
+    private static final int SURGE_TOKEN_XP = 50;
+
     private final UserProfileService userProfileService;
     private final UserProfileRepository profileRepository;
     private final XpEventRepository xpEventRepository;
@@ -53,23 +55,41 @@ public class GamificationEngineImpl implements GamificationEngine {
         userProfileService.resetDailyCountersIfNeeded(profile, timeUtil.today());
 
         int previousLevel = profile.getLevel();
-        XpCalculator.XpResult xp = xpCalculator.calculateForCompletion(task, profile, true);
+        XpCalculator.XpResult base = xpCalculator.calculateForCompletion(task, profile, true);
 
-        if (xp.totalXp() > 0) {
-            profile.addXp(xp.totalXp());
-            profile.setDailyXpEarned(profile.getDailyXpEarned() + xp.totalXp());
+        boolean doubleStrike = profile.isPendingDoubleStrike();
+        boolean surge = profile.isPendingSurgeToken();
+        int rawTotal = base.baseXp() + base.streakBonus() + base.firstTaskBonus()
+                + base.variableBonus() + base.challengeBonus();
+        if (doubleStrike) {
+            rawTotal *= 2;
+        }
+        int totalXp = xpCalculator.applyDailyCap(rawTotal, profile.getDailyXpEarned());
+        if (surge) {
+            totalXp += SURGE_TOKEN_XP;
+        }
+        if (doubleStrike) {
+            profile.setPendingDoubleStrike(false);
+        }
+        if (surge) {
+            profile.setPendingSurgeToken(false);
+        }
+
+        if (totalXp > 0) {
+            profile.addXp(totalXp);
+            profile.setDailyXpEarned(profile.getDailyXpEarned() + totalXp);
             profile.setFirstTaskCompletedToday(true);
         }
 
         XpEvent event = new XpEvent();
         event.setUserId(userId);
         event.setTaskId(task.getId());
-        event.setBaseXp(xp.baseXp());
-        event.setStreakBonus(xp.streakBonus());
-        event.setFirstTaskBonus(xp.firstTaskBonus());
-        event.setVariableBonus(xp.variableBonus());
-        event.setChallengeBonus(xp.challengeBonus());
-        event.setTotalXp(xp.totalXp());
+        event.setBaseXp(base.baseXp());
+        event.setStreakBonus(base.streakBonus());
+        event.setFirstTaskBonus(base.firstTaskBonus());
+        event.setVariableBonus(base.variableBonus());
+        event.setChallengeBonus(base.challengeBonus());
+        event.setTotalXp(totalXp);
         event.setDifficulty(task.getDifficulty());
         event.setWeeklyChallenge(task.isWeeklyChallenge());
         xpEventRepository.save(event);
@@ -93,15 +113,15 @@ public class GamificationEngineImpl implements GamificationEngine {
 
         int remaining = Math.max(0, properties.getDailyXpCap() - profile.getDailyXpEarned());
         XpBreakdownDto breakdown = new XpBreakdownDto(
-                xp.baseXp(), xp.streakBonus(), xp.firstTaskBonus(), xp.variableBonus(), xp.challengeBonus(),
-                xp.totalXp(), remaining);
+                base.baseXp(), base.streakBonus(), base.firstTaskBonus(), base.variableBonus(), base.challengeBonus(),
+                totalXp, remaining);
 
         return new RewardEventDto(
                 breakdown,
                 profile.getLevel() > previousLevel,
                 previousLevel,
                 profile.getLevel(),
-                xp.variableBonusTriggered(),
+                base.variableBonusTriggered(),
                 bossDamage,
                 unlocked,
                 lootBoxId

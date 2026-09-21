@@ -24,14 +24,25 @@
   <div class="dashboard">
     @if (profileService.profile(); as prof) {
       <section class="hero">
-        <div class="hex-level" [attr.aria-label]="'Current level ' + prof.level">
-          <div class="hex-outer">
+        <div
+          class="hex-level"
+          [class.hex-level--framed]="!!cosmetics.equippedFrame()"
+          [attr.aria-label]="'Current level ' + prof.level"
+        >
+          <div class="hex-outer" [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null">
             <div class="hex-inner">
               <span class="hex-level-value">{{ prof.level }}</span>
               <span class="hex-level-label">Current Level</span>
             </div>
           </div>
+          @if (cosmetics.equippedFrame(); as frame) {
+            <p class="hero-frame-label">{{ frame.label }}</p>
+          }
         </div>
+
+        @if (cosmetics.equippedTitle(); as title) {
+          <p class="hero-title">{{ title.label }}</p>
+        }
 
         <div class="xp-block">
           <div class="xp-head">
@@ -69,10 +80,21 @@
 
     @if (daily()?.pendingCelebrations) {
       <section class="celebrate-banner">
-        <p>Qualifying day complete — celebrate your progress!</p>
+        <div>
+          <p class="celebrate-title">Qualifying day complete</p>
+          <p class="celebrate-copy">Seal today to lock the beat — past days are already settled by the daily sync.</p>
+        </div>
         <button type="button" class="celebrate-btn" [disabled]="celebrating()" (click)="celebrateDay()">
-          {{ celebrating() ? 'Celebrating…' : 'Celebrate' }}
+          {{ celebrating() ? 'Sealing…' : 'Seal the day' }}
         </button>
+      </section>
+    } @else if (daily()?.daySealed) {
+      <section class="celebrate-banner celebrate-banner--sealed">
+        <div>
+          <p class="celebrate-title">Day sealed</p>
+          <p class="celebrate-copy">Streak progress is locked in. Keep executing — tomorrow’s ritual will count this day.</p>
+        </div>
+        <span class="sealed-chip">Sealed</span>
       </section>
     }
 
@@ -136,14 +158,29 @@
           <section class="panel-block">
             <div class="block-head">
               <h2 class="block-title">Weekly Challenges</h2>
+              <a routerLink="/tasks" class="link-muted">Open Strategy Canvas →</a>
             </div>
             <ul class="task-list">
               @for (task of daily()?.weeklyChallenges ?? []; track task.id) {
                 <li class="task-item">
                   <div class="task-body">
-                    <p class="task-title">{{ task.title }} <span class="weekly-badge">Weekly</span></p>
+                    <p class="task-title">
+                      <a class="task-deep-link" [routerLink]="['/tasks']" [queryParams]="{ focus: task.id }">
+                        {{ task.title }}
+                      </a>
+                      <span class="weekly-badge">Weekly</span>
+                    </p>
+                    @if (task.description) {
+                      <p class="task-detail">{{ task.description }}</p>
+                    }
                   </div>
-                  <span class="xp-pill">+50% XP</span>
+                  @if (task.status === 'DONE') {
+                    <span class="xp-pill subtle-pill">Done</span>
+                  } @else {
+                    <button type="button" class="schedule-btn" (click)="completeWeeklyChallenge(task)">
+                      Complete · +50% XP
+                    </button>
+                  }
                 </li>
               }
             </ul>

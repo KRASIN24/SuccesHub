@@ -1,0 +1,140 @@
+@if (loading()) {
+  <div class="page page--state">
+    <app-loading-skeleton height="480px"></app-loading-skeleton>
+  </div>
+} @else if (error()) {
+  <div class="page page--state">
+    <app-error-state [message]="error() || ''" (retry)="load()"></app-error-state>
+  </div>
+} @else {
+  <div class="page">
+    <main class="main">
+      <section class="profile-hero">
+        <div class="profile-hero__avatar">{{ userInitials() }}</div>
+        <div class="profile-hero__copy">
+          <p class="profile-hero__eyebrow">Sovereign Profile</p>
+          <h1 class="profile-hero__title">{{ profile()?.displayName || user()?.email }}</h1>
+          @if (profile(); as p) {
+            <p class="profile-hero__meta">Level {{ p.level }} · {{ p.currentXp }} / {{ p.nextLevelXp }} XP</p>
+            <div class="profile-hero__xp-track">
+              <div class="profile-hero__xp-fill" [style.width.%]="xpPercent()"></div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="profile-stats">
+        @for (stat of stats(); track stat.label) {
+          <div class="profile-stat">
+            <span class="material-symbols-outlined profile-stat__icon">{{ stat.icon }}</span>
+            <div class="profile-stat__text">
+              <p class="profile-stat__label">{{ stat.label }}</p>
+              <p class="profile-stat__value">{{ stat.value }}</p>
+            </div>
+          </div>
+        }
+      </section>
+
+      <app-streak-panel
+        [cards]="utilityStacks()"
+        (changed)="onStreakChanged()"
+      ></app-streak-panel>
+
+      <section class="inventory">
+        <div class="inventory__heading">
+          <p class="inventory__eyebrow">Your Collection</p>
+          <h2 class="inventory__title">Vault Inventory</h2>
+          <p class="inventory__count">{{ totalItems() }} item{{ totalItems() === 1 ? '' : 's' }}</p>
+        </div>
+
+        @if (totalItems() === 0) {
+          <div class="inventory__empty">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <p>Nothing here yet. Open a cache to start your collection.</p>
+            <a routerLink="/loot-boxes" class="inventory__cta">Go to Celestial Cache</a>
+          </div>
+        } @else {
+          @if (utilityStacks().length > 0) {
+            <div class="inventory__group">
+              <h3 class="inventory__group-label">Utility</h3>
+              <div class="inventory__utility-grid">
+                @for (stack of utilityStacks(); track stack.id) {
+                  <article class="inventory-item" [ngClass]="revealCardClass(stack.reward.rarity)">
+                    <span
+                      class="material-symbols-outlined inventory-item__icon"
+                      [ngClass]="revealRarityTextClass(stack.reward.rarity)"
+                    >
+                      {{ stack.reward.icon }}
+                    </span>
+                    <div class="inventory-item__text">
+                      <p class="inventory-item__label">{{ stack.reward.label }}</p>
+                      @if (stack.reward.effect) {
+                        <p class="inventory-item__meta">{{ stack.reward.effect }}</p>
+                      }
+                    </div>
+                    <span class="inventory-item__qty">×{{ stack.quantity }}</span>
+                  </article>
+                }
+              </div>
+            </div>
+          }
+
+          @if (titleStacks().length > 0) {
+            <div class="inventory__group">
+              <h3 class="inventory__group-label">Titles</h3>
+              <div class="inventory__chip-row">
+                @for (stack of titleStacks(); track stack.id) {
+                  <button
+                    type="button"
+                    class="inventory-chip"
+                    [class.inventory-chip--equipped]="stack.equipped"
+                    [ngClass]="revealCardClass(stack.reward.rarity)"
+                    [disabled]="busy()"
+                    (click)="equip(stack)"
+                  >
+                    <span class="material-symbols-outlined inventory-chip__icon">
+                      {{ stack.equipped ? 'check_circle' : stack.reward.icon }}
+                    </span>
+                    <span class="inventory-chip__label">{{ stack.reward.label }}</span>
+                    @if (stack.quantity > 1) {
+                      <span class="inventory-chip__qty">×{{ stack.quantity }}</span>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (frameStacks().length > 0) {
+            <div class="inventory__group">
+              <h3 class="inventory__group-label">Avatar Frames</h3>
+              <div class="inventory__frame-grid">
+                @for (stack of frameStacks(); track stack.id) {
+                  <button
+                    type="button"
+                    class="inventory-frame"
+                    [class.inventory-frame--equipped]="stack.equipped"
+                    [ngClass]="revealCardClass(stack.reward.rarity)"
+                    [disabled]="busy()"
+                    (click)="equip(stack)"
+                  >
+                    <div class="inventory-frame__hex">
+                      <span
+                        class="material-symbols-outlined inventory-frame__icon"
+                        [ngClass]="revealRarityTextClass(stack.reward.rarity)"
+                      >
+                        {{ stack.reward.icon }}
+                      </span>
+                    </div>
+                    <span class="inventory-frame__label">{{ stack.reward.label }}</span>
+                    <span class="inventory-frame__status">{{ stack.equipped ? 'Equipped' : 'Tap to equip' }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        }
+      </section>
+    </main>
+  </div>
+}
