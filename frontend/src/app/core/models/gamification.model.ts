@@ -55,6 +55,8 @@ export interface DailyStatus {
   streakTier: string;
   streakShields: number;
   pendingCelebrations: boolean;
+  /** Qualifying day already acknowledged via Celebrate. */
+  daySealed: boolean;
   weeklyChallenges: Task[];
   scheduledToday: Task[];
 }
@@ -128,4 +130,39 @@ export interface InventoryItem {
 
 export interface GamificationClientConfig {
   enableLootDevGrants: boolean;
+}
+
+export type StreakDayStatus = 'COMPLETED' | 'MISSED' | 'SHIELDED' | 'TODAY' | 'FUTURE';
+
+export interface StreakDay {
+  /** ISO date string (yyyy-MM-dd). */
+  date: string;
+  status: StreakDayStatus;
+  completedTasks: number;
+}
+
+export interface StreakCalendar {
+  /** First day of the rendered month (yyyy-MM-dd). */
+  month: string;
+  currentStreak: number;
+  streakTier: string;
+  streakShields: number;
+  shieldsAvailable: number;
+  minTasksPerDay: number;
+  days: StreakDay[];
+}
+
+export interface StreakActionResult {
+  currentStreak: number;
+  streakTier: string;
+  streakShields: number;
+  shieldsAvailable: number;
+  message: string;
+}
+
+export interface UseItemResult {
+  rewardKey: string;
+  message: string;
+  quantityRemaining: number;
+  updatedProfile: import('./profile.model').UserProfile;
 }

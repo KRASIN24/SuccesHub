@@ -1,6 +1,5 @@
 package com.succeshub.appdomain.service.impl;
 
-import com.succeshub.appdomain.model.RewardDefinition;
 import com.succeshub.appdomain.model.UserInventory;
 import com.succeshub.appdomain.model.UserProfile;
 import com.succeshub.appdomain.repository.RewardDefinitionRepository;
@@ -12,11 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-// V1: grace period and day boundaries use server timezone (ZoneId.systemDefault()).
-// User timezone support deferred to V2 — do not "fix" by switching to user TZ without a profile timezone field.
+/**
+ * Default streak outcome and shield accounting. Inventory shields and banked
+ * {@link UserProfile#getStreakShields()} are separate pools — spending inventory does not
+ * also decrement the banked counter (and vice versa).
+ *
+ * <p>V1: grace period and day boundaries use server timezone ({@code ZoneId.systemDefault()}).
+ * User timezone support deferred to V2.
+ */
 @Service
 @RequiredArgsConstructor
 public class StreakServiceImpl implements StreakService {
+
+    private static final String STREAK_SHIELD_KEY = "STREAK_SHIELD";
 
     private final UserInventoryRepository inventoryRepository;
     private final RewardDefinitionRepository rewardDefinitionRepository;
@@ -29,20 +36,22 @@ public class StreakServiceImpl implements StreakService {
             profile.setLastActiveDate(day);
             return false;
         }
-        return consumeShield(profile.getKeycloakId(), profile);
+        if (consumeShield(profile.getKeycloakId(), profile)) {
+            return true;
+        }
+        profile.setCurrentStreak(0);
+        profile.setStreakTier(UserProfile.StreakTier.NONE);
+        return false;
     }
 
     @Override
     @Transactional
     public boolean consumeShield(String userId, UserProfile profile) {
-        var shieldDef = rewardDefinitionRepository.findByKey("STREAK_SHIELD");
+        var shieldDef = rewardDefinitionRepository.findByKey(STREAK_SHIELD_KEY);
         if (shieldDef.isPresent()) {
             var inv = inventoryRepository.findByUserIdAndRewardDefinitionId(userId, shieldDef.get().getId());
             if (inv.isPresent() && inv.get().getQuantity() > 0) {
-                UserInventory stack = inv.get();
-                stack.setQuantity(stack.getQuantity() - 1);
-                inventoryRepository.save(stack);
-                profile.setStreakShields(Math.max(0, profile.getStreakShields() - 1));
+                decrementStack(inv.get());
                 return true;
             }
         }
@@ -50,8 +59,26 @@ public class StreakServiceImpl implements StreakService {
             profile.setStreakShields(profile.getStreakShields() - 1);
             return true;
         }
-        profile.setCurrentStreak(0);
-        profile.setStreakTier(UserProfile.StreakTier.NONE);
         return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int shieldsAvailable(String userId, UserProfile profile) {
+        int inventory = rewardDefinitionRepository.findByKey(STREAK_SHIELD_KEY)
+                .flatMap(def -> inventoryRepository.findByUserIdAndRewardDefinitionId(userId, def.getId()))
+                .map(UserInventory::getQuantity)
+                .orElse(0);
+        return profile.getStreakShields() + inventory;
+    }
+
+    private void decrementStack(UserInventory item) {
+        int remaining = Math.max(0, item.getQuantity() - 1);
+        if (remaining == 0) {
+            inventoryRepository.delete(item);
+        } else {
+            item.setQuantity(remaining);
+            inventoryRepository.save(item);
+        }
     }
 }

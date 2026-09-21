@@ -137,7 +137,12 @@
             }
 
             @for (task of column.tasks; track task.id) {
-              <article class="quest-card" [class.is-done]="task.status === 'DONE'">
+              <article
+                class="quest-card"
+                [class.is-done]="task.status === 'DONE'"
+                [class.is-focused]="focusTaskId() === task.id"
+                [attr.id]="'task-' + task.id"
+              >
                 <button
                   type="button"
                   class="checkbox"

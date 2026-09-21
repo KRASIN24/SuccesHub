@@ -8,22 +8,6 @@
     <span class="material-icons">close</span>
   </button>
 
-  <div class="sidebar-profile">
-    <div class="avatar-shield" aria-hidden="true">
-      <span class="material-icons">shield</span>
-    </div>
-    <div class="profile-meta">
-      <p class="profile-name">{{ displayName() }}</p>
-      <p class="profile-rank">
-        @if (profileService.profile(); as prof) {
-          Level {{ prof.level }} · {{ prof.currentStreak }}d streak
-        } @else {
-          Loading profile…
-        }
-      </p>
-    </div>
-  </div>
-
   <div class="nav-section">
     @for (item of navItems; track item.route) {
       <a

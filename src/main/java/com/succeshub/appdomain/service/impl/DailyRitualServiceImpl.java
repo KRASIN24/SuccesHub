@@ -6,7 +6,9 @@ import com.succeshub.appdomain.dto.gamification.GamificationDto.CloseDayResultDt
 import com.succeshub.appdomain.dto.gamification.GamificationDto.DailyStatusDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.ForecastDto;
 import com.succeshub.appdomain.model.Task;
+import com.succeshub.appdomain.model.UserLootBox;
 import com.succeshub.appdomain.model.UserProfile;
+import com.succeshub.appdomain.repository.StreakDayOverrideRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.repository.UserProfileRepository;
 import com.succeshub.appdomain.service.AchievementEvaluator;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class DailyRitualServiceImpl implements DailyRitualService {
     private final UserProfileService userProfileService;
     private final UserProfileRepository profileRepository;
     private final TaskRepository taskRepository;
+    private final StreakDayOverrideRepository overrideRepository;
     private final StreakService streakService;
     private final LootBoxService lootBoxService;
     private final AchievementEvaluator achievementEvaluator;
@@ -43,6 +47,16 @@ public class DailyRitualServiceImpl implements DailyRitualService {
     @Override
     @Transactional
     public CloseDayResultDto closePendingDays(String userId) {
+        return closePendingDaysInternal(userId, false);
+    }
+
+    @Override
+    @Transactional
+    public CloseDayResultDto celebrateDay(String userId) {
+        return closePendingDaysInternal(userId, true);
+    }
+
+    private CloseDayResultDto closePendingDaysInternal(String userId, boolean acknowledgeCelebrate) {
         UserProfile profile = userProfileService.requireProfile(userId);
         userProfileService.resetDailyCountersIfNeeded(profile, timeUtil.today());
 
@@ -54,31 +68,50 @@ public class DailyRitualServiceImpl implements DailyRitualService {
         LocalDate yesterday = today.minusDays(1);
         LocalDate cursor = profile.getLastProcessedDay() == null ? yesterday : profile.getLastProcessedDay().plusDays(1);
 
-        if (cursor.isAfter(yesterday)) {
-            return new CloseDayResultDto(streakBefore, profile.getCurrentStreak(),
-                    tierName(profile), List.of(), List.of(), true);
+        boolean alreadyClosed = cursor.isAfter(yesterday);
+        if (!alreadyClosed) {
+            while (!cursor.isAfter(yesterday)) {
+                boolean qualifying = isQualifyingDay(userId, cursor);
+                if (!qualifying && cursor.equals(yesterday) && isGraceActive(userId, today)) {
+                    qualifying = true;
+                }
+                streakService.applyDayOutcome(profile, cursor, qualifying);
+                UUID loot = lootBoxService.checkStreakMilestone(userId, profile.getCurrentStreak());
+                if (loot != null) {
+                    lootBoxes.add(loot);
+                }
+                if (cursor.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                    UUID weekly = lootBoxService.checkWeeklyLoot(
+                            userId, profile, timeUtil.mondayOfWeek(cursor));
+                    if (weekly != null) {
+                        lootBoxes.add(weekly);
+                    }
+                }
+                profile.setLastProcessedDay(cursor);
+                cursor = cursor.plusDays(1);
+            }
+
+            long tasksToday = taskRepository.countCompletedInRange(
+                    userId, timeUtil.startOfDay(today), timeUtil.endOfDay(today));
+            List<AchievementDto> unlocked = achievementEvaluator.evaluateAndUnlock(userId, profile, tasksToday);
+            achievements.addAll(unlocked);
+            for (AchievementDto ignored : unlocked) {
+                lootBoxes.add(lootBoxService.grantLootBox(userId, UserLootBox.Source.ACHIEVEMENT));
+            }
         }
 
-        while (!cursor.isAfter(yesterday)) {
-            boolean qualifying = isQualifyingDay(userId, cursor);
-            if (!qualifying && cursor.equals(yesterday) && isGraceActive(userId, today)) {
-                qualifying = true;
-            }
-            streakService.applyDayOutcome(profile, cursor, qualifying);
-            UUID loot = lootBoxService.checkStreakMilestone(userId, profile.getCurrentStreak());
-            if (loot != null) {
-                lootBoxes.add(loot);
-            }
-            profile.setLastProcessedDay(cursor);
-            cursor = cursor.plusDays(1);
+        if (acknowledgeCelebrate) {
+            profile.setLastCelebratedDay(today);
         }
-
-        long tasksToday = taskRepository.countCompletedInRange(
-                userId, timeUtil.startOfDay(today), timeUtil.endOfDay(today));
-        achievements.addAll(achievementEvaluator.evaluateAndUnlock(userId, profile, tasksToday));
         profileRepository.save(profile);
 
-        return new CloseDayResultDto(streakBefore, profile.getCurrentStreak(), tierName(profile), achievements, lootBoxes, false);
+        return new CloseDayResultDto(
+                streakBefore,
+                profile.getCurrentStreak(),
+                tierName(profile),
+                achievements,
+                lootBoxes,
+                alreadyClosed);
     }
 
     @Override
@@ -96,7 +129,9 @@ public class DailyRitualServiceImpl implements DailyRitualService {
         long completedToday = taskRepository.countCompletedInRange(
                 userId, timeUtil.startOfDay(today), timeUtil.endOfDay(today));
         int remaining = Math.max(0, properties.getDailyXpCap() - profile.getDailyXpEarned());
-        boolean pendingCelebrations = completedToday >= properties.getMinTasksForQualifyingDay();
+        boolean qualifying = completedToday >= properties.getMinTasksForQualifyingDay();
+        boolean daySealed = qualifying && today.equals(profile.getLastCelebratedDay());
+        boolean pendingCelebrations = qualifying && !daySealed;
 
         return new DailyStatusDto(
                 scheduled.size(),
@@ -106,6 +141,7 @@ public class DailyRitualServiceImpl implements DailyRitualService {
                 tierName(profile),
                 profile.getStreakShields(),
                 pendingCelebrations,
+                daySealed,
                 weekly.stream().map(taskMapper::toDto).toList(),
                 scheduled.stream().map(taskMapper::toDto).toList()
         );
@@ -128,6 +164,10 @@ public class DailyRitualServiceImpl implements DailyRitualService {
     }
 
     private boolean isQualifyingDay(String userId, LocalDate day) {
+        // A day manually protected with a streak shield counts as qualifying.
+        if (overrideRepository.existsByUserIdAndDay(userId, day)) {
+            return true;
+        }
         long count = taskRepository.countCompletedInRange(
                 userId, timeUtil.startOfDay(day), timeUtil.endOfDay(day));
         return count >= properties.getMinTasksForQualifyingDay();
