@@ -3,7 +3,7 @@ import { GamificationService } from './gamification.service';
 import { InventoryItem, RewardItem } from '../models/gamification.model';
 
 /**
- * Shared equipped TITLE / FRAME cosmetics for dashboard hero and navbar chrome.
+ * Shared equipped TITLE / FRAME cosmetics for profile hero, dashboard, and navbar chrome.
  */
 @Injectable({
   providedIn: 'root',

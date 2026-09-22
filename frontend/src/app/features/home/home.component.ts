@@ -18,11 +18,18 @@ import { MarketData } from '../../core/models/market.model';
 import { DailyQuote, LunarData } from '../../core/models/lunar.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [DecimalPipe, RouterLink, LoadingSkeletonComponent, ErrorStateComponent],
+  imports: [
+    DecimalPipe,
+    RouterLink,
+    LoadingSkeletonComponent,
+    ErrorStateComponent,
+    FrameOrnamentsComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

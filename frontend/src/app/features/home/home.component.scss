@@ -14,11 +14,24 @@
 .hex-level {
   filter: drop-shadow(0 0 28px rgba(232, 179, 62, 0.35));
   text-align: center;
+  overflow: visible;
+}
+
+.hex-level__stage {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  overflow: visible;
+}
+
+.hex-level--framed {
+  filter: drop-shadow(0 0 36px rgba(232, 179, 62, 0.5));
 }
 
 .hex-level--framed .hex-outer {
   background: linear-gradient(160deg, #f6cf63, #8d6e1a);
-  box-shadow: 0 0 0 3px rgba(246, 207, 99, 0.35), 0 0 24px rgba(232, 179, 62, 0.4);
+  box-shadow: 0 0 0 4px rgba(246, 207, 99, 0.4), 0 0 32px rgba(232, 179, 62, 0.5);
+  padding: 3px;
 }
 
 .hero-frame-label {

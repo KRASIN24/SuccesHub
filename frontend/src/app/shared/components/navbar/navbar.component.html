@@ -38,13 +38,38 @@
     <button type="button" class="icon-btn" aria-label="Notifications">
       <span class="material-icons">notifications_none</span>
     </button>
+
     <a
-      class="avatar-btn"
-      [class.avatar-btn--framed]="!!cosmetics.equippedFrame()"
+      class="nav-avatar"
+      [class.nav-avatar--framed]="!!cosmetics.equippedFrame()"
       routerLink="/profile"
-      [attr.aria-label]="cosmetics.equippedFrame() ? 'Account · ' + cosmetics.equippedFrame()!.label : 'Account'"
+      [attr.aria-label]="
+        cosmetics.equippedFrame()
+          ? 'Account · ' + cosmetics.equippedFrame()!.label
+          : 'Account'
+      "
     >
-      <span class="material-icons">{{ cosmetics.equippedFrame()?.icon || 'person' }}</span>
+      <div
+        class="nav-avatar__stage"
+        [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null"
+      >
+        <app-frame-ornaments
+          [frameKey]="cosmetics.equippedFrame()?.key ?? null"
+          size="sm"
+        />
+        <div
+          class="hex-outer nav-avatar__outer"
+          [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null"
+        >
+          <div class="nav-avatar__inner">
+            @if (auth.userInitials(); as initials) {
+              <span class="nav-avatar__initials">{{ initials }}</span>
+            } @else {
+              <span class="material-icons nav-avatar__fallback">person</span>
+            }
+          </div>
+        </div>
+      </div>
     </a>
   </div>
 </header>

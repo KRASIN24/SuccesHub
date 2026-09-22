@@ -29,10 +29,16 @@
           [class.hex-level--framed]="!!cosmetics.equippedFrame()"
           [attr.aria-label]="'Current level ' + prof.level"
         >
-          <div class="hex-outer" [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null">
-            <div class="hex-inner">
-              <span class="hex-level-value">{{ prof.level }}</span>
-              <span class="hex-level-label">Current Level</span>
+          <div class="hex-level__stage" [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null">
+            <app-frame-ornaments
+              [frameKey]="cosmetics.equippedFrame()?.key ?? null"
+              size="lg"
+            />
+            <div class="hex-outer" [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null">
+              <div class="hex-inner">
+                <span class="hex-level-value">{{ prof.level }}</span>
+                <span class="hex-level-label">Current Level</span>
+              </div>
             </div>
           </div>
           @if (cosmetics.equippedFrame(); as frame) {
