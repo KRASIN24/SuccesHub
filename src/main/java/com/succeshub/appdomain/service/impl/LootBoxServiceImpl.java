@@ -129,7 +129,7 @@ public class LootBoxServiceImpl implements LootBoxService {
     @Override
     @Transactional(readOnly = true)
     public List<InventoryItemDto> getInventory(String userId) {
-        return inventoryRepository.findByUserId(userId).stream()
+        return inventoryRepository.findByUserIdOrderByIdAsc(userId).stream()
                 .map(i -> new InventoryItemDto(i.getId(), toRewardItem(i.getRewardDefinition()), i.getQuantity(), i.isEquipped()))
                 .toList();
     }
@@ -149,7 +149,7 @@ public class LootBoxServiceImpl implements LootBoxService {
 
         boolean willEquip = !item.isEquipped();
         if (willEquip) {
-            for (UserInventory other : inventoryRepository.findByUserId(userId)) {
+            for (UserInventory other : inventoryRepository.findByUserIdOrderByIdAsc(userId)) {
                 if (other.getRewardDefinition().getType() == type && other.isEquipped() && !other.getId().equals(item.getId())) {
                     other.setEquipped(false);
                     inventoryRepository.save(other);
