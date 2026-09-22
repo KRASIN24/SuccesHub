@@ -1,22 +1,24 @@
 :host {
   display: block;
-  --bg: #141317;
-  --panel: #211f23;
-  --panel-alt: #2b292d;
-  --border-faint: rgba(255, 255, 255, 0.05);
-  --gold: #d29f22;
-  --gold-bright: #f5be42;
-  --text-primary: #e7e1e6;
-  --text-white: #ffffff;
-  --text-muted: #a3a3a3;
-  --text-dim: #737373;
+  /* Match shell / dashboard palette (global.css) — no separate page wash */
+  --bg: var(--color-app-bg, #0a0a0c);
+  --panel: var(--color-surface, #141417);
+  --panel-alt: var(--color-surface-2, #1a1a1e);
+  --border-faint: var(--color-border, rgba(255, 255, 255, 0.07));
+  --gold: var(--color-gold, #e8b33e);
+  --gold-bright: var(--color-gold-bright, #f6cf63);
+  --text-primary: var(--color-text, #ededee);
+  --text-white: var(--color-text, #ededee);
+  --text-muted: var(--color-text-muted, #9a9aa2);
+  --text-dim: var(--color-text-faint, #62626a);
   --hero-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--text-primary);
 }
 
 .page {
-  background: var(--bg);
+  /* Transparent so the app shell (--color-app-bg) shows through like Home/Tasks */
+  background: transparent;
   min-height: 100%;
 }
 
@@ -28,218 +30,351 @@
 
 .main {
   width: 100%;
-  max-width: 1024px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 64px 24px 120px;
+  padding: 48px 24px 120px;
   display: flex;
   flex-direction: column;
-  gap: 64px;
+  gap: 48px;
 }
 
 .profile-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 20px;
+  width: 100%;
 }
 
-.profile-hero__avatar {
-  width: 88px;
-  height: 88px;
-  border-radius: 9999px;
-  border: 2px solid rgba(245, 190, 66, 0.35);
-  background: linear-gradient(180deg, rgba(245, 190, 66, 0.15), rgba(93, 0, 24, 0.25));
+.profile-hero__card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 40px;
+  border-radius: 40px;
+  background:
+    linear-gradient(19deg, rgba(245, 190, 66, 0.05) 0%, rgba(245, 190, 66, 0) 50%),
+    rgba(33, 31, 35, 0.45);
+  border: 1px solid rgba(245, 190, 66, 0.08);
+  backdrop-filter: blur(6px);
+  overflow: visible;
+}
+
+.profile-hero__hex {
+  position: relative;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 24px rgba(232, 179, 62, 0.28));
+  overflow: visible;
+}
+
+.profile-hero__hex-outer {
+  width: 160px;
+  height: 186px;
+  clip-path: var(--hero-hex-clip);
+  background: linear-gradient(160deg, #f6cf63, #b98520);
+  padding: 2px;
+  display: grid;
+  place-items: center;
+}
+
+.profile-hero__hex--framed .profile-hero__hex-outer {
+  background: linear-gradient(160deg, #f6cf63, #8d6e1a);
+  box-shadow:
+    0 0 0 4px rgba(246, 207, 99, 0.35),
+    0 0 36px rgba(232, 179, 62, 0.45);
+}
+
+.profile-hero__hex-inner {
+  width: 100%;
+  height: 100%;
+  clip-path: var(--hero-hex-clip);
+  background: radial-gradient(circle at 50% 35%, #2a2418, #141317 72%);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.profile-hero__initials {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 28px;
+  font-size: 48px;
   font-weight: 700;
+  line-height: 1;
   color: var(--gold-bright);
 }
 
-.profile-hero__copy {
-  max-width: 420px;
+.profile-hero__body {
+  flex: 1;
+  min-width: 0;
+  padding-left: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.profile-hero__eyebrow {
-  margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.35em;
+.profile-hero__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-hero__rank {
+  display: inline-flex;
+  padding: 5px 13px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 190, 66, 0.2);
+  background: rgba(245, 190, 66, 0.1);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold-bright);
+  color: var(--color-primary, #f5be42);
 }
 
-.profile-hero__title {
-  margin: 8px 0 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 28px;
+.profile-hero__uid {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 40%, transparent);
+}
+
+.profile-hero__name {
+  margin: 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: clamp(2rem, 4vw, 3.75rem);
   font-weight: 700;
-  color: var(--text-white);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-on-surface, #e7e1e6);
 }
 
-.profile-hero__meta {
-  margin: 8px 0 0;
-  font-size: 13px;
-  color: var(--text-muted);
+.profile-hero__ascend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 32px;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.profile-hero__level-block {
+  flex-shrink: 0;
+}
+
+.profile-hero__level-label {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.6;
+}
+
+.profile-hero__level-value {
+  margin: 4px 0 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 40px;
+  color: var(--color-primary, #f5be42);
+}
+
+.profile-hero__xp-block {
+  flex: 1;
+  min-width: 180px;
+  max-width: 352px;
+  padding-bottom: 8px;
 }
 
 .profile-hero__xp-track {
-  margin-top: 12px;
   width: 100%;
   height: 4px;
   border-radius: 9999px;
-  background: #262626;
+  background: var(--color-surface-container-highest, #363438);
   overflow: hidden;
 }
 
 .profile-hero__xp-fill {
   height: 100%;
   border-radius: 9999px;
-  background: var(--gold-bright);
+  background: var(--color-primary, #f5be42);
+  box-shadow: 0 0 15px rgba(245, 190, 66, 0.5);
 }
 
-.profile-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 40px;
-}
-
-.profile-stat {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  border: 1px solid var(--border-faint);
-  background: var(--panel);
-}
-
-.profile-stat__icon {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  border: 1px solid rgba(245, 190, 66, 0.25);
-  background: rgba(245, 190, 66, 0.08);
-  color: var(--gold-bright);
-  font-size: 24px;
-}
-
-.profile-stat__text {
-  min-width: 0;
-}
-
-.profile-stat__label {
-  margin: 0 0 2px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
-  line-height: 15px;
-  letter-spacing: 1.2px;
+.profile-hero__xp-caption {
+  margin: 8px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  text-align: right;
+  color: var(--color-on-surface-variant, #d3c5af);
 }
 
-.profile-stat__value {
+.profile-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.overview-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--color-surface-container, #211f23);
+  border: 1px solid var(--border-faint);
+}
+
+.overview-stat__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.overview-stat__icon {
+  font-size: 22px;
+  color: var(--gold-bright);
+}
+
+.overview-stat__category {
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.4;
+}
+
+.overview-stat__value {
+  margin: 16px 0 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 36px;
   font-weight: 700;
-  font-size: 24px;
-  line-height: 30px;
-  color: var(--text-white);
+  line-height: 40px;
+  color: var(--color-on-surface, #e7e1e6);
+}
+
+.overview-stat__suffix {
+  margin-left: 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.3;
+}
+
+.overview-stat__label {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.6;
+}
+
+@media (max-width: 900px) {
+  .profile-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
-  .profile-stats {
+  .profile-hero__card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    border-radius: 28px;
+  }
+
+  .profile-hero__body {
+    padding-left: 0;
+    padding-top: 28px;
+    width: 100%;
+  }
+
+  .profile-hero__hex-outer {
+    width: 120px;
+    height: 140px;
+  }
+
+  .profile-hero__initials {
+    font-size: 36px;
+  }
+
+  .profile-overview {
     grid-template-columns: 1fr;
+  }
+
+  .overview-stat {
+    padding: 24px;
   }
 }
 
 .inventory {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 32px;
 }
 
 .inventory__heading {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-}
-
-.inventory__eyebrow {
-  margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: 4.2px;
-  text-transform: uppercase;
-  color: var(--gold-bright);
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .inventory__title {
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
   font-weight: 700;
-  font-size: 30px;
-  line-height: 36px;
-  letter-spacing: -0.75px;
-  text-transform: uppercase;
-  color: var(--text-white);
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  color: var(--color-on-surface, #e7e1e6);
 }
 
-.inventory__count {
+.inventory__sub {
   margin: 0;
-  font-size: 12px;
-  line-height: 18px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-dim);
+  font-size: 13px;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.7;
 }
 
 .inventory__empty {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  padding: 64px 24px;
+  padding: 40px 32px;
   border: 1px solid var(--border-faint);
-  border-radius: 16px;
-  background: var(--panel);
-  text-align: center;
+  border-radius: 24px;
+  background: var(--color-surface-container, #211f23);
 
   .material-symbols-outlined {
-    font-size: 56px;
-    color: rgba(163, 163, 163, 0.25);
+    font-size: 40px;
+    color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 35%, transparent);
   }
 
   p {
     margin: 0;
-    max-width: 360px;
-    font-size: 15px;
+    max-width: 420px;
+    font-size: 14px;
     line-height: 22px;
     color: var(--text-muted);
   }
 }
 
 .inventory__cta {
-  margin-top: 8px;
-  padding: 10px 20px;
+  margin-top: 4px;
+  padding: 9px 20px;
   border-radius: 9999px;
-  border: 1px solid rgba(245, 190, 66, 0.35);
+  border: 1px solid rgba(245, 190, 66, 0.25);
   color: var(--gold-bright);
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   text-decoration: none;
   transition: background 0.15s ease;
@@ -255,64 +390,28 @@
   gap: 16px;
 }
 
+.inventory__group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .inventory__group-label {
   margin: 0;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 16px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.5;
 }
 
-.inventory__utility-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.inventory-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 14px;
-  border: 1px solid var(--border-faint);
-  background: var(--panel-alt);
-}
-
-.inventory-item__icon {
-  font-size: 30px;
-}
-
-.inventory-item__text {
-  flex: 1;
-  min-width: 0;
-  text-align: left;
-}
-
-.inventory-item__label {
+.inventory__group-meta {
   margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-white);
-}
-
-.inventory-item__meta {
-  margin: 4px 0 0;
   font-size: 12px;
-  line-height: 17px;
-  color: var(--text-muted);
-}
-
-.inventory-item__qty {
-  flex-shrink: 0;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  background: #262626;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.55;
 }
 
 .inventory__chip-row {
@@ -325,146 +424,163 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 18px;
-  border-radius: 9999px;
+  padding: 12px 18px;
+  border-radius: 24px;
   border: 1px solid var(--border-faint);
-  background: var(--panel-alt);
-  color: var(--text-primary);
-  transition: border-color 0.15s ease, background 0.15s ease;
+  background: var(--color-surface-container, #211f23);
+  color: var(--color-on-surface, #e7e1e6);
+  /* COMMON — muted bronze/taupe (distinct from silver rare) */
+  --inv-rarity: #c9854a;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  &[data-rarity='RARE'] {
+    --inv-rarity: #9eb6cc;
+  }
+
+  &[data-rarity='LEGENDARY'] {
+    --inv-rarity: #f5be42;
+  }
+
+  &:hover {
+    border-color: rgba(245, 190, 66, 0.35);
   }
 
   &--equipped {
     border-color: rgba(245, 190, 66, 0.55);
-    background: rgba(245, 190, 66, 0.14);
+    background: rgba(245, 190, 66, 0.12);
     color: var(--gold-bright);
   }
 }
 
 .inventory-chip__icon {
   font-size: 18px;
+  flex-shrink: 0;
+  color: var(--inv-rarity);
+}
+
+.inventory-chip__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
 }
 
 .inventory-chip__label {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
   font-size: 13px;
   font-weight: 700;
 }
 
-.inventory-chip__qty {
-  font-size: 11px;
-  opacity: 0.7;
+.inventory-chip__rarity {
+  font-size: 9px;
+  line-height: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--inv-rarity);
+  opacity: 0.9;
+}
+
+.inventory-chip__status {
+  margin-left: 4px;
+  font-size: 9px;
+  line-height: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
 }
 
 .inventory__frame-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+}
+
+.frame-preview {
+  position: relative;
+  filter: drop-shadow(0 0 12px rgba(232, 179, 62, 0.2));
+  overflow: visible;
 }
 
 .inventory-frame {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 20px 16px;
-  border-radius: 16px;
+  gap: 10px;
+  padding: 32px 16px 22px;
+  border-radius: 24px;
   border: 1px solid var(--border-faint);
-  background: var(--panel-alt);
-  color: var(--text-primary);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  background: var(--color-surface-container, #211f23);
+  color: var(--color-on-surface, #e7e1e6);
+  /* COMMON — muted bronze/taupe (distinct from silver rare) */
+  --inv-rarity: #c9854a;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  overflow: visible;
 
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
+  &[data-rarity='RARE'] {
+    --inv-rarity: #9eb6cc;
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  &[data-rarity='LEGENDARY'] {
+    --inv-rarity: #f5be42;
+  }
+
+  &:hover {
+    border-color: rgba(245, 190, 66, 0.35);
   }
 
   &--equipped {
     border-color: rgba(245, 190, 66, 0.55);
-    box-shadow: 0 0 20px rgba(245, 190, 66, 0.15);
+    box-shadow: 0 0 24px rgba(245, 190, 66, 0.14);
   }
 }
 
-.inventory-frame__hex {
-  width: 72px;
-  height: 84px;
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, var(--gold) 0%, #5d0018 100%);
+.frame-preview__outer {
+  width: 88px;
+  height: 102px;
   clip-path: var(--hero-hex-clip);
-
-  .inventory-frame--equipped & {
-    filter: drop-shadow(0 0 10px rgba(245, 190, 66, 0.45));
-  }
+  background: linear-gradient(160deg, #f6cf63, #b98520);
+  padding: 3px;
+  display: grid;
+  place-items: center;
 }
 
-.inventory-frame__icon {
+.frame-preview__inner {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #363438;
   clip-path: var(--hero-hex-clip);
-  font-size: 30px;
+  /* Hollow hex: punch through to the card surface so only the rim + ornaments show. */
+  background: var(--color-surface-container, #211f23);
 }
 
 .inventory-frame__label {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 12px;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 13px;
   font-weight: 700;
   text-align: center;
 }
 
+.inventory-frame__rarity {
+  font-size: 9px;
+  line-height: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--inv-rarity);
+  opacity: 0.9;
+}
+
 .inventory-frame__status {
+  min-height: 14px;
   font-size: 9px;
   line-height: 14px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-dim);
-
-  .inventory-frame--equipped & {
-    color: var(--gold-bright);
-  }
-}
-
-.reveal-card--legendary {
-  border-color: rgba(245, 190, 66, 0.6);
-  box-shadow: 0 0 20px rgba(245, 190, 66, 0.2);
-}
-
-.reveal-card--rare {
-  border-color: rgba(203, 213, 225, 0.4);
-  box-shadow: 0 0 16px rgba(203, 213, 225, 0.15);
-}
-
-.reveal-card--common {
-  border-color: rgba(79, 70, 53, 0.3);
-}
-
-.reveal-card__rarity--legendary {
+  text-align: center;
   color: var(--gold-bright);
 }
 
-.reveal-card__rarity--rare {
-  color: #cbd5e1;
-}
-
-.reveal-card__rarity--common {
-  color: #d3c5af;
-}
-
 @media (max-width: 720px) {
-  .inventory__utility-grid,
   .inventory__frame-grid {
     grid-template-columns: 1fr;
   }

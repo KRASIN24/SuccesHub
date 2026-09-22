@@ -1,15 +1,17 @@
 :host {
   display: block;
-  --sp-bg: #211f23;
-  --sp-panel: #2b292d;
-  --sp-border: rgba(255, 255, 255, 0.06);
-  --sp-gold: #f5be42;
-  --sp-green: #34d399;
-  --sp-red: #f87171;
-  --sp-blue: #60a5fa;
-  --sp-text: #e7e1e6;
-  --sp-muted: #a3a3a3;
-  --sp-dim: #737373;
+  --sp-bg: var(--color-surface-container, #211f23);
+  --sp-panel: var(--color-surface-container-high, #2b292d);
+  --sp-border: var(--color-border, rgba(255, 255, 255, 0.07));
+  --sp-gold: var(--color-gold-bright, #f6cf63);
+  --sp-gold-deep: var(--color-gold, #e8b33e);
+  --sp-green: var(--color-success, #5bd17c);
+  --sp-red: var(--color-danger, #e5654b);
+  --sp-blue: var(--color-accent-blue, #3b82f6);
+  --sp-text: var(--color-on-surface, #e7e1e6);
+  --sp-muted: var(--color-on-surface-variant, #d3c5af);
+  --sp-dim: var(--color-text-faint, #62626a);
+  --sp-on-mark: var(--color-app-bg, #0a0a0c);
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--sp-text);
 }
@@ -21,80 +23,37 @@
 }
 
 .streak-panel__heading {
-  text-align: center;
-}
-
-.streak-panel__eyebrow {
-  margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--sp-gold);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .streak-panel__title {
-  margin: 8px 0 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 26px;
+  margin: 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 24px;
   font-weight: 700;
-  text-transform: uppercase;
-  color: #fff;
+  letter-spacing: -0.02em;
+  color: var(--color-on-surface, #e7e1e6);
 }
 
 .streak-panel__sub {
-  margin: 8px auto 0;
-  max-width: 480px;
+  margin: 0;
+  max-width: 520px;
   font-size: 13px;
-  color: var(--sp-muted);
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.7;
 }
 
 .streak-panel__feedback {
   margin: 0;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid rgba(245, 190, 66, 0.35);
   background: rgba(245, 190, 66, 0.1);
   color: var(--sp-gold);
   font-size: 13px;
-  text-align: center;
-}
-
-.streak-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.streak-stat {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid var(--sp-border);
-  background: var(--sp-bg);
-}
-
-.streak-stat__icon {
-  font-size: 26px;
-  color: var(--sp-gold);
-}
-
-.streak-stat__value {
-  margin: 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.streak-stat__label {
-  margin: 2px 0 0;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--sp-dim);
 }
 
 .streak-grid {
@@ -105,12 +64,33 @@
 }
 
 .streak-calendar-card,
-.streak-cards,
-.streak-manip {
-  padding: 20px;
-  border-radius: 16px;
+.streak-cards {
+  padding: 24px;
+  border-radius: 24px;
   border: 1px solid var(--sp-border);
   background: var(--sp-bg);
+}
+
+.streak-manip {
+  padding: 16px 20px;
+  border-radius: 14px;
+  border: 1px dashed color-mix(in srgb, var(--sp-border) 80%, transparent);
+  background: color-mix(in srgb, var(--sp-bg) 70%, transparent);
+  opacity: 0.85;
+}
+
+.streak-manip__summary {
+  cursor: pointer;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sp-dim);
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
 }
 
 .streak-calendar-card__loading,
@@ -120,18 +100,199 @@
   color: var(--sp-muted);
 }
 
+.streak-calendar-card__inline-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(220, 80, 80, 0.35);
+  color: var(--sp-muted);
+  font-size: 13px;
+}
+
+:host ::ng-deep .streak-calendar--busy {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .streak-side {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .streak-side__title {
-  margin: 0 0 12px;
-  font-size: 12px;
-  letter-spacing: 0.2em;
+  margin: 0 0 14px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--sp-dim);
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.5;
+}
+
+/* ── PrimeNG DatePicker chrome → forced dark app palette ─────────── */
+:host ::ng-deep {
+  .streak-calendar,
+  .streak-calendar.p-datepicker,
+  .p-datepicker.streak-calendar,
+  .p-datepicker {
+    /* Design tokens — kill white content.background */
+    --p-datepicker-panel-background: var(--color-surface-2, #1a1a1e);
+    --p-datepicker-panel-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
+    --p-datepicker-panel-color: var(--color-text, #ededee);
+    --p-datepicker-header-background: var(--color-surface-2, #1a1a1e);
+    --p-datepicker-header-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
+    --p-datepicker-header-color: var(--color-text, #ededee);
+    --p-datepicker-date-color: var(--color-text, #ededee);
+    --p-datepicker-date-hover-background: rgba(232, 179, 62, 0.14);
+    --p-datepicker-date-hover-color: var(--color-gold-bright, #f6cf63);
+    --p-datepicker-date-selected-background: rgba(232, 179, 62, 0.28);
+    --p-datepicker-date-selected-color: var(--color-gold-bright, #f6cf63);
+    --p-datepicker-today-background: rgba(232, 179, 62, 0.12);
+    --p-datepicker-today-color: var(--color-gold-bright, #f6cf63);
+    --p-datepicker-select-month-color: var(--color-gold-bright, #f6cf63);
+    --p-datepicker-select-year-color: var(--color-gold-bright, #f6cf63);
+    --p-datepicker-select-month-hover-background: rgba(232, 179, 62, 0.12);
+    --p-datepicker-select-year-hover-background: rgba(232, 179, 62, 0.12);
+    --p-datepicker-week-day-color: var(--color-text-faint, #62626a);
+    --p-content-background: var(--color-surface-2, #1a1a1e);
+    --p-content-hover-background: rgba(232, 179, 62, 0.14);
+    --p-content-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
+    --p-content-color: var(--color-text, #ededee);
+    --p-content-hover-color: var(--color-gold-bright, #f6cf63);
+    --p-surface-0: #0a0a0c;
+    --p-surface-50: #121214;
+    --p-surface-100: #1a1a1e;
+    --p-surface-200: #202026;
+    --p-surface-700: #2b292d;
+    --p-surface-800: #1a1a1e;
+    --p-surface-900: #141417;
+    --p-text-color: var(--color-text, #ededee);
+    --p-primary-color: var(--color-gold, #e8b33e);
+    --p-primary-contrast-color: #0a0a0c;
+
+    width: 100% !important;
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07)) !important;
+    border-radius: 14px !important;
+    background: var(--color-surface-2, #1a1a1e) !important;
+    color: var(--color-text, #ededee) !important;
+    padding: 12px !important;
+    box-shadow: none !important;
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  }
+
+  .p-datepicker-panel,
+  .p-datepicker-calendar-container,
+  .p-datepicker-calendar,
+  .p-datepicker-day-view,
+  .p-datepicker table {
+    background: transparent !important;
+    color: inherit !important;
+    border-color: var(--color-border, rgba(255, 255, 255, 0.07)) !important;
+  }
+
+  .p-datepicker-header {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.07)) !important;
+    padding: 0 0 12px !important;
+    margin-bottom: 8px !important;
+    color: var(--color-text, #ededee) !important;
+  }
+
+  .p-datepicker-title,
+  .p-datepicker-select-month,
+  .p-datepicker-select-year,
+  .p-datepicker-month,
+  .p-datepicker-year,
+  button.p-datepicker-select-month,
+  button.p-datepicker-select-year {
+    color: var(--color-gold-bright, #f6cf63) !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+  }
+
+  .p-datepicker-prev-button,
+  .p-datepicker-next-button,
+  .p-datepicker-prev,
+  .p-datepicker-next,
+  button.p-datepicker-prev-button,
+  button.p-datepicker-next-button {
+    color: var(--color-text-muted, #9a9aa2) !important;
+    background: transparent !important;
+
+    &:hover {
+      background: rgba(232, 179, 62, 0.12) !important;
+      color: var(--color-gold-bright, #f6cf63) !important;
+    }
+  }
+
+  .p-datepicker th,
+  .p-datepicker-weekday,
+  .p-datepicker-weekheader {
+    color: var(--color-text-faint, #62626a) !important;
+    background: transparent !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.65rem !important;
+    padding: 10px 4px 14px !important;
+    text-align: center !important;
+  }
+
+  /* Balance grid: tighter columns, taller rows (PrimeNG defaults are wide + flat). */
+  .p-datepicker table,
+  .p-datepicker-day-view table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important;
+  }
+
+  .p-datepicker td {
+    background: transparent !important;
+    padding: 6px 2px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    height: 3rem !important;
+  }
+
+  .p-datepicker td > span,
+  .p-datepicker-day,
+  span.p-datepicker-day {
+    color: var(--color-text, #ededee) !important;
+    background: transparent !important;
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    margin: 0 auto !important;
+
+    &:hover:not(.p-disabled) {
+      background: rgba(232, 179, 62, 0.14) !important;
+      color: var(--color-gold-bright, #f6cf63) !important;
+    }
+  }
+
+  .p-datepicker-day-selected,
+  .p-highlight,
+  td span.p-highlight {
+    background: rgba(232, 179, 62, 0.25) !important;
+    color: var(--color-gold-bright, #f6cf63) !important;
+  }
+
+  .p-datepicker-today > span:not(.p-highlight),
+  .p-datepicker-day.p-datepicker-today:not(.p-datepicker-day-selected) {
+    background: rgba(232, 179, 62, 0.1) !important;
+    color: var(--color-gold-bright, #f6cf63) !important;
+    box-shadow: inset 0 0 0 1px rgba(232, 179, 62, 0.35);
+  }
+
+  .p-datepicker-other-month > span,
+  .p-datepicker-day.p-datepicker-other-month {
+    opacity: 0.35 !important;
+  }
 }
 
 /* ── Calendar day markers ─────────────────────────────────────────── */
@@ -139,30 +300,34 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.35rem;
+  height: 2.35rem;
   border-radius: 9999px;
   font-weight: 600;
 }
 
 .streak-day--completed {
-  background: rgba(52, 211, 153, 0.9);
-  color: #06281d;
+  background: color-mix(in srgb, var(--sp-green) 88%, transparent);
+  color: var(--sp-on-mark);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sp-green) 40%, transparent);
 }
 
 .streak-day--missed {
-  background: rgba(248, 113, 113, 0.9);
-  color: #2b0707;
+  background: color-mix(in srgb, var(--sp-red) 88%, transparent);
+  color: var(--sp-on-mark);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sp-red) 35%, transparent);
 }
 
 .streak-day--shielded {
-  background: rgba(96, 165, 250, 0.9);
-  color: #06183a;
+  background: color-mix(in srgb, var(--sp-gold-deep) 75%, var(--sp-blue) 25%);
+  color: var(--sp-on-mark);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sp-gold) 45%, transparent);
 }
 
 .streak-day--today {
   border: 2px solid var(--sp-gold);
   color: var(--sp-gold);
+  background: rgba(232, 179, 62, 0.08);
 }
 
 .streak-day--future {
@@ -198,7 +363,9 @@
 
 .legend-dot--completed { background: var(--sp-green); }
 .legend-dot--missed { background: var(--sp-red); }
-.legend-dot--shielded { background: var(--sp-blue); }
+.legend-dot--shielded {
+  background: color-mix(in srgb, var(--sp-gold-deep) 75%, var(--sp-blue) 25%);
+}
 .legend-dot--today { border: 2px solid var(--sp-gold); }
 
 .streak-selection {
@@ -215,6 +382,11 @@
   margin: 0;
   font-size: 13px;
   color: var(--sp-text);
+}
+
+.streak-selection__shields {
+  color: var(--sp-dim);
+  font-weight: 500;
 }
 
 .streak-selection__hint {
@@ -234,10 +406,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
+  padding: 14px;
+  border-radius: 14px;
   border: 1px solid var(--sp-border);
-  background: var(--sp-panel);
+  background: var(--color-surface-2, #1a1a1e);
 }
 
 .streak-card + .streak-card {
@@ -250,7 +422,7 @@
 }
 
 .streak-card--boost .streak-card__icon {
-  color: var(--sp-blue);
+  color: var(--sp-gold-deep);
 }
 
 .streak-card__body {
@@ -263,7 +435,7 @@
   font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: var(--sp-text);
 }
 
 .streak-card__qty {
@@ -279,7 +451,7 @@
 
 /* ── Manipulation controls ─────────────────────────────────────────── */
 .streak-manip__hint {
-  margin: -6px 0 12px;
+  margin: 12px 0;
   font-size: 11px;
   color: var(--sp-dim);
 }
@@ -299,9 +471,15 @@
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid var(--sp-border);
-  background: #1b1a1e;
-  color: #fff;
+  background: var(--color-surface, #1b1a1e);
+  color: var(--sp-text);
   font-size: 13px;
+
+  &:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--sp-gold) 55%, transparent);
+    box-shadow: 0 0 0 2px rgba(232, 179, 62, 0.15);
+  }
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────── */
@@ -348,9 +526,6 @@
 
 @media (max-width: 900px) {
   .streak-grid {
-    grid-template-columns: 1fr;
-  }
-  .streak-stats {
     grid-template-columns: 1fr;
   }
 }

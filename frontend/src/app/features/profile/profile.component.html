@@ -10,28 +10,73 @@
   <div class="page">
     <main class="main">
       <section class="profile-hero">
-        <div class="profile-hero__avatar">{{ userInitials() }}</div>
-        <div class="profile-hero__copy">
-          <p class="profile-hero__eyebrow">Sovereign Profile</p>
-          <h1 class="profile-hero__title">{{ profile()?.displayName || user()?.email }}</h1>
-          @if (profile(); as p) {
-            <p class="profile-hero__meta">Level {{ p.level }} · {{ p.currentXp }} / {{ p.nextLevelXp }} XP</p>
-            <div class="profile-hero__xp-track">
-              <div class="profile-hero__xp-fill" [style.width.%]="xpPercent()"></div>
+        <div class="profile-hero__card">
+          <div
+            class="profile-hero__hex"
+            [class.profile-hero__hex--framed]="!!cosmetics.equippedFrame()"
+            [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null"
+            [attr.aria-label]="
+              cosmetics.equippedFrame()
+                ? 'Avatar · ' + cosmetics.equippedFrame()!.label
+                : 'Avatar'
+            "
+          >
+            <app-frame-ornaments
+              [frameKey]="cosmetics.equippedFrame()?.key ?? null"
+              size="md"
+            />
+            <div class="profile-hero__hex-outer">
+              <div class="profile-hero__hex-inner">
+                <span class="profile-hero__initials">{{ userInitials() }}</span>
+              </div>
             </div>
-          }
+          </div>
+
+          <div class="profile-hero__body">
+            <div class="profile-hero__meta-row">
+              <span class="profile-hero__rank">RANK: {{ rankLabel() }}</span>
+              <span class="profile-hero__uid">SYSTEM UID: {{ systemUid() }}</span>
+            </div>
+
+            <h1 class="profile-hero__name">
+              {{ profile()?.displayName || user()?.email || 'Operator' }}
+            </h1>
+
+            @if (profile(); as p) {
+              <div class="profile-hero__ascend">
+                <div class="profile-hero__level-block">
+                  <p class="profile-hero__level-label">Ascension tier</p>
+                  <p class="profile-hero__level-value">Level {{ p.level }}</p>
+                </div>
+                <div class="profile-hero__xp-block">
+                  <div class="profile-hero__xp-track">
+                    <div class="profile-hero__xp-fill" [style.width.%]="xpPercent()"></div>
+                  </div>
+                  <p class="profile-hero__xp-caption">
+                    {{ p.currentXp }} / {{ p.nextLevelXp }} XP TO LVL {{ p.level + 1 }}
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
         </div>
       </section>
 
-      <section class="profile-stats">
-        @for (stat of stats(); track stat.label) {
-          <div class="profile-stat">
-            <span class="material-symbols-outlined profile-stat__icon">{{ stat.icon }}</span>
-            <div class="profile-stat__text">
-              <p class="profile-stat__label">{{ stat.label }}</p>
-              <p class="profile-stat__value">{{ stat.value }}</p>
+      <section class="profile-overview" aria-label="Profile overview">
+        @for (stat of overviewStats(); track stat.label) {
+          <article class="overview-stat">
+            <div class="overview-stat__head">
+              <span class="material-symbols-outlined overview-stat__icon">{{ stat.icon }}</span>
+              <p class="overview-stat__category">{{ stat.category }}</p>
             </div>
-          </div>
+            <p class="overview-stat__value">
+              {{ stat.value }}
+              @if (stat.suffix) {
+                <span class="overview-stat__suffix">{{ stat.suffix }}</span>
+              }
+            </p>
+            <p class="overview-stat__label">{{ stat.label }}</p>
+          </article>
         }
       </section>
 
@@ -42,62 +87,42 @@
 
       <section class="inventory">
         <div class="inventory__heading">
-          <p class="inventory__eyebrow">Your Collection</p>
-          <h2 class="inventory__title">Vault Inventory</h2>
-          <p class="inventory__count">{{ totalItems() }} item{{ totalItems() === 1 ? '' : 's' }}</p>
+          <h2 class="inventory__title">Collection</h2>
+          <p class="inventory__sub">Equip one title and one frame</p>
         </div>
 
-        @if (totalItems() === 0) {
+        @if (titleStacks().length === 0 && frameStacks().length === 0) {
           <div class="inventory__empty">
             <span class="material-symbols-outlined">inventory_2</span>
-            <p>Nothing here yet. Open a cache to start your collection.</p>
+            <p>Nothing here yet. Open a cache to unlock titles and frames.</p>
             <a routerLink="/loot-boxes" class="inventory__cta">Go to Celestial Cache</a>
           </div>
         } @else {
-          @if (utilityStacks().length > 0) {
-            <div class="inventory__group">
-              <h3 class="inventory__group-label">Utility</h3>
-              <div class="inventory__utility-grid">
-                @for (stack of utilityStacks(); track stack.id) {
-                  <article class="inventory-item" [ngClass]="revealCardClass(stack.reward.rarity)">
-                    <span
-                      class="material-symbols-outlined inventory-item__icon"
-                      [ngClass]="revealRarityTextClass(stack.reward.rarity)"
-                    >
-                      {{ stack.reward.icon }}
-                    </span>
-                    <div class="inventory-item__text">
-                      <p class="inventory-item__label">{{ stack.reward.label }}</p>
-                      @if (stack.reward.effect) {
-                        <p class="inventory-item__meta">{{ stack.reward.effect }}</p>
-                      }
-                    </div>
-                    <span class="inventory-item__qty">×{{ stack.quantity }}</span>
-                  </article>
-                }
-              </div>
-            </div>
-          }
-
           @if (titleStacks().length > 0) {
             <div class="inventory__group">
-              <h3 class="inventory__group-label">Titles</h3>
+              <div class="inventory__group-head">
+                <h3 class="inventory__group-label">Titles</h3>
+                <p class="inventory__group-meta">{{ titleStacks().length }} unlocked</p>
+              </div>
               <div class="inventory__chip-row">
-                @for (stack of titleStacks(); track stack.id) {
+                @for (stack of titleStacks(); track stack.reward.key) {
                   <button
                     type="button"
                     class="inventory-chip"
                     [class.inventory-chip--equipped]="stack.equipped"
-                    [ngClass]="revealCardClass(stack.reward.rarity)"
-                    [disabled]="busy()"
+                    [attr.data-rarity]="stack.reward.rarity"
+                    [attr.aria-pressed]="stack.equipped"
                     (click)="equip(stack)"
                   >
                     <span class="material-symbols-outlined inventory-chip__icon">
-                      {{ stack.equipped ? 'check_circle' : stack.reward.icon }}
+                      {{ stack.reward.icon }}
                     </span>
-                    <span class="inventory-chip__label">{{ stack.reward.label }}</span>
-                    @if (stack.quantity > 1) {
-                      <span class="inventory-chip__qty">×{{ stack.quantity }}</span>
+                    <span class="inventory-chip__text">
+                      <span class="inventory-chip__label">{{ stack.reward.label }}</span>
+                      <span class="inventory-chip__rarity">{{ stack.reward.rarity }}</span>
+                    </span>
+                    @if (stack.equipped) {
+                      <span class="inventory-chip__status">Equipped</span>
                     }
                   </button>
                 }
@@ -107,27 +132,30 @@
 
           @if (frameStacks().length > 0) {
             <div class="inventory__group">
-              <h3 class="inventory__group-label">Avatar Frames</h3>
+              <div class="inventory__group-head">
+                <h3 class="inventory__group-label">Avatar frames</h3>
+                <p class="inventory__group-meta">{{ frameStacks().length }} unlocked</p>
+              </div>
               <div class="inventory__frame-grid">
-                @for (stack of frameStacks(); track stack.id) {
+                @for (stack of frameStacks(); track stack.reward.key) {
                   <button
                     type="button"
                     class="inventory-frame"
                     [class.inventory-frame--equipped]="stack.equipped"
-                    [ngClass]="revealCardClass(stack.reward.rarity)"
-                    [disabled]="busy()"
+                    [attr.data-frame]="stack.reward.key"
+                    [attr.data-rarity]="stack.reward.rarity"
+                    [attr.aria-pressed]="stack.equipped"
                     (click)="equip(stack)"
                   >
-                    <div class="inventory-frame__hex">
-                      <span
-                        class="material-symbols-outlined inventory-frame__icon"
-                        [ngClass]="revealRarityTextClass(stack.reward.rarity)"
-                      >
-                        {{ stack.reward.icon }}
-                      </span>
+                    <div class="frame-preview" [attr.data-frame]="stack.reward.key">
+                      <app-frame-ornaments [frameKey]="stack.reward.key" size="sm" />
+                      <div class="frame-preview__outer">
+                        <div class="frame-preview__inner" aria-hidden="true"></div>
+                      </div>
                     </div>
                     <span class="inventory-frame__label">{{ stack.reward.label }}</span>
-                    <span class="inventory-frame__status">{{ stack.equipped ? 'Equipped' : 'Tap to equip' }}</span>
+                    <span class="inventory-frame__rarity">{{ stack.reward.rarity }}</span>
+                    <span class="inventory-frame__status">{{ stack.equipped ? 'Equipped' : '' }}</span>
                   </button>
                 }
               </div>
