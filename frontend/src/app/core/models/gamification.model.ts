@@ -132,7 +132,7 @@ export interface GamificationClientConfig {
   enableLootDevGrants: boolean;
 }
 
-export type StreakDayStatus = 'COMPLETED' | 'MISSED' | 'SHIELDED' | 'TODAY' | 'FUTURE';
+export type StreakDayStatus = 'COMPLETED' | 'MISSED' | 'SHIELDED' | 'TODAY' | 'FUTURE' | 'EMPTY';
 
 export interface StreakDay {
   /** ISO date string (yyyy-MM-dd). */

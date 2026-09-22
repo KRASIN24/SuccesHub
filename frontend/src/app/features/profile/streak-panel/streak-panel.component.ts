@@ -94,7 +94,12 @@ export class StreakPanelComponent implements OnInit {
   load(year: number, month: number): void {
     this.curYear.set(year);
     this.curMonth.set(month);
-    this.loading.set(true);
+    // Keep the datepicker mounted on month switches — destroying it reset the view to
+    // "today" while dayMap still held the fetched month, so colors looked wrong.
+    const initial = this.calendar() == null;
+    if (initial) {
+      this.loading.set(true);
+    }
     this.error.set(null);
     const key = `${year}-${String(month).padStart(2, '0')}`;
     this.gamification.getStreakCalendar(key).subscribe({
@@ -115,6 +120,8 @@ export class StreakPanelComponent implements OnInit {
       return;
     }
     this.selectedDate.set(null);
+    // PrimeNG emits 1-based month; keep viewDate in sync for remounts / defaultDate.
+    this.viewDate.set(new Date(event.year, event.month - 1, 1));
     this.load(event.year, event.month);
   }
 
@@ -134,7 +141,7 @@ export class StreakPanelComponent implements OnInit {
       'streak-day--missed': status === 'MISSED',
       'streak-day--shielded': status === 'SHIELDED',
       'streak-day--today': status === 'TODAY',
-      'streak-day--future': status === 'FUTURE',
+      'streak-day--future': status === 'FUTURE' || status === 'EMPTY',
     };
   }
 

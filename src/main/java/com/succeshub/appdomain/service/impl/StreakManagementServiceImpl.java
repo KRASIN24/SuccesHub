@@ -72,11 +72,12 @@ public class StreakManagementServiceImpl implements StreakManagementService {
         Set<LocalDate> shielded = overrideRepository.findByUserIdAndDayBetween(userId, first, last).stream()
                 .map(StreakDayOverride::getDay)
                 .collect(Collectors.toSet());
+        LocalDate joined = profile.getCreatedAt().atZone(timeUtil.zone()).toLocalDate();
 
         List<StreakDayDto> days = first.datesUntil(last.plusDays(1))
                 .map(day -> {
                     int completed = completions.getOrDefault(day, 0);
-                    String status = classify(day, today, completed, minTasks, shielded.contains(day));
+                    String status = classify(day, today, joined, completed, minTasks, shielded.contains(day));
                     return new StreakDayDto(day, status, completed);
                 })
                 .toList();
@@ -128,6 +129,10 @@ public class StreakManagementServiceImpl implements StreakManagementService {
 
         if (date.isAfter(today)) {
             throw new ValidationException("Cannot shield a day in the future.");
+        }
+        LocalDate joined = profile.getCreatedAt().atZone(timeUtil.zone()).toLocalDate();
+        if (date.isBefore(joined)) {
+            throw new ValidationException("Cannot shield a day before your account existed.");
         }
         if (overrideRepository.existsByUserIdAndDay(userId, date)) {
             throw new ValidationException("That day is already protected.");
@@ -220,9 +225,20 @@ public class StreakManagementServiceImpl implements StreakManagementService {
         return counts;
     }
 
-    private String classify(LocalDate day, LocalDate today, int completed, int minTasks, boolean shielded) {
+    private String classify(
+            LocalDate day,
+            LocalDate today,
+            LocalDate joined,
+            int completed,
+            int minTasks,
+            boolean shielded
+    ) {
         if (day.isAfter(today)) {
             return "FUTURE";
+        }
+        // Days before the profile existed are not part of the streak window.
+        if (day.isBefore(joined)) {
+            return "EMPTY";
         }
         if (completed >= minTasks) {
             return "COMPLETED";

@@ -19,7 +19,7 @@ public interface StreakManagementService {
      *
      * @param userId Keycloak subject ID of the owner
      * @param month  month to render
-     * @return calendar with each day classified as completed, missed, shielded, today, or future
+     * @return calendar with each day classified as completed, missed, shielded, today, future, or empty (pre-account)
      */
     StreakCalendarDto getCalendar(String userId, YearMonth month);
 
