@@ -3,6 +3,7 @@ package com.succeshub.appdomain.service.gamification;
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.repository.UserProfileRepository;
+import com.succeshub.appdomain.service.LootBoxService;
 import com.succeshub.config.GamificationProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ class WeeklyChallengeSchedulerTest {
     private UserProfileRepository profileRepository;
     @Mock
     private TaskRepository taskRepository;
+    @Mock
+    private LootBoxService lootBoxService;
 
     private WeeklyChallengeScheduler scheduler;
     private GamificationTimeUtil timeUtil;
@@ -36,7 +39,7 @@ class WeeklyChallengeSchedulerTest {
         properties.setWeeklyChallengeCount(2);
         properties.setWeeklyChallengeMinDifficulty(4);
         timeUtil = new GamificationTimeUtil();
-        scheduler = new WeeklyChallengeScheduler(profileRepository, taskRepository, properties, timeUtil);
+        scheduler = new WeeklyChallengeScheduler(profileRepository, taskRepository, lootBoxService, properties, timeUtil);
     }
 
     @Test

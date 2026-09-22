@@ -1,10 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { GoalService } from '../../core/services/goal.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { GamificationService } from '../../core/services/gamification.service';
+import { GamificationCelebrationService } from '../../core/services/gamification-celebration.service';
 import { Goal, GoalSummary } from '../../core/models/goal.model';
 import { UserProfile } from '../../core/models/profile.model';
 import { WeeklyInsight } from '../../core/models/gamification.model';
@@ -22,6 +23,7 @@ export class GoalsComponent implements OnInit {
   private readonly goalService = inject(GoalService);
   private readonly profileService = inject(ProfileService);
   private readonly gamificationService = inject(GamificationService);
+  private readonly celebrations = inject(GamificationCelebrationService);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -42,6 +44,15 @@ export class GoalsComponent implements OnInit {
   newGoalXpReward = 500;
   newGoalIcon = 'savings';
   newGoalFeatured = false;
+
+  constructor() {
+    effect(() => {
+      const tick = this.celebrations.goalsRefreshTick();
+      if (tick > 0 && !this.loading()) {
+        this.softRefreshGoals();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadGoalsData();
@@ -71,6 +82,22 @@ export class GoalsComponent implements OnInit {
         this.error.set('Could not synchronize campaign status with the server.');
         this.loading.set(false);
       },
+    });
+  }
+
+  /** Quiet refresh after boss damage from task completion elsewhere in the app. */
+  private softRefreshGoals(): void {
+    forkJoin({
+      active: this.goalService.getGoals('ACTIVE'),
+      completed: this.goalService.getGoals('COMPLETED'),
+      summary: this.goalService.getSummary(),
+    }).subscribe({
+      next: (data) => {
+        this.activeGoals.set(data.active);
+        this.conqueredGoals.set(data.completed);
+        this.summary.set(data.summary);
+      },
+      error: (err) => console.error('Failed to soft-refresh goals', err),
     });
   }
 

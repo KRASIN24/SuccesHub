@@ -273,6 +273,11 @@
       color: var(--color-text-faint);
     }
   }
+
+  &.is-focused {
+    border-color: rgba(232, 179, 62, 0.65);
+    box-shadow: 0 0 0 1px rgba(232, 179, 62, 0.35);
+  }
 }
 
 .checkbox {

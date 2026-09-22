@@ -1,0 +1,132 @@
+<section class="streak-panel app-dark">
+  <div class="streak-panel__heading">
+    <h2 class="streak-panel__title">Streak</h2>
+    <p class="streak-panel__sub">Repair missed days and bank shields to defend the chain.</p>
+  </div>
+
+  @if (feedback()) {
+    <p class="streak-panel__feedback">{{ feedback() }}</p>
+  }
+
+  <div class="streak-grid">
+    <div class="streak-calendar-card">
+      @if (!calendar() && loading()) {
+        <div class="streak-calendar-card__loading">Loading calendar…</div>
+      } @else if (!calendar() && error()) {
+        <div class="streak-calendar-card__error">
+          <p>{{ error() }}</p>
+          <button type="button" class="streak-btn" (click)="retry()">Retry</button>
+        </div>
+      } @else if (calendar()) {
+        <p-datepicker
+          [inline]="true"
+          [ngModel]="selectedDate()"
+          (onSelect)="onSelect($event)"
+          [defaultDate]="viewDate()"
+          [showOtherMonths]="true"
+          [selectOtherMonths]="false"
+          (onMonthChange)="onMonthChange($event)"
+          [styleClass]="loading() ? 'streak-calendar streak-calendar--busy' : 'streak-calendar'"
+        >
+          <ng-template pTemplate="date" let-date>
+            <span [ngClass]="dayClass(date)">{{ date.day }}</span>
+          </ng-template>
+        </p-datepicker>
+
+        @if (error()) {
+          <div class="streak-calendar-card__inline-error">
+            <p>{{ error() }}</p>
+            <button type="button" class="streak-btn" (click)="retry()">Retry</button>
+          </div>
+        }
+
+        <ul class="streak-legend">
+          <li><span class="legend-dot legend-dot--completed"></span>Done</li>
+          <li><span class="legend-dot legend-dot--missed"></span>Missed</li>
+          <li><span class="legend-dot legend-dot--shielded"></span>Shielded</li>
+          <li><span class="legend-dot legend-dot--today"></span>Today</li>
+        </ul>
+
+        <div class="streak-selection">
+          @if (selectedKey()) {
+            <p class="streak-selection__label">
+              {{ selectedKey() }} —
+              <strong>{{ selectedStatus() || 'No activity' }}</strong>
+              @if (calendar(); as cal) {
+                <span class="streak-selection__shields">· {{ cal.shieldsAvailable }} shields ready</span>
+              }
+            </p>
+            <button
+              type="button"
+              class="streak-btn streak-btn--primary"
+              [disabled]="!canShieldSelected() || busy()"
+              (click)="protectSelectedDay()"
+            >
+              <span class="material-symbols-outlined">shield</span>
+              Protect this day
+            </button>
+            @if (selectedStatus() === 'MISSED' && (calendar()?.shieldsAvailable ?? 0) === 0) {
+              <p class="streak-selection__hint">No shields available — earn or use a Streak Shield card first.</p>
+            }
+          } @else {
+            <p class="streak-selection__hint">Select a red (missed) day to spend a shield and repair your streak.</p>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="streak-side">
+      <div class="streak-cards">
+        <h3 class="streak-side__title">Shields &amp; boosts</h3>
+        @if (shieldCards().length === 0 && boostCards().length === 0) {
+          <p class="streak-cards__empty">No usable cards yet. Open caches to earn shields and boosts.</p>
+        }
+
+        @for (card of shieldCards(); track card.id) {
+          <article class="streak-card streak-card--shield">
+            <span class="material-symbols-outlined streak-card__icon">{{ card.reward.icon }}</span>
+            <div class="streak-card__body">
+              <p class="streak-card__label">{{ card.reward.label }} <span class="streak-card__qty">×{{ card.quantity }}</span></p>
+              <p class="streak-card__effect">{{ card.reward.effect || 'Protects your streak from a missed day.' }}</p>
+            </div>
+            <button type="button" class="streak-btn" [disabled]="busy()" (click)="useCard(card)">Bank</button>
+          </article>
+        }
+
+        @for (card of boostCards(); track card.id) {
+          <article class="streak-card streak-card--boost">
+            <span class="material-symbols-outlined streak-card__icon">{{ card.reward.icon }}</span>
+            <div class="streak-card__body">
+              <p class="streak-card__label">{{ card.reward.label }} <span class="streak-card__qty">×{{ card.quantity }}</span></p>
+              <p class="streak-card__effect">{{ card.reward.effect || 'Grants bonus XP.' }}</p>
+            </div>
+            <button type="button" class="streak-btn" [disabled]="busy()" (click)="useCard(card)">Use</button>
+          </article>
+        }
+      </div>
+
+      <details class="streak-manip">
+        <summary class="streak-manip__summary">Dev streak controls</summary>
+        <p class="streak-manip__hint">Testing tools — manually tune the streak counter.</p>
+        <div class="streak-manip__row">
+          <button type="button" class="streak-btn" [disabled]="busy()" (click)="adjust(-1)">−1 day</button>
+          <button type="button" class="streak-btn" [disabled]="busy()" (click)="adjust(1)">+1 day</button>
+          <button type="button" class="streak-btn streak-btn--danger" [disabled]="busy()" (click)="reset()">Reset</button>
+        </div>
+        <div class="streak-manip__row">
+          <input
+            type="number"
+            min="0"
+            class="streak-input"
+            [ngModel]="setValueInput()"
+            (ngModelChange)="setValueInput.set($event)"
+            [disabled]="busy()"
+          />
+          <button type="button" class="streak-btn streak-btn--primary" [disabled]="busy()" (click)="applySet()">
+            Set streak
+          </button>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>

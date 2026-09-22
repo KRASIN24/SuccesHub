@@ -93,7 +93,7 @@
         <insert tableName="reward_definition" schemaName="succeshub">
             <column name="id" value="c2000000-0000-0000-0000-000000000021"/>
             <column name="key" value="FRAME_BRONZE_CIRCUIT"/>
-            <column name="label" value="Bronze Circuit"/>
+            <column name="label" value="Bug Antennae"/>
             <column name="type" value="FRAME"/>
             <column name="rarity" value="COMMON"/>
             <column name="icon" value="hexagon"/>
@@ -101,7 +101,7 @@
         <insert tableName="reward_definition" schemaName="succeshub">
             <column name="id" value="c2000000-0000-0000-0000-000000000022"/>
             <column name="key" value="FRAME_SILVER_SIGIL"/>
-            <column name="label" value="Silver Sigil"/>
+            <column name="label" value="Bunny Ears"/>
             <column name="type" value="FRAME"/>
             <column name="rarity" value="RARE"/>
             <column name="icon" value="shield_moon"/>
@@ -109,7 +109,7 @@
         <insert tableName="reward_definition" schemaName="succeshub">
             <column name="id" value="c2000000-0000-0000-0000-000000000023"/>
             <column name="key" value="FRAME_GOLD_SOVEREIGN"/>
-            <column name="label" value="Gold Sovereign"/>
+            <column name="label" value="Royal Crown"/>
             <column name="type" value="FRAME"/>
             <column name="rarity" value="LEGENDARY"/>
             <column name="icon" value="workspace_premium"/>

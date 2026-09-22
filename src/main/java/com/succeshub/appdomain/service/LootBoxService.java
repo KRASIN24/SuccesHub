@@ -5,7 +5,9 @@ import com.succeshub.appdomain.dto.gamification.GamificationDto.InventoryItemDto
 import com.succeshub.appdomain.dto.gamification.GamificationDto.LootBoxDto;
 import com.succeshub.appdomain.model.LootBoxType;
 import com.succeshub.appdomain.model.UserLootBox;
+import com.succeshub.appdomain.model.UserProfile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,4 +93,15 @@ public interface LootBoxService {
      * @return loot box ID if granted, else {@code null}
      */
     UUID checkStreakMilestone(String userId, int streak);
+
+    /**
+     * Grants a WEEKLY_RESET Sovereign Vault when the week ending on the Sunday of
+     * {@code weekMonday}'s week has enough qualifying days and has not already been rewarded.
+     *
+     * @param userId     Keycloak subject ID
+     * @param profile    profile (mutated with {@code lastWeeklyLootWeek} on grant)
+     * @param weekMonday Monday of the week to evaluate
+     * @return loot box ID if granted, else {@code null}
+     */
+    UUID checkWeeklyLoot(String userId, UserProfile profile, LocalDate weekMonday);
 }

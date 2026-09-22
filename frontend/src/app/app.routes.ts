@@ -53,9 +53,7 @@ export const routes: Routes = [
     path: 'profile',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/placeholder/placeholder.component').then(
-        (m) => m.PlaceholderComponent
-      ),
+      import('./features/profile/profile.component').then((m) => m.ProfileComponent),
     title: 'Profile — SuccesHub',
     data: { title: 'Profile', icon: 'person' },
   },

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-09-21-01-loop-closure-profile" author="cursor">
+        <comment>Pending XP boosts, celebrate acknowledgment, and weekly loot idempotency.</comment>
+        <addColumn tableName="user_profile" schemaName="succeshub">
+            <column name="pending_double_strike" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pending_surge_token" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_celebrated_day" type="DATE"/>
+            <column name="last_weekly_loot_week" type="DATE"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

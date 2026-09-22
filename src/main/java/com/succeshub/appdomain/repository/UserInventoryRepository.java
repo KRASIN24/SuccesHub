@@ -13,12 +13,13 @@ import java.util.UUID;
 public interface UserInventoryRepository extends JpaRepository<UserInventory, UUID> {
 
     /**
-     * Returns all inventory rows for a user.
+     * Returns all inventory rows for a user in stable id order
+     * (avoids Collection UI reshuffling after equip refreshes).
      *
      * @param userId Keycloak subject ID
-     * @return inventory items
+     * @return inventory items ordered by id ascending
      */
-    List<UserInventory> findByUserId(String userId);
+    List<UserInventory> findByUserIdOrderByIdAsc(String userId);
 
     /**
      * Finds an inventory stack for a specific reward type.

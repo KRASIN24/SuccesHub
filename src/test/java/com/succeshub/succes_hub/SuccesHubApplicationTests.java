@@ -4,6 +4,7 @@ import com.succeshub.appdomain.repository.AchievementDefinitionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
 import com.succeshub.appdomain.repository.LootBoxContentRepository;
 import com.succeshub.appdomain.repository.RewardDefinitionRepository;
+import com.succeshub.appdomain.repository.StreakDayOverrideRepository;
 import com.succeshub.appdomain.repository.TaskCategoryRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.repository.UserAchievementRepository;
@@ -59,6 +60,8 @@ class SuccesHubApplicationTests {
 	private UserLootBoxRepository userLootBoxRepository;
 	@MockitoBean
 	private LootBoxContentRepository lootBoxContentRepository;
+	@MockitoBean
+	private StreakDayOverrideRepository streakDayOverrideRepository;
 
 	@Test
 	void contextLoads() {
