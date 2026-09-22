@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthService } from './core/services/auth.service';
+import { LocaleService } from './core/services/locale.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +25,12 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideAnimationsAsync(),
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [LocaleService],
+      useFactory: (locale: LocaleService) => () => locale.init(),
+    },
     {
       provide: APP_INITIALIZER,
       multi: true,

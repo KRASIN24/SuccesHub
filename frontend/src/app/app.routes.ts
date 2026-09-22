@@ -63,11 +63,10 @@ export const routes: Routes = [
     path: 'settings',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/placeholder/placeholder.component').then(
-        (m) => m.PlaceholderComponent
+      import('./features/settings/settings.component').then(
+        (m) => m.SettingsComponent
       ),
     title: 'Settings — SuccesHub',
-    data: { title: 'Settings', icon: 'settings' },
   },
   {
     path: '**',

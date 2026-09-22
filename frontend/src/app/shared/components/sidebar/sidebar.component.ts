@@ -30,7 +30,10 @@ export class SidebarComponent implements OnInit {
   readonly closeRequested = output<void>();
 
   readonly displayName = computed(
-    () => this.auth.currentUser()?.name ?? 'The Sovereign'
+    () =>
+      this.profileService.profile()?.displayName ??
+      this.auth.currentUser()?.name ??
+      'The Sovereign'
   );
 
   ngOnInit(): void {

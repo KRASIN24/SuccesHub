@@ -1,0 +1,222 @@
+<div class="settings-page">
+
+  <header class="settings-topbar">
+    <div>
+      <h1 class="settings-topbar__title">Configuration</h1>
+      <p class="settings-topbar__subtitle">Celestial Control Center</p>
+    </div>
+  </header>
+
+  @if (saveSuccess()) {
+    <div class="toast toast--success" role="status" aria-live="polite">
+      <span class="material-symbols-outlined text-base">check_circle</span>
+      {{ saveSuccess() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="settings-layout">
+      <app-loading-skeleton height="420px"></app-loading-skeleton>
+      <app-loading-skeleton height="420px"></app-loading-skeleton>
+    </div>
+  } @else if (error()) {
+    <app-error-state [message]="error()!"></app-error-state>
+  } @else {
+    <div class="settings-layout">
+
+      <section class="settings-main">
+        <div class="section-heading">
+          <h2 class="section-heading__title section-heading__title--lg">Account Settings</h2>
+          <span class="section-heading__rule section-heading__rule--strong" aria-hidden="true"></span>
+        </div>
+
+        <div class="account-card">
+          <div class="field">
+            <label class="field__label" for="display-name">Display name</label>
+            <div class="field__row">
+              <input
+                id="display-name"
+                class="field__input"
+                type="text"
+                [(ngModel)]="draftDisplayName"
+                maxlength="64"
+                placeholder="Your display name"
+                (keyup.enter)="saveIdentity()"
+              />
+              <app-glitch-button
+                class="field__action"
+                label="Update Identity"
+                [disabled]="saving()"
+                (pressed)="saveIdentity()"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field__label" id="settings-email-label">Email</span>
+            <div class="field__row">
+              <div
+                class="field__static"
+                [class.field__static--empty]="!user()?.email"
+                aria-labelledby="settings-email-label"
+              >
+                {{ user()?.email || 'Not set' }}
+              </div>
+              <button
+                type="button"
+                class="field__btn"
+                (click)="updateEmail()"
+              >
+                Update email
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field__label" id="settings-password-label">Password</span>
+            <div class="field__row">
+              <div
+                class="field__static field__static--mask"
+                aria-labelledby="settings-password-label"
+                aria-hidden="true"
+              >
+                ••••••••
+              </div>
+              <button
+                type="button"
+                class="field__btn"
+                (click)="changePassword()"
+              >
+                Change password
+              </button>
+            </div>
+          </div>
+
+          @if (saveError()) {
+            <p class="field__error">{{ saveError() }}</p>
+          }
+        </div>
+      </section>
+
+      <aside class="settings-side">
+
+        <div class="side-block">
+          <div class="section-heading">
+            <h2 class="section-heading__title">Appearance</h2>
+            <span class="section-heading__rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="side-card">
+            <div class="pref-row pref-row--theme">
+              <div>
+                <p class="pref-row__label">Visual Theme</p>
+                <p class="pref-row__desc">Dark or light appearance</p>
+              </div>
+              <app-theme-toggle
+                [dark]="preferences().darkTheme"
+                (darkChange)="setDarkTheme($event)"
+              />
+            </div>
+
+            <div class="pref-block">
+              <p class="pref-block__desc">Audio for loot and reveals</p>
+              <app-glitch-checkbox
+                label="Sound Effects"
+                glitchText="SOUND_EFFECTS"
+                [checked]="preferences().soundEffects"
+                (checkedChange)="setPreference('soundEffects', $event)"
+              />
+            </div>
+
+            <div class="pref-row">
+              <div>
+                <label class="pref-row__label" for="settings-language">Language</label>
+                <p class="pref-row__desc">Interface language</p>
+              </div>
+              <select
+                id="settings-language"
+                class="lang-select"
+                [ngModel]="localeService.locale()"
+                (ngModelChange)="onLocaleChange($event)"
+                aria-label="Interface language"
+              >
+                @for (loc of localeService.supportedLocales; track loc.code) {
+                  <option [value]="loc.code">{{ loc.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-block">
+          <div class="section-heading">
+            <h2 class="section-heading__title">Notifications</h2>
+            <span class="section-heading__rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="side-card side-card--checks">
+            <app-glitch-checkbox
+              label="Daily Reminder"
+              glitchText="DAILY_REMINDER"
+              [checked]="preferences().dailyGoalReminder"
+              (checkedChange)="setPreference('dailyGoalReminder', $event)"
+            />
+            <app-glitch-checkbox
+              label="Streak Alert"
+              glitchText="STREAK_ALERT"
+              [checked]="preferences().showStreakReminder"
+              (checkedChange)="setPreference('showStreakReminder', $event)"
+            />
+            <app-glitch-checkbox
+              label="Weekly Summary"
+              glitchText="WEEKLY_SUMMARY"
+              [checked]="preferences().weeklySummary"
+              (checkedChange)="setPreference('weeklySummary', $event)"
+            />
+          </div>
+        </div>
+
+        <div class="side-block">
+          <div class="section-heading">
+            <h2 class="section-heading__title">Security</h2>
+            <span class="section-heading__rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="side-card">
+            <div class="pref-row pref-row--stack">
+              <div>
+                <p class="pref-row__label">Two-factor authentication</p>
+                <p class="pref-row__desc">
+                  Add an authenticator app for an extra sign-in step.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="field__btn"
+                (click)="setupTwoFactor()"
+              >
+                Set up two-factor authentication
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="danger-zone" aria-labelledby="danger-zone-title">
+      <div class="danger-card">
+        <div class="danger-card__copy">
+          <h3 id="danger-zone-title" class="danger-card__title">Delete account</h3>
+          <p class="danger-card__body">
+            Permanently remove your account and all associated progress. This cannot be undone.
+          </p>
+        </div>
+        <div class="danger-card__actions">
+          <button type="button" class="btn-danger-outline" (click)="deleteAccount()">
+            Delete account
+          </button>
+        </div>
+      </div>
+    </section>
+  }
+</div>
