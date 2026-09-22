@@ -1,0 +1,10 @@
+<button
+  class="glitch-btn"
+  [class.glitch-btn--danger]="variant() === 'danger'"
+  [attr.type]="type()"
+  [disabled]="disabled()"
+  [attr.data-text]="label()"
+  (click)="onClick()"
+>
+  {{ label() }}
+</button>
