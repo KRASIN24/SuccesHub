@@ -18,9 +18,9 @@ xsi:schemaLocation="
     <include file="db/changelog/2026-06-18-05-seed-rewards.xml"/>
     <include file="db/changelog/2026-06-20-01-task-xp-awarded.xml"/>
     <include file="db/changelog/2026-06-26-01-loot-box-types.xml"/>
+    <include file="db/changelog/2026-07-07-01-profile-display-name-customized.xml"/>
     <include file="db/changelog/2026-07-08-01-streak-day-override.xml"/>
     <include file="db/changelog/2026-09-21-01-loop-closure-profile.xml"/>
     <include file="db/changelog/2026-09-22-01-classic-frame-labels.xml"/>
     <include file="db/changelog/2026-09-22-02-bug-antennae-frame-label.xml"/>
 </databaseChangeLog>
-

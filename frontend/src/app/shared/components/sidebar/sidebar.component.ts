@@ -1,6 +1,7 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ProfileService } from '../../../core/services/profile.service';
 import { LootPendingService } from '../../../core/services/loot-pending.service';
 
 interface NavItem {
@@ -20,12 +21,28 @@ interface NavItem {
     '[class.collapsed]': 'collapsed()',
   },
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   private readonly auth = inject(AuthService);
+  protected readonly profileService = inject(ProfileService);
   protected readonly lootPending = inject(LootPendingService);
 
   readonly collapsed = input(false);
   readonly closeRequested = output<void>();
+
+  readonly displayName = computed(
+    () =>
+      this.profileService.profile()?.displayName ??
+      this.auth.currentUser()?.name ??
+      'The Sovereign'
+  );
+
+  ngOnInit(): void {
+    if (!this.profileService.profile()) {
+      this.profileService.getProfile().subscribe({
+        error: (err) => console.error('Failed to load sidebar profile', err),
+      });
+    }
+  }
 
   logout(): void {
     this.auth.logout();
@@ -40,6 +57,7 @@ export class SidebarComponent {
     { label: 'Profile', icon: 'person', route: '/profile' },
   ];
 
-  /** Settings stays a PlaceholderComponent — hide until a real page ships. */
-  readonly bottomItems: NavItem[] = [];
+  readonly bottomItems: NavItem[] = [
+    { label: 'Settings', icon: 'settings', route: '/settings' },
+  ];
 }

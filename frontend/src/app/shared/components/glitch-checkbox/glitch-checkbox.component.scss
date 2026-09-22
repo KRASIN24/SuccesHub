@@ -1,0 +1,230 @@
+:host {
+  display: block;
+}
+
+.glitch-checkbox {
+  --glitch-primary: var(--color-primary, #f5be42);
+  --glitch-secondary: #ff8a3d;
+  --glitch-text: #f2ece8;
+  --glitch-disabled: #6b6358;
+  --glitch-bg: var(--color-surface-container-lowest, #0f0d11);
+  --glitch-duration: 0.3s;
+
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.glitch-checkbox input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.glitch-checkbox__box {
+  width: 1.55em;
+  height: 1.55em;
+  flex-shrink: 0;
+  border: 2px solid var(--glitch-primary);
+  position: relative;
+  background: rgba(245, 190, 66, 0.06);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  clip-path: polygon(
+    15% 0,
+    85% 0,
+    100% 15%,
+    100% 85%,
+    85% 100%,
+    15% 100%,
+    0 85%,
+    0 15%
+  );
+}
+
+.glitch-checkbox__mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58%;
+  height: 58%;
+  background: var(--glitch-primary);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  clip-path: inherit;
+  box-shadow: 0 0 10px rgba(245, 190, 66, 0.55);
+}
+
+.glitch-checkbox__label {
+  color: var(--glitch-text);
+  font-family: var(--font-label, Inter, system-ui, sans-serif);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+  z-index: 1;
+}
+
+.glitch-checkbox__label::before,
+.glitch-checkbox__label::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+}
+
+.glitch-checkbox input:checked + .glitch-checkbox__box {
+  background: rgba(245, 190, 66, 0.16);
+  box-shadow: 0 0 12px rgba(245, 190, 66, 0.35);
+}
+
+.glitch-checkbox input:checked + .glitch-checkbox__box .glitch-checkbox__mark {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  animation: glitch-anim-checkbox var(--glitch-duration) both;
+}
+
+.glitch-checkbox input:checked ~ .glitch-checkbox__label {
+  color: var(--glitch-primary);
+  text-shadow: 0 0 10px rgba(245, 190, 66, 0.45);
+}
+
+.glitch-checkbox:hover .glitch-checkbox__box {
+  box-shadow: 0 0 14px rgba(245, 190, 66, 0.55);
+}
+
+/* One-shot glitch layers — fade out so the real label stays readable while hovered. */
+.glitch-checkbox:hover:not(.glitch-checkbox--disabled) .glitch-checkbox__label::before {
+  color: var(--glitch-secondary);
+  animation: glitch-anim-text var(--glitch-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.glitch-checkbox:hover:not(.glitch-checkbox--disabled) .glitch-checkbox__label::after {
+  color: var(--glitch-primary);
+  animation: glitch-anim-text-alt var(--glitch-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.glitch-checkbox--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.glitch-checkbox--disabled .glitch-checkbox__box {
+  border-color: var(--glitch-disabled);
+  box-shadow: none !important;
+  background: transparent;
+}
+
+.glitch-checkbox--disabled .glitch-checkbox__label {
+  color: var(--glitch-disabled);
+  text-shadow: none;
+}
+
+.glitch-checkbox--disabled .glitch-checkbox__label::before,
+.glitch-checkbox--disabled .glitch-checkbox__label::after {
+  content: none;
+}
+
+@keyframes glitch-anim-checkbox {
+  0% {
+    transform: translate(-50%, -50%);
+    clip-path: inset(0 0 0 0);
+  }
+  20% {
+    transform: translate(calc(-50% - 3px), calc(-50% + 2px));
+    clip-path: inset(50% 0 20% 0);
+  }
+  40% {
+    transform: translate(calc(-50% + 2px), calc(-50% - 1px));
+    clip-path: inset(20% 0 60% 0);
+  }
+  60% {
+    transform: translate(calc(-50% - 2px), calc(-50% + 1px));
+    clip-path: inset(80% 0 5% 0);
+  }
+  80% {
+    transform: translate(calc(-50% + 2px), calc(-50% - 2px));
+    clip-path: inset(30% 0 45% 0);
+  }
+  100% {
+    transform: translate(-50%, -50%);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes glitch-anim-text {
+  0% {
+    opacity: 1;
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-3px, 2px);
+    clip-path: inset(50% 0 20% 0);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(2px, -1px);
+    clip-path: inset(20% 0 60% 0);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-2px, 1px);
+    clip-path: inset(80% 0 5% 0);
+  }
+  80% {
+    opacity: 0.85;
+    transform: translate(2px, -2px);
+    clip-path: inset(30% 0 45% 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes glitch-anim-text-alt {
+  0% {
+    opacity: 1;
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(3px, -2px);
+    clip-path: inset(30% 0 45% 0);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-2px, 1px);
+    clip-path: inset(80% 0 5% 0);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(2px, 1px);
+    clip-path: inset(20% 0 60% 0);
+  }
+  80% {
+    opacity: 0.85;
+    transform: translate(-2px, 2px);
+    clip-path: inset(50% 0 20% 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
