@@ -3,16 +3,19 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { Observable } from 'rxjs';
 import { GamificationService } from '../../../core/services/gamification.service';
+import { DevToolsService } from '../../../core/services/dev-tools.service';
 import {
   InventoryItem,
   StreakActionResult,
@@ -20,6 +23,7 @@ import {
   StreakDay,
   StreakDayStatus,
 } from '../../../core/models/gamification.model';
+import { DevToolsChipComponent } from '../../../shared/components/dev-tools/dev-tools-chip.component';
 
 /** Shape of the date object PrimeNG passes to the `date` template. `month` is 0-indexed. */
 interface DateCell {
@@ -32,19 +36,20 @@ interface DateCell {
 }
 
 /**
- * Streak management panel: a PrimeNG calendar heat-map of completed/missed/shielded days,
- * manual streak controls, and gamification card usage (bank/spend shields, use XP boosts).
+ * Streak management panel: calendar heat-map, shield/card usage.
+ * Manual streak testing tools live in the Dev bubble system when enabled.
  */
 @Component({
   selector: 'app-streak-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePickerModule],
+  imports: [CommonModule, FormsModule, DatePickerModule, DevToolsChipComponent],
   templateUrl: './streak-panel.component.html',
   styleUrl: './streak-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StreakPanelComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
+  private readonly devTools = inject(DevToolsService);
 
   /** Utility inventory items (shields + XP boosts) usable from this panel. */
   readonly cards = input<InventoryItem[]>([]);
@@ -59,7 +64,6 @@ export class StreakPanelComponent implements OnInit {
 
   readonly viewDate = signal<Date>(new Date());
   readonly selectedDate = signal<Date | null>(null);
-  readonly setValueInput = signal<number>(0);
 
   private readonly curYear = signal<number>(new Date().getFullYear());
   private readonly curMonth = signal<number>(new Date().getMonth() + 1);
@@ -87,6 +91,20 @@ export class StreakPanelComponent implements OnInit {
     () => this.selectedStatus() === 'MISSED' && (this.calendar()?.shieldsAvailable ?? 0) > 0
   );
 
+  constructor() {
+    // Reload when Dev tools mutate streak / clock / ritual state.
+    effect(() => {
+      const rev = this.devTools.dataRevision();
+      untracked(() => {
+        if (rev === 0) {
+          return;
+        }
+        this.reloadCurrent();
+        this.changed.emit();
+      });
+    });
+  }
+
   ngOnInit(): void {
     this.load(this.curYear(), this.curMonth());
   }
@@ -105,7 +123,7 @@ export class StreakPanelComponent implements OnInit {
     this.gamification.getStreakCalendar(key).subscribe({
       next: (cal) => {
         this.calendar.set(cal);
-        this.setValueInput.set(cal.currentStreak);
+        this.devTools.applyStreakResult(cal.currentStreak);
         this.loading.set(false);
       },
       error: () => {
@@ -151,24 +169,6 @@ export class StreakPanelComponent implements OnInit {
       return;
     }
     this.run(this.gamification.shieldDay(key));
-  }
-
-  adjust(delta: number): void {
-    if (!this.busy()) {
-      this.run(this.gamification.adjustStreak(delta));
-    }
-  }
-
-  applySet(): void {
-    if (!this.busy()) {
-      this.run(this.gamification.setStreak(this.setValueInput()));
-    }
-  }
-
-  reset(): void {
-    if (!this.busy()) {
-      this.run(this.gamification.resetStreak());
-    }
   }
 
   useCard(item: InventoryItem): void {

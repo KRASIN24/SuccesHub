@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal, untracked } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -11,6 +11,7 @@ import { EquippedCosmeticsService } from '../../core/services/equipped-cosmetics
 import { QuoteService } from '../../core/services/quote.service';
 import { MarketService } from '../../core/services/market.service';
 import { AstronomyService } from '../../core/services/astronomy.service';
+import { DevToolsService } from '../../core/services/dev-tools.service';
 import { Task } from '../../core/models/task.model';
 import { Achievement } from '../../core/models/achievement.model';
 import { DailyStatus, Forecast } from '../../core/models/gamification.model';
@@ -19,6 +20,7 @@ import { DailyQuote, LunarData } from '../../core/models/lunar.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';
+import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
 
 @Component({
   selector: 'app-home',
@@ -29,6 +31,7 @@ import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments
     LoadingSkeletonComponent,
     ErrorStateComponent,
     FrameOrnamentsComponent,
+    DevToolsChipComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -43,6 +46,7 @@ export class HomeComponent implements OnInit {
   private readonly quoteService = inject(QuoteService);
   private readonly marketService = inject(MarketService);
   private readonly astronomyService = inject(AstronomyService);
+  private readonly devTools = inject(DevToolsService);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -55,6 +59,18 @@ export class HomeComponent implements OnInit {
   readonly marketData = signal<MarketData | null>(null);
   readonly lunarData = signal<LunarData | null>(null);
   readonly quote = signal<DailyQuote | null>(null);
+
+  constructor() {
+    effect(() => {
+      const rev = this.devTools.dataRevision();
+      untracked(() => {
+        if (rev === 0) {
+          return;
+        }
+        this.loadDashboardData(true);
+      });
+    });
+  }
 
   ngOnInit(): void {
     this.loadDashboardData();

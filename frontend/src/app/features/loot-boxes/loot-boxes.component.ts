@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { forkJoin, switchMap } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { GamificationService } from '../../core/services/gamification.service';
 import { LootAudioService } from '../../core/services/loot-audio.service';
 import { LootPendingService } from '../../core/services/loot-pending.service';
@@ -12,6 +12,7 @@ import {
   LootChestVariant,
 } from './animated-loot-chest/animated-loot-chest.component';
 import { RevealCardComponent } from './reveal-card/reveal-card.component';
+import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
 
 type Phase = 'idle' | 'charging' | 'revealing';
 type GlowTier = 'default' | 'silver' | 'gold';
@@ -112,6 +113,7 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     ErrorStateComponent,
     AnimatedLootChestComponent,
     RevealCardComponent,
+    DevToolsChipComponent,
   ],
   templateUrl: './loot-boxes.component.html',
   styleUrl: './loot-boxes.component.scss',
@@ -120,9 +122,6 @@ export class LootBoxesComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
   private readonly lootAudio = inject(LootAudioService);
   private readonly lootPending = inject(LootPendingService);
-
-  /** Loaded from backend {@code GET /gamification/config}. */
-  readonly enableLootDevGrants = signal(false);
 
   readonly navPrevIcon = 'https://www.figma.com/api/mcp/asset/c32ac360-fb11-43c3-8a87-8987a3ddb081';
   readonly navNextIcon = 'https://www.figma.com/api/mcp/asset/58580b05-b667-4c70-86a2-93d7ba92670c';
@@ -176,9 +175,6 @@ export class LootBoxesComponent implements OnInit {
     if (pending > 0) {
       return `${pending} cache${pending === 1 ? '' : 's'} ready to open`;
     }
-    if (this.enableLootDevGrants()) {
-      return 'Summons a cache and opens instantly';
-    }
     return 'Complete tasks or streak milestones to earn caches';
   });
 
@@ -186,10 +182,7 @@ export class LootBoxesComponent implements OnInit {
     if (this.busy() || this.phase() !== 'idle' || !this.selectedBox()) {
       return false;
     }
-    if (this.selectedPendingCount() > 0) {
-      return true;
-    }
-    return this.enableLootDevGrants();
+    return this.selectedPendingCount() > 0;
   });
 
   readonly heroChestClass = computed(() => this.chestClassForBox(this.selectedBox()));
@@ -262,13 +255,11 @@ export class LootBoxesComponent implements OnInit {
       types: this.gamification.getBoxTypes(),
       pending: this.gamification.getPendingLootBoxes(),
       history: this.gamification.getLootBoxHistory(HISTORY_BOX_LIMIT),
-      config: this.gamification.getClientConfig(),
     }).subscribe({
-      next: ({ types, pending, history, config }) => {
+      next: ({ types, pending, history }) => {
         this.boxTypes.set(types);
         this.lootPending.pendingBoxes.set(pending);
         this.recentHistory.set(this.mapHistoryFromApi(history, types));
-        this.enableLootDevGrants.set(config.enableLootDevGrants);
         this.loading.set(false);
       },
       error: () => {
@@ -366,55 +357,13 @@ export class LootBoxesComponent implements OnInit {
     this.primaryAction();
   }
 
-  /** Opens a held cache, or grants one and opens immediately when dev grants are enabled. */
+  /** Opens a held pending cache of the selected type. */
   primaryAction(): void {
     const box = this.selectedBox();
     if (!box) return;
     if (this.selectedPendingCount() > 0) {
       this.open(box);
-    } else if (this.enableLootDevGrants()) {
-      this.grantAndOpen(box);
     }
-  }
-
-  /** Grants a pending cache of the selected type WITHOUT opening it (earn-simulation). */
-  summon(): void {
-    const box = this.selectedBox();
-    if (!box || this.busy() || this.phase() !== 'idle') return;
-    this.busy.set(true);
-    this.gamification.grantLootBox(box.id).subscribe({
-      next: (created) => {
-        this.lootPending.pendingBoxes.update((list) => [created, ...list]);
-        this.busy.set(false);
-      },
-      error: () => {
-        this.error.set('Could not summon a cache.');
-        this.busy.set(false);
-      },
-    });
-  }
-
-  private grantAndOpen(box: BoxType): void {
-    if (this.busy() || this.phase() !== 'idle') return;
-    this.busy.set(true);
-    this.gamification
-      .grantLootBox(box.id)
-      .pipe(
-        switchMap((created) => {
-          this.lootPending.pendingBoxes.update((list) => [created, ...list]);
-          return this.gamification.openLootBox(created.id);
-        })
-      )
-      .subscribe({
-        next: (opened) => {
-          this.lootPending.removeOpened(opened.id);
-          this.beginOpening(box, opened);
-        },
-        error: () => {
-          this.error.set('Could not open the cache.');
-          this.busy.set(false);
-        },
-      });
   }
 
   pendingCount(boxTypeId: string): number {

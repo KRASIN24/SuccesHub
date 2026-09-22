@@ -128,8 +128,20 @@ export interface InventoryItem {
   equipped: boolean;
 }
 
+/** Mirrors GET /api/gamification/config — gates testing tools and exposes virtual clock. */
 export interface GamificationClientConfig {
   enableLootDevGrants: boolean;
+  /** ISO date (yyyy-MM-dd) used as gamification today. */
+  effectiveToday: string;
+  /** Days added to the real calendar for testing (0 = none). */
+  dayOffset: number;
+}
+
+/** Result of POST /gamification/dev/unseal. */
+export interface DevUnsealResult {
+  cleared: boolean;
+  effectiveToday: string;
+  message: string;
 }
 
 export type StreakDayStatus = 'COMPLETED' | 'MISSED' | 'SHIELDED' | 'TODAY' | 'FUTURE' | 'EMPTY';

@@ -473,6 +473,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
   border: 1px solid rgba(232, 179, 62, 0.35);
@@ -483,6 +484,19 @@
     margin: 0;
     font-size: 0.9rem;
   }
+}
+
+.celebrate-banner__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dev-ritual-anchor {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
 }
 
 .celebrate-banner--sealed {

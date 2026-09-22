@@ -15,6 +15,7 @@ import com.succeshub.appdomain.service.DailyRitualService;
 import com.succeshub.appdomain.service.GamificationService;
 import com.succeshub.appdomain.service.InsightService;
 import com.succeshub.appdomain.service.LootBoxService;
+import com.succeshub.appdomain.service.gamification.GamificationTimeUtil;
 import com.succeshub.config.LootProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,11 +44,14 @@ public class GamificationController {
     private final InsightService insightService;
     private final LootBoxService lootBoxService;
     private final LootProperties lootProperties;
+    private final GamificationTimeUtil timeUtil;
 
     /**
      * Returns client-safe feature flags for the gamification UI.
      */
-    @Operation(summary = "Client config", description = "Feature flags for the SPA (loot dev grants, etc.).")
+    @Operation(summary = "Client config",
+            description = "Feature flags for the SPA: enableLootDevGrants gates loot summon, streak tools, "
+                    + "and /dev testing APIs. Also returns the effective gamification today and day offset.")
     @ApiResponse(responseCode = "200", description = "Config returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @GetMapping("/config")
@@ -55,7 +59,10 @@ public class GamificationController {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.ok(new ClientConfigDto(lootProperties.isEnableDevGrants()));
+        return ResponseEntity.ok(new ClientConfigDto(
+                lootProperties.isEnableDevGrants(),
+                timeUtil.today().toString(),
+                timeUtil.getDayOffset()));
     }
 
     /**

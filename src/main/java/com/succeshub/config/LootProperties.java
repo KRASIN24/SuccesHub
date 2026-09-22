@@ -13,8 +13,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class LootProperties {
 
     /**
-     * When {@code false} (production default), manual grant/summon endpoints are disabled
-     * and the frontend hides dev-only affordances.
+     * When {@code false} (production default), manual loot grant/summon, streak
+     * adjust/set/reset, and {@code /api/gamification/dev/*} endpoints return 403,
+     * and the SPA hides the Dev bubble dock and page chips.
+     * Shield day and inventory card use remain available.
      */
     private boolean enableDevGrants = false;
 }

@@ -97,9 +97,11 @@ public class StreakManagementServiceImpl implements StreakManagementService {
     @Transactional
     public StreakActionResultDto adjustStreak(String userId, int delta) {
         UserProfile profile = userProfileService.requireProfile(userId);
-        applyStreakValue(profile, profile.getCurrentStreak() + delta);
+        int before = profile.getCurrentStreak();
+        applyStreakValue(profile, before + delta);
         profileRepository.save(profile);
-        return result(userId, profile, "Streak set to " + profile.getCurrentStreak() + " day(s).");
+        return result(userId, profile,
+                "Streak " + before + " → " + profile.getCurrentStreak() + " day(s).");
     }
 
     @Override
@@ -117,6 +119,7 @@ public class StreakManagementServiceImpl implements StreakManagementService {
         UserProfile profile = userProfileService.requireProfile(userId);
         profile.setCurrentStreak(0);
         profile.setStreakTier(UserProfile.StreakTier.NONE);
+        profile.setLastProcessedDay(timeUtil.today().minusDays(1));
         profileRepository.save(profile);
         return result(userId, profile, "Streak reset.");
     }
@@ -256,6 +259,10 @@ public class StreakManagementServiceImpl implements StreakManagementService {
         int clamped = Math.max(0, value);
         profile.setCurrentStreak(clamped);
         profile.setStreakTier(UserProfile.tierForStreak(clamped));
+        // Pin settlement cursor so a virtual clock backlog does not immediately
+        // re-process days and overwrite this manual testing value.
+        profile.setLastProcessedDay(timeUtil.today().minusDays(1));
+        profile.setLastActiveDate(timeUtil.today());
     }
 
     /** Decrements a stack, deleting the row when it hits zero. Returns remaining quantity. */
