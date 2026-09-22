@@ -116,6 +116,19 @@ public class DailyRitualServiceImpl implements DailyRitualService {
 
     @Override
     @Transactional
+    public boolean unsealToday(String userId) {
+        UserProfile profile = userProfileService.requireProfile(userId);
+        LocalDate today = timeUtil.today();
+        if (today.equals(profile.getLastCelebratedDay())) {
+            profile.setLastCelebratedDay(null);
+            profileRepository.save(profile);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
     public DailyStatusDto getDailyStatus(String userId) {
         closePendingDays(userId);
         UserProfile profile = userProfileService.requireProfile(userId);

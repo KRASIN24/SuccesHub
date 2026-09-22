@@ -42,4 +42,12 @@ public interface DailyRitualService {
      * @return forecast widget payload
      */
     ForecastDto getForecast(String userId);
+
+    /**
+     * Dev/testing helper: clears today's celebrate seal so the Seal CTA can reappear.
+     *
+     * @param userId Keycloak subject ID
+     * @return true when a seal for effective today was cleared
+     */
+    boolean unsealToday(String userId);
 }

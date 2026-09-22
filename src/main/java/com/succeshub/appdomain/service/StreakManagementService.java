@@ -9,8 +9,9 @@ import java.time.YearMonth;
 import java.util.UUID;
 
 /**
- * User-facing streak management: calendar rendering, manual streak adjustment,
- * and spending gamification cards (shields, boosts) against the streak.
+ * User-facing streak management: calendar rendering, shield/card usage, and
+ * manual streak adjust/set/reset (gated at the controller by
+ * {@code succeshub.loot.enable-dev-grants}).
  */
 public interface StreakManagementService {
 
