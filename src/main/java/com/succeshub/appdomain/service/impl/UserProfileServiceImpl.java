@@ -25,12 +25,29 @@ public class UserProfileServiceImpl implements UserProfileService {
                     return repository.save(p);
                 });
 
-        if (displayName != null && !displayName.equals(profile.getDisplayName())) {
+        if (displayName != null
+                && !displayName.equals(profile.getDisplayName())
+                && !profile.isDisplayNameCustomized()) {
             profile.setDisplayName(displayName);
             profile = repository.save(profile);
         }
 
         return toDto(profile);
+    }
+
+    @Override
+    @Transactional
+    public ProfileDto updateDisplayName(String keycloakId, String displayName) {
+        UserProfile profile = repository.findByKeycloakId(keycloakId)
+                .orElseGet(() -> {
+                    UserProfile p = new UserProfile();
+                    p.setKeycloakId(keycloakId);
+                    return repository.save(p);
+                });
+
+        profile.setDisplayName(displayName.trim());
+        profile.setDisplayNameCustomized(true);
+        return toDto(repository.save(profile));
     }
 
     @Override
