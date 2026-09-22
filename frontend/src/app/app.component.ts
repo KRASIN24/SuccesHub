@@ -8,10 +8,12 @@ import { LevelUpOverlayComponent } from './shared/components/gamification/level-
 import { AchievementSlamComponent } from './shared/components/gamification/achievement-slam.component';
 import { CacheEarnedToastComponent } from './shared/components/gamification/cache-earned-toast.component';
 import { BossDamageToastComponent } from './shared/components/gamification/boss-damage-toast.component';
+import { DevToolsHostComponent } from './shared/components/dev-tools/dev-tools-host.component';
 import { GamificationCelebrationService } from './core/services/gamification-celebration.service';
 import { LootPendingService } from './core/services/loot-pending.service';
 import { EquippedCosmeticsService } from './core/services/equipped-cosmetics.service';
 import { AuthService } from './core/services/auth.service';
+import { DevToolsService } from './core/services/dev-tools.service';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +27,7 @@ import { AuthService } from './core/services/auth.service';
     AchievementSlamComponent,
     CacheEarnedToastComponent,
     BossDamageToastComponent,
+    DevToolsHostComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -35,6 +38,7 @@ export class AppComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly lootPending = inject(LootPendingService);
   private readonly cosmetics = inject(EquippedCosmeticsService);
+  private readonly devTools = inject(DevToolsService);
   readonly celebrations = inject(GamificationCelebrationService);
 
   readonly sidenavOpen = signal(this.isDesktop());
@@ -53,6 +57,7 @@ export class AppComponent implements OnInit {
     if (this.auth.isLoggedIn()) {
       this.lootPending.refresh();
       this.cosmetics.refresh();
+      this.devTools.refresh();
     }
   }
 

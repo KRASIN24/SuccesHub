@@ -1,0 +1,122 @@
+@if (tools.enabled()) {
+  <div class="dev-dock" aria-live="polite">
+    @if (tools.openTool(); as openId) {
+      <div class="dev-panel" role="dialog" [attr.aria-label]="toolMeta[openId].title">
+        <header class="dev-panel__head">
+          <div class="dev-panel__tabs">
+            @for (id of toolIds; track id) {
+              <button
+                type="button"
+                class="dev-tab"
+                [class.dev-tab--active]="openId === id"
+                (click)="selectTool(id)"
+              >
+                <span class="material-symbols-outlined">{{ toolMeta[id].icon }}</span>
+                {{ toolMeta[id].label }}
+              </button>
+            }
+          </div>
+          <button type="button" class="dev-panel__close" (click)="closePanel()" aria-label="Close tools">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </header>
+
+        <p class="dev-panel__clock">
+          Effective today <strong>{{ tools.effectiveToday() || '—' }}</strong>
+          · offset {{ tools.dayOffset() }}
+        </p>
+
+        @if (tools.feedback()) {
+          <p class="dev-panel__reply">{{ tools.feedback() }}</p>
+        }
+
+        @if (tools.pendingConfirm() === 'reset-streak') {
+          <div class="dev-confirm">
+            <p>Reset streak to zero?</p>
+            <div class="dev-actions">
+              <button type="button" class="dev-btn dev-btn--danger" [disabled]="tools.busy()" (click)="confirmResetStreak()">
+                Confirm reset
+              </button>
+              <button type="button" class="dev-btn" (click)="cancelConfirm()">Cancel</button>
+            </div>
+          </div>
+        } @else if (tools.pendingConfirm() === 'clear-clock') {
+          <div class="dev-confirm">
+            <p>Clear virtual day offset?</p>
+            <div class="dev-actions">
+              <button type="button" class="dev-btn dev-btn--danger" [disabled]="tools.busy()" (click)="confirmClearClock()">
+                Confirm clear
+              </button>
+              <button type="button" class="dev-btn" (click)="cancelConfirm()">Cancel</button>
+            </div>
+          </div>
+        } @else if (openId === 'streak') {
+          <p class="dev-panel__hint">
+            Live streak:
+            <strong>{{ tools.liveStreak() ?? '—' }}</strong>
+            (profile “Day streak” refreshes after each action)
+          </p>
+          <div class="dev-actions">
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="adjustMinusOne()">−1 day</button>
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="adjustPlusOne()">+1 day</button>
+            <button type="button" class="dev-btn dev-btn--danger" [disabled]="tools.busy()" (click)="requestResetStreak()">
+              Reset
+            </button>
+          </div>
+          <div class="dev-actions">
+            <input
+              type="number"
+              min="0"
+              class="dev-input"
+              [ngModel]="tools.streakSetValue()"
+              (ngModelChange)="tools.streakSetValue.set(+$event)"
+              [disabled]="tools.busy()"
+            />
+            <button type="button" class="dev-btn dev-btn--primary" [disabled]="tools.busy()" (click)="applySetStreak()">
+              Set streak
+            </button>
+          </div>
+        } @else if (openId === 'cache') {
+          <p class="dev-panel__hint">Summon a pending cache without opening it.</p>
+          <div class="dev-actions dev-actions--wrap">
+            @for (box of tools.boxTypes(); track box.id) {
+              <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="summon(box.id)">
+                {{ box.name }}
+              </button>
+            }
+          </div>
+        } @else if (openId === 'time') {
+          <p class="dev-panel__hint">Shift gamification “today” for day-close / streak demos. Process-wide until cleared or restart.</p>
+          <div class="dev-actions">
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="shiftDay(-1)">−1 day</button>
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="shiftDay(1)">+1 day</button>
+            <button type="button" class="dev-btn dev-btn--danger" [disabled]="tools.busy()" (click)="requestClearClock()">
+              Clear
+            </button>
+          </div>
+        } @else if (openId === 'ritual') {
+          <p class="dev-panel__hint">Force settle past days or reopen today’s Seal CTA.</p>
+          <div class="dev-actions dev-actions--wrap">
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="forceClosePending()">
+              Close pending days
+            </button>
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="unsealToday()">
+              Unseal today
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <button
+      type="button"
+      class="dev-fab"
+      [class.dev-fab--open]="!!tools.openTool()"
+      (click)="toggleDock()"
+      aria-label="Toggle dev tools"
+    >
+      <span class="material-symbols-outlined">{{ tools.openTool() ? 'close' : 'construction' }}</span>
+      <span class="dev-fab__label">Dev</span>
+    </button>
+  </div>
+}

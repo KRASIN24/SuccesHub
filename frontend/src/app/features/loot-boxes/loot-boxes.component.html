@@ -56,8 +56,13 @@
         </div>
 
         <div class="hero__copy">
-          <p class="hero__eyebrow">The Celestial Cache</p>
-          <h1 class="hero__title">{{ selectedBox()!.name }}</h1>
+          <div class="hero__copy-row">
+            <div>
+              <p class="hero__eyebrow">The Celestial Cache</p>
+              <h1 class="hero__title">{{ selectedBox()!.name }}</h1>
+            </div>
+            <app-dev-tools-chip tool="cache"></app-dev-tools-chip>
+          </div>
           <p class="hero__subtitle">{{ selectedBox()!.blurb }}</p>
         </div>
 
@@ -74,16 +79,6 @@
               <span class="hero__cta-badge">{{ selectedPendingCount() }}</span>
             }
           </button>
-          @if (enableLootDevGrants()) {
-            <button
-              type="button"
-              class="hero__cta-secondary"
-              (click)="summon()"
-              [disabled]="!canOpen()"
-            >
-              + Summon a cache (no open)
-            </button>
-          }
           <p class="hero__cta-hint">{{ ctaHint() }}</p>
         </div>
       </section>

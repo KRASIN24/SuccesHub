@@ -1,7 +1,12 @@
 <section class="streak-panel app-dark">
   <div class="streak-panel__heading">
-    <h2 class="streak-panel__title">Streak</h2>
-    <p class="streak-panel__sub">Repair missed days and bank shields to defend the chain.</p>
+    <div class="streak-panel__heading-row">
+      <div>
+        <h2 class="streak-panel__title">Streak</h2>
+        <p class="streak-panel__sub">Repair missed days and bank shields to defend the chain.</p>
+      </div>
+      <app-dev-tools-chip tool="streak"></app-dev-tools-chip>
+    </div>
   </div>
 
   @if (feedback()) {
@@ -104,29 +109,6 @@
           </article>
         }
       </div>
-
-      <details class="streak-manip">
-        <summary class="streak-manip__summary">Dev streak controls</summary>
-        <p class="streak-manip__hint">Testing tools — manually tune the streak counter.</p>
-        <div class="streak-manip__row">
-          <button type="button" class="streak-btn" [disabled]="busy()" (click)="adjust(-1)">−1 day</button>
-          <button type="button" class="streak-btn" [disabled]="busy()" (click)="adjust(1)">+1 day</button>
-          <button type="button" class="streak-btn streak-btn--danger" [disabled]="busy()" (click)="reset()">Reset</button>
-        </div>
-        <div class="streak-manip__row">
-          <input
-            type="number"
-            min="0"
-            class="streak-input"
-            [ngModel]="setValueInput()"
-            (ngModelChange)="setValueInput.set($event)"
-            [disabled]="busy()"
-          />
-          <button type="button" class="streak-btn streak-btn--primary" [disabled]="busy()" (click)="applySet()">
-            Set streak
-          </button>
-        </div>
-      </details>
     </div>
   </div>
 </section>

@@ -87,7 +87,10 @@
     @if (daily()?.pendingCelebrations) {
       <section class="celebrate-banner">
         <div>
-          <p class="celebrate-title">Qualifying day complete</p>
+          <div class="celebrate-banner__row">
+            <p class="celebrate-title">Qualifying day complete</p>
+            <app-dev-tools-chip tool="ritual"></app-dev-tools-chip>
+          </div>
           <p class="celebrate-copy">Seal today to lock the beat — past days are already settled by the daily sync.</p>
         </div>
         <button type="button" class="celebrate-btn" [disabled]="celebrating()" (click)="celebrateDay()">
@@ -97,11 +100,18 @@
     } @else if (daily()?.daySealed) {
       <section class="celebrate-banner celebrate-banner--sealed">
         <div>
-          <p class="celebrate-title">Day sealed</p>
+          <div class="celebrate-banner__row">
+            <p class="celebrate-title">Day sealed</p>
+            <app-dev-tools-chip tool="ritual"></app-dev-tools-chip>
+          </div>
           <p class="celebrate-copy">Streak progress is locked in. Keep executing — tomorrow’s ritual will count this day.</p>
         </div>
         <span class="sealed-chip">Sealed</span>
       </section>
+    } @else {
+      <div class="dev-ritual-anchor">
+        <app-dev-tools-chip tool="ritual"></app-dev-tools-chip>
+      </div>
     }
 
     <div class="grid">

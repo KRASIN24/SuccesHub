@@ -5,6 +5,7 @@ import {
   BoxType,
   CloseDayResult,
   DailyStatus,
+  DevUnsealResult,
   Forecast,
   GamificationClientConfig,
   InventoryItem,
@@ -112,5 +113,20 @@ export class GamificationService {
   /** Spends a streak shield to protect a specific missed day (yyyy-MM-dd). */
   shieldDay(date: string): Observable<StreakActionResult> {
     return this.api.post<StreakActionResult>('/gamification/streak/shield', { date });
+  }
+
+  /** Sets or clears the virtual day offset (dev tools). */
+  setDevClock(body: { dayOffset?: number; clear?: boolean }): Observable<GamificationClientConfig> {
+    return this.api.post<GamificationClientConfig>('/gamification/dev/clock', body);
+  }
+
+  /** Forces lazy close of pending days through yesterday (dev tools). */
+  forceClosePending(): Observable<CloseDayResult> {
+    return this.api.post<CloseDayResult>('/gamification/dev/close-pending', {});
+  }
+
+  /** Clears today's celebrate seal (dev tools). */
+  unsealToday(): Observable<DevUnsealResult> {
+    return this.api.post<DevUnsealResult>('/gamification/dev/unseal', {});
   }
 }
