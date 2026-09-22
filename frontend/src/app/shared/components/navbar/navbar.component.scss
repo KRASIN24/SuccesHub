@@ -10,6 +10,7 @@
   background: color-mix(in srgb, var(--color-app-bg), transparent 15%);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--color-border);
+  overflow: visible;
 }
 
 .topbar-left {
@@ -31,6 +32,7 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
+  overflow: visible;
 }
 
 .stat-chip {
@@ -54,8 +56,21 @@
   color: var(--color-gold);
 }
 
-.icon-btn,
-.avatar-btn {
+.stat-chip.rank {
+  /* keep existing layout */
+}
+
+.title-chip {
+  max-width: 160px;
+
+  .stat-val {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.icon-btn {
   position: relative;
   display: grid;
   place-items: center;
@@ -69,20 +84,81 @@
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
-.icon-btn .material-icons,
-.avatar-btn .material-icons {
+.icon-btn .material-icons {
   font-size: 20px;
 }
 
-.icon-btn:hover,
-.avatar-btn:hover {
+.icon-btn:hover {
   color: var(--color-text);
   background: var(--color-surface-2);
 }
 
-.avatar-btn {
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface-2);
+/* Mini copy of the profile hero avatar — hex + ornaments when a frame is equipped. */
+.nav-avatar {
+  --nav-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  text-decoration: none;
+  overflow: visible;
+}
+
+.nav-avatar__stage {
+  position: relative;
+  width: 34px;
+  height: 38px;
+  overflow: visible;
+  filter: drop-shadow(0 0 8px rgba(232, 179, 62, 0.25));
+}
+
+.nav-avatar--framed .nav-avatar__stage {
+  filter: drop-shadow(0 0 10px rgba(232, 179, 62, 0.4));
+}
+
+.nav-avatar__outer.hex-outer {
+  width: 34px;
+  height: 38px;
+  clip-path: var(--nav-hex-clip);
+  background: linear-gradient(160deg, #f6cf63, #b98520);
+  padding: 2px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+}
+
+.nav-avatar--framed .nav-avatar__outer.hex-outer {
+  padding: 2px;
+}
+
+.nav-avatar__inner {
+  width: 100%;
+  height: 100%;
+  clip-path: var(--nav-hex-clip);
+  background: radial-gradient(circle at 50% 35%, #2a2418, #141317 72%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-avatar__initials {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-gold-bright, #f6cf63);
+  letter-spacing: 0.02em;
+}
+
+.nav-avatar__fallback {
+  font-size: 14px;
+  color: var(--color-gold-bright, #f6cf63);
+}
+
+.nav-avatar:hover .nav-avatar__outer.hex-outer {
+  filter: brightness(1.08);
 }
 
 @media (max-width: 960px) {

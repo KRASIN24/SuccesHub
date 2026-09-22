@@ -1,11 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Achievement } from '../models/achievement.model';
-import { CloseDayResult, RewardEvent, TaskCompletion } from '../models/gamification.model';
+import { BossDamage, CloseDayResult, RewardEvent, TaskCompletion } from '../models/gamification.model';
 import { ProfileService } from './profile.service';
 import { LootPendingService } from './loot-pending.service';
 
 /**
- * Global celebration overlays (XP tick, level-up, achievements).
+ * Global celebration overlays (XP tick, level-up, achievements, boss damage).
  * Loot boxes are NOT opened here — earned caches stay pending until the user
  * opens them on the Celestial Cache page.
  */
@@ -21,6 +21,9 @@ export class GamificationCelebrationService {
   readonly levelUpTrigger = signal<{ level: number; tick: number } | null>(null);
   readonly achievementTrigger = signal<{ achievement: Achievement; tick: number } | null>(null);
   readonly cacheEarnedTrigger = signal<{ count: number; tick: number } | null>(null);
+  readonly bossDamageTrigger = signal<{ damage: BossDamage; tick: number } | null>(null);
+  /** Bumped when goals should soft-refresh after boss damage. */
+  readonly goalsRefreshTick = signal(0);
 
   handleTaskCompletion(completion: TaskCompletion): void {
     if (completion.updatedProfile) {
@@ -59,6 +62,13 @@ export class GamificationCelebrationService {
       setTimeout(() => {
         this.levelUpTrigger.set({ level: reward.newLevel, tick: ++this.sequence });
       }, 400);
+    }
+
+    if (reward.bossDamage) {
+      setTimeout(() => {
+        this.bossDamageTrigger.set({ damage: reward.bossDamage!, tick: ++this.sequence });
+        this.goalsRefreshTick.update((n) => n + 1);
+      }, 550);
     }
 
     reward.achievementsUnlocked.forEach((achievement, index) => {

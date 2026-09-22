@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Display names match Steam-style ornaments (keys unchanged for CSS / inventory). -->
+    <changeSet id="2026-09-22-01-classic-frame-labels" author="cursor">
+        <update tableName="reward_definition" schemaName="succeshub">
+            <column name="label" value="Devil Horns"/>
+            <where>key = 'FRAME_BRONZE_CIRCUIT'</where>
+        </update>
+        <update tableName="reward_definition" schemaName="succeshub">
+            <column name="label" value="Bunny Ears"/>
+            <where>key = 'FRAME_SILVER_SIGIL'</where>
+        </update>
+        <update tableName="reward_definition" schemaName="succeshub">
+            <column name="label" value="Royal Crown"/>
+            <where>key = 'FRAME_GOLD_SOVEREIGN'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

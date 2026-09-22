@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { TaskService } from '../../core/services/task.service';
 import { GoalService } from '../../core/services/goal.service';
@@ -33,6 +34,7 @@ export class TasksComponent implements OnInit {
   private readonly goalService = inject(GoalService);
   private readonly gamificationService = inject(GamificationService);
   private readonly celebrations = inject(GamificationCelebrationService);
+  private readonly route = inject(ActivatedRoute);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -40,6 +42,7 @@ export class TasksComponent implements OnInit {
   readonly columns = signal<QuestColumn[]>([]);
   readonly goals = signal<Goal[]>([]);
   readonly xpPreview = signal<XpPreview | null>(null);
+  readonly focusTaskId = signal<string | null>(null);
 
   readonly activeAddTaskId = signal<string | null>(null);
   newTaskTitle = '';
@@ -62,6 +65,9 @@ export class TasksComponent implements OnInit {
   private editCategorySortOrder = 0;
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      this.focusTaskId.set(params.get('focus'));
+    });
     this.loadTasksData();
   }
 
@@ -89,6 +95,15 @@ export class TasksComponent implements OnInit {
           }))
         );
         this.loading.set(false);
+        const focusId = this.focusTaskId();
+        if (focusId) {
+          setTimeout(() => {
+            document.getElementById('task-' + focusId)?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }, 50);
+        }
       },
       error: (err) => {
         console.error('Failed to load tasks data', err);

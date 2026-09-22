@@ -11,11 +11,21 @@ public interface DailyRitualService {
 
     /**
      * Idempotently closes all unprocessed days through yesterday. Primary streak integrity path.
+     * Does not mark the day as celebrated (see {@link #celebrateDay}).
      *
      * @param userId Keycloak subject ID
      * @return close summary with streak delta and earned loot
      */
     CloseDayResultDto closePendingDays(String userId);
+
+    /**
+     * Settles any pending days (same as {@link #closePendingDays}) and acknowledges today's
+     * Celebrate CTA so the dashboard can show a sealed-day state.
+     *
+     * @param userId Keycloak subject ID
+     * @return close summary with streak delta and earned loot
+     */
+    CloseDayResultDto celebrateDay(String userId);
 
     /**
      * Runs lazy close then returns dashboard daily status.

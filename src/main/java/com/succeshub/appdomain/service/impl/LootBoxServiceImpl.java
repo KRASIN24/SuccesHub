@@ -9,11 +9,16 @@ import com.succeshub.appdomain.model.LootBoxType;
 import com.succeshub.appdomain.model.RewardDefinition;
 import com.succeshub.appdomain.model.UserInventory;
 import com.succeshub.appdomain.model.UserLootBox;
+import com.succeshub.appdomain.model.UserProfile;
 import com.succeshub.appdomain.repository.LootBoxContentRepository;
 import com.succeshub.appdomain.repository.RewardDefinitionRepository;
+import com.succeshub.appdomain.repository.StreakDayOverrideRepository;
+import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.repository.UserInventoryRepository;
 import com.succeshub.appdomain.repository.UserLootBoxRepository;
 import com.succeshub.appdomain.service.LootBoxService;
+import com.succeshub.appdomain.service.gamification.GamificationTimeUtil;
+import com.succeshub.config.GamificationProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -40,6 +46,10 @@ public class LootBoxServiceImpl implements LootBoxService {
     private final LootBoxContentRepository contentRepository;
     private final RewardDefinitionRepository rewardDefinitionRepository;
     private final UserInventoryRepository inventoryRepository;
+    private final TaskRepository taskRepository;
+    private final StreakDayOverrideRepository overrideRepository;
+    private final GamificationProperties properties;
+    private final GamificationTimeUtil timeUtil;
 
     @Override
     @Transactional
@@ -119,7 +129,7 @@ public class LootBoxServiceImpl implements LootBoxService {
     @Override
     @Transactional(readOnly = true)
     public List<InventoryItemDto> getInventory(String userId) {
-        return inventoryRepository.findByUserId(userId).stream()
+        return inventoryRepository.findByUserIdOrderByIdAsc(userId).stream()
                 .map(i -> new InventoryItemDto(i.getId(), toRewardItem(i.getRewardDefinition()), i.getQuantity(), i.isEquipped()))
                 .toList();
     }
@@ -139,7 +149,7 @@ public class LootBoxServiceImpl implements LootBoxService {
 
         boolean willEquip = !item.isEquipped();
         if (willEquip) {
-            for (UserInventory other : inventoryRepository.findByUserId(userId)) {
+            for (UserInventory other : inventoryRepository.findByUserIdOrderByIdAsc(userId)) {
                 if (other.getRewardDefinition().getType() == type && other.isEquipped() && !other.getId().equals(item.getId())) {
                     other.setEquipped(false);
                     inventoryRepository.save(other);
@@ -161,6 +171,35 @@ public class LootBoxServiceImpl implements LootBoxService {
             return createBox(userId, UserLootBox.Source.STREAK_MILESTONE, LootBoxType.SOVEREIGN_VAULT).getId();
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public UUID checkWeeklyLoot(String userId, UserProfile profile, LocalDate weekMonday) {
+        if (weekMonday.equals(profile.getLastWeeklyLootWeek())) {
+            return null;
+        }
+        int qualifying = 0;
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = weekMonday.plusDays(i);
+            if (isQualifyingDay(userId, day)) {
+                qualifying++;
+            }
+        }
+        if (qualifying < properties.getWeeklyLootMinQualifyingDays()) {
+            return null;
+        }
+        profile.setLastWeeklyLootWeek(weekMonday);
+        return createBox(userId, UserLootBox.Source.WEEKLY_RESET, LootBoxType.SOVEREIGN_VAULT).getId();
+    }
+
+    private boolean isQualifyingDay(String userId, LocalDate day) {
+        if (overrideRepository.existsByUserIdAndDay(userId, day)) {
+            return true;
+        }
+        long count = taskRepository.countCompletedInRange(
+                userId, timeUtil.startOfDay(day), timeUtil.endOfDay(day));
+        return count >= properties.getMinTasksForQualifyingDay();
     }
 
     private UserLootBox createBox(String userId, UserLootBox.Source source, LootBoxType boxType) {

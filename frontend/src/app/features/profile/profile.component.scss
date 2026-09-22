@@ -1,0 +1,587 @@
+:host {
+  display: block;
+  /* Match shell / dashboard palette (global.css) — no separate page wash */
+  --bg: var(--color-app-bg, #0a0a0c);
+  --panel: var(--color-surface, #141417);
+  --panel-alt: var(--color-surface-2, #1a1a1e);
+  --border-faint: var(--color-border, rgba(255, 255, 255, 0.07));
+  --gold: var(--color-gold, #e8b33e);
+  --gold-bright: var(--color-gold-bright, #f6cf63);
+  --text-primary: var(--color-text, #ededee);
+  --text-white: var(--color-text, #ededee);
+  --text-muted: var(--color-text-muted, #9a9aa2);
+  --text-dim: var(--color-text-faint, #62626a);
+  --hero-hex-clip: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-primary);
+}
+
+.page {
+  /* Transparent so the app shell (--color-app-bg) shows through like Home/Tasks */
+  background: transparent;
+  min-height: 100%;
+}
+
+.page--state {
+  padding: 3rem 1.5rem;
+  max-width: 896px;
+  margin: 0 auto;
+}
+
+.main {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 48px 24px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.profile-hero {
+  width: 100%;
+}
+
+.profile-hero__card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 40px;
+  border-radius: 40px;
+  background:
+    linear-gradient(19deg, rgba(245, 190, 66, 0.05) 0%, rgba(245, 190, 66, 0) 50%),
+    rgba(33, 31, 35, 0.45);
+  border: 1px solid rgba(245, 190, 66, 0.08);
+  backdrop-filter: blur(6px);
+  overflow: visible;
+}
+
+.profile-hero__hex {
+  position: relative;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 24px rgba(232, 179, 62, 0.28));
+  overflow: visible;
+}
+
+.profile-hero__hex-outer {
+  width: 160px;
+  height: 186px;
+  clip-path: var(--hero-hex-clip);
+  background: linear-gradient(160deg, #f6cf63, #b98520);
+  padding: 2px;
+  display: grid;
+  place-items: center;
+}
+
+.profile-hero__hex--framed .profile-hero__hex-outer {
+  background: linear-gradient(160deg, #f6cf63, #8d6e1a);
+  box-shadow:
+    0 0 0 4px rgba(246, 207, 99, 0.35),
+    0 0 36px rgba(232, 179, 62, 0.45);
+}
+
+.profile-hero__hex-inner {
+  width: 100%;
+  height: 100%;
+  clip-path: var(--hero-hex-clip);
+  background: radial-gradient(circle at 50% 35%, #2a2418, #141317 72%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-hero__initials {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold-bright);
+}
+
+.profile-hero__body {
+  flex: 1;
+  min-width: 0;
+  padding-left: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-hero__meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-hero__rank {
+  display: inline-flex;
+  padding: 5px 13px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 190, 66, 0.2);
+  background: rgba(245, 190, 66, 0.1);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-primary, #f5be42);
+}
+
+.profile-hero__uid {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 40%, transparent);
+}
+
+.profile-hero__name {
+  margin: 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-on-surface, #e7e1e6);
+}
+
+.profile-hero__ascend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 32px;
+  padding-top: 8px;
+  width: 100%;
+}
+
+.profile-hero__level-block {
+  flex-shrink: 0;
+}
+
+.profile-hero__level-label {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.6;
+}
+
+.profile-hero__level-value {
+  margin: 4px 0 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 40px;
+  color: var(--color-primary, #f5be42);
+}
+
+.profile-hero__xp-block {
+  flex: 1;
+  min-width: 180px;
+  max-width: 352px;
+  padding-bottom: 8px;
+}
+
+.profile-hero__xp-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--color-surface-container-highest, #363438);
+  overflow: hidden;
+}
+
+.profile-hero__xp-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-primary, #f5be42);
+  box-shadow: 0 0 15px rgba(245, 190, 66, 0.5);
+}
+
+.profile-hero__xp-caption {
+  margin: 8px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--color-on-surface-variant, #d3c5af);
+}
+
+.profile-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.overview-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--color-surface-container, #211f23);
+  border: 1px solid var(--border-faint);
+}
+
+.overview-stat__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.overview-stat__icon {
+  font-size: 22px;
+  color: var(--gold-bright);
+}
+
+.overview-stat__category {
+  margin: 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.4;
+}
+
+.overview-stat__value {
+  margin: 16px 0 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 40px;
+  color: var(--color-on-surface, #e7e1e6);
+}
+
+.overview-stat__suffix {
+  margin-left: 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.3;
+}
+
+.overview-stat__label {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.6;
+}
+
+@media (max-width: 900px) {
+  .profile-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .profile-hero__card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    border-radius: 28px;
+  }
+
+  .profile-hero__body {
+    padding-left: 0;
+    padding-top: 28px;
+    width: 100%;
+  }
+
+  .profile-hero__hex-outer {
+    width: 120px;
+    height: 140px;
+  }
+
+  .profile-hero__initials {
+    font-size: 36px;
+  }
+
+  .profile-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-stat {
+    padding: 24px;
+  }
+}
+
+.inventory {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.inventory__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.inventory__title {
+  margin: 0;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  color: var(--color-on-surface, #e7e1e6);
+}
+
+.inventory__sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.7;
+}
+
+.inventory__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 40px 32px;
+  border: 1px solid var(--border-faint);
+  border-radius: 24px;
+  background: var(--color-surface-container, #211f23);
+
+  .material-symbols-outlined {
+    font-size: 40px;
+    color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 35%, transparent);
+  }
+
+  p {
+    margin: 0;
+    max-width: 420px;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--text-muted);
+  }
+}
+
+.inventory__cta {
+  margin-top: 4px;
+  padding: 9px 20px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 190, 66, 0.25);
+  color: var(--gold-bright);
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(245, 190, 66, 0.1);
+  }
+}
+
+.inventory__group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inventory__group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.inventory__group-label {
+  margin: 0;
+  font-size: 10px;
+  line-height: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.5;
+}
+
+.inventory__group-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-on-surface-variant, #d3c5af);
+  opacity: 0.55;
+}
+
+.inventory__chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.inventory-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 24px;
+  border: 1px solid var(--border-faint);
+  background: var(--color-surface-container, #211f23);
+  color: var(--color-on-surface, #e7e1e6);
+  /* COMMON — muted bronze/taupe (distinct from silver rare) */
+  --inv-rarity: #c9854a;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+
+  &[data-rarity='RARE'] {
+    --inv-rarity: #9eb6cc;
+  }
+
+  &[data-rarity='LEGENDARY'] {
+    --inv-rarity: #f5be42;
+  }
+
+  &:hover {
+    border-color: rgba(245, 190, 66, 0.35);
+  }
+
+  &--equipped {
+    border-color: rgba(245, 190, 66, 0.55);
+    background: rgba(245, 190, 66, 0.12);
+    color: var(--gold-bright);
+  }
+}
+
+.inventory-chip__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  color: var(--inv-rarity);
+}
+
+.inventory-chip__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.inventory-chip__label {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.inventory-chip__rarity {
+  font-size: 9px;
+  line-height: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--inv-rarity);
+  opacity: 0.9;
+}
+
+.inventory-chip__status {
+  margin-left: 4px;
+  font-size: 9px;
+  line-height: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+
+.inventory__frame-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.frame-preview {
+  position: relative;
+  filter: drop-shadow(0 0 12px rgba(232, 179, 62, 0.2));
+  overflow: visible;
+}
+
+.inventory-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 16px 22px;
+  border-radius: 24px;
+  border: 1px solid var(--border-faint);
+  background: var(--color-surface-container, #211f23);
+  color: var(--color-on-surface, #e7e1e6);
+  /* COMMON — muted bronze/taupe (distinct from silver rare) */
+  --inv-rarity: #c9854a;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  overflow: visible;
+
+  &[data-rarity='RARE'] {
+    --inv-rarity: #9eb6cc;
+  }
+
+  &[data-rarity='LEGENDARY'] {
+    --inv-rarity: #f5be42;
+  }
+
+  &:hover {
+    border-color: rgba(245, 190, 66, 0.35);
+  }
+
+  &--equipped {
+    border-color: rgba(245, 190, 66, 0.55);
+    box-shadow: 0 0 24px rgba(245, 190, 66, 0.14);
+  }
+}
+
+.frame-preview__outer {
+  width: 88px;
+  height: 102px;
+  clip-path: var(--hero-hex-clip);
+  background: linear-gradient(160deg, #f6cf63, #b98520);
+  padding: 3px;
+  display: grid;
+  place-items: center;
+}
+
+.frame-preview__inner {
+  width: 100%;
+  height: 100%;
+  clip-path: var(--hero-hex-clip);
+  /* Hollow hex: punch through to the card surface so only the rim + ornaments show. */
+  background: var(--color-surface-container, #211f23);
+}
+
+.inventory-frame__label {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.inventory-frame__rarity {
+  font-size: 9px;
+  line-height: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--inv-rarity);
+  opacity: 0.9;
+}
+
+.inventory-frame__status {
+  min-height: 14px;
+  font-size: 9px;
+  line-height: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--gold-bright);
+}
+
+@media (max-width: 720px) {
+  .inventory__frame-grid {
+    grid-template-columns: 1fr;
+  }
+}

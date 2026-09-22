@@ -27,13 +27,49 @@
         <span class="stat-key">STREAK:</span>
         <span class="stat-val">{{ prof.currentStreak }}d</span>
       </div>
+      @if (cosmetics.equippedTitle(); as title) {
+        <div class="stat-chip title-chip" [title]="title.label">
+          <span class="stat-key">TITLE:</span>
+          <span class="stat-val gold">{{ title.label }}</span>
+        </div>
+      }
     }
 
     <button type="button" class="icon-btn" aria-label="Notifications">
       <span class="material-icons">notifications_none</span>
     </button>
-    <a class="avatar-btn" routerLink="/profile" aria-label="Account">
-      <span class="material-icons">person</span>
+
+    <a
+      class="nav-avatar"
+      [class.nav-avatar--framed]="!!cosmetics.equippedFrame()"
+      routerLink="/profile"
+      [attr.aria-label]="
+        cosmetics.equippedFrame()
+          ? 'Account · ' + cosmetics.equippedFrame()!.label
+          : 'Account'
+      "
+    >
+      <div
+        class="nav-avatar__stage"
+        [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null"
+      >
+        <app-frame-ornaments
+          [frameKey]="cosmetics.equippedFrame()?.key ?? null"
+          size="sm"
+        />
+        <div
+          class="hex-outer nav-avatar__outer"
+          [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null"
+        >
+          <div class="nav-avatar__inner">
+            @if (auth.userInitials(); as initials) {
+              <span class="nav-avatar__initials">{{ initials }}</span>
+            } @else {
+              <span class="material-icons nav-avatar__fallback">person</span>
+            }
+          </div>
+        </div>
+      </div>
     </a>
   </div>
 </header>

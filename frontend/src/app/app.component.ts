@@ -7,8 +7,10 @@ import { XpTickComponent } from './shared/components/gamification/xp-tick.compon
 import { LevelUpOverlayComponent } from './shared/components/gamification/level-up-overlay.component';
 import { AchievementSlamComponent } from './shared/components/gamification/achievement-slam.component';
 import { CacheEarnedToastComponent } from './shared/components/gamification/cache-earned-toast.component';
+import { BossDamageToastComponent } from './shared/components/gamification/boss-damage-toast.component';
 import { GamificationCelebrationService } from './core/services/gamification-celebration.service';
 import { LootPendingService } from './core/services/loot-pending.service';
+import { EquippedCosmeticsService } from './core/services/equipped-cosmetics.service';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
@@ -22,6 +24,7 @@ import { AuthService } from './core/services/auth.service';
     LevelUpOverlayComponent,
     AchievementSlamComponent,
     CacheEarnedToastComponent,
+    BossDamageToastComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -31,6 +34,7 @@ export class AppComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly lootPending = inject(LootPendingService);
+  private readonly cosmetics = inject(EquippedCosmeticsService);
   readonly celebrations = inject(GamificationCelebrationService);
 
   readonly sidenavOpen = signal(this.isDesktop());
@@ -48,6 +52,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     if (this.auth.isLoggedIn()) {
       this.lootPending.refresh();
+      this.cosmetics.refresh();
     }
   }
 

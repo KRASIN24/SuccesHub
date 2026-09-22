@@ -67,6 +67,22 @@ public class UserProfile {
     @Column(name = "last_processed_day")
     private LocalDate lastProcessedDay;
 
+    /** Armed Double Strike card — next task completion awards 2× XP (then cleared). */
+    @Column(name = "pending_double_strike", nullable = false)
+    private boolean pendingDoubleStrike = false;
+
+    /** Armed Surge Token — next task gains +50 XP ignoring the daily cap (then cleared). */
+    @Column(name = "pending_surge_token", nullable = false)
+    private boolean pendingSurgeToken = false;
+
+    /** Calendar day the user last acknowledged via Celebrate (client seal state). */
+    @Column(name = "last_celebrated_day")
+    private LocalDate lastCelebratedDay;
+
+    /** Monday of the last week that received a WEEKLY_RESET loot grant. */
+    @Column(name = "last_weekly_loot_week")
+    private LocalDate lastWeeklyLootWeek;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
