@@ -27,6 +27,9 @@ public class UserProfile {
     @Column(name = "display_name")
     private String displayName;
 
+    @Column(name = "display_name_customized", nullable = false)
+    private boolean displayNameCustomized = false;
+
     @Column(name = "level", nullable = false)
     private int level = 1;
 

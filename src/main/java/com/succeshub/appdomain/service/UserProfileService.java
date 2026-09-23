@@ -19,6 +19,16 @@ public interface UserProfileService {
     ProfileDto getOrCreateProfile(String keycloakId, String displayName);
 
     /**
+     * Sets a user-chosen display name from Settings. Marks the profile so Keycloak
+     * sync on subsequent logins does not overwrite the custom value.
+     *
+     * @param keycloakId  OIDC subject ({@code sub}) of the authenticated user
+     * @param displayName trimmed display name (1–64 characters)
+     * @return updated profile snapshot
+     */
+    ProfileDto updateDisplayName(String keycloakId, String displayName);
+
+    /**
      * Adds XP to the user's profile and applies any resulting level-ups.
      *
      * @param keycloakId OIDC subject ({@code sub}) of the user receiving XP
