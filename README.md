@@ -83,6 +83,21 @@ After a qualifying day → click **Seal the day** → UI flips to **Day sealed**
 
 **Auth model (important):** the SPA never holds access tokens in `localStorage`. Spring is the OAuth2 client; after login the browser only sees the session cookie. That is a deliberate BFF choice, not a missing JWT tutorial.
 
+### Engineering highlights (talking points)
+
+| Decision | Why |
+|----------|-----|
+| **BFF + session cookie** | Avoid SPA token storage; CSRF-aware cookie API matches browser apps |
+| **Keycloak** | Real IdP (OIDC) instead of a toy in-memory user store |
+| **Liquibase** | Schema history that survives wipe/rebuild; no `ddl-auto=update` drift |
+| **Modular monolith** | One deployable with clear packages — not microservices theater for a solo MVP |
+| **GamificationEngine** | Single orchestrator for XP / boss / achievements / loot on task complete |
+| **Lazy streak close** | Streak integrity on next dashboard load — not “remember to click Close” |
+| **Earn-only loot** | Variable reward without a real-money store |
+| **CI on PRs** | Backend tests + Angular build/test — quality gate before merge |
+
+Portfolio strategy (Notion): [SuccessHub hub](https://app.notion.com/p/SuccessHub-280b2614a9c080dba909f994fa874676).
+
 ---
 
 ## Product surface (MVP)
