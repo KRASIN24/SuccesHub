@@ -60,7 +60,7 @@ public class StreakManagementServiceImpl implements StreakManagementService {
     private final GamificationTimeUtil timeUtil;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public StreakCalendarDto getCalendar(String userId, YearMonth month) {
         UserProfile profile = userProfileService.requireProfile(userId);
         LocalDate first = month.atDay(1);
@@ -98,6 +98,7 @@ public class StreakManagementServiceImpl implements StreakManagementService {
     public StreakActionResultDto adjustStreak(String userId, int delta) {
         UserProfile profile = userProfileService.requireProfile(userId);
         applyStreakValue(profile, profile.getCurrentStreak() + delta);
+        pinManualStreakValue(profile);
         profileRepository.save(profile);
         return result(userId, profile, "Streak set to " + profile.getCurrentStreak() + " day(s).");
     }
@@ -107,6 +108,7 @@ public class StreakManagementServiceImpl implements StreakManagementService {
     public StreakActionResultDto setStreak(String userId, int value) {
         UserProfile profile = userProfileService.requireProfile(userId);
         applyStreakValue(profile, value);
+        pinManualStreakValue(profile);
         profileRepository.save(profile);
         return result(userId, profile, "Streak set to " + profile.getCurrentStreak() + " day(s).");
     }
@@ -117,6 +119,7 @@ public class StreakManagementServiceImpl implements StreakManagementService {
         UserProfile profile = userProfileService.requireProfile(userId);
         profile.setCurrentStreak(0);
         profile.setStreakTier(UserProfile.StreakTier.NONE);
+        profile.setLastProcessedDay(timeUtil.today().minusDays(1));
         profileRepository.save(profile);
         return result(userId, profile, "Streak reset.");
     }
@@ -256,6 +259,13 @@ public class StreakManagementServiceImpl implements StreakManagementService {
         int clamped = Math.max(0, value);
         profile.setCurrentStreak(clamped);
         profile.setStreakTier(UserProfile.tierForStreak(clamped));
+    }
+
+    private void pinManualStreakValue(UserProfile profile) {
+        // Keep lazy daily settlement from replaying historical days and replacing
+        // the value that a developer just set through the gated testing endpoint.
+        profile.setLastProcessedDay(timeUtil.today().minusDays(1));
+        profile.setLastActiveDate(timeUtil.today());
     }
 
     /** Decrements a stack, deleting the row when it hits zero. Returns remaining quantity. */

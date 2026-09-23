@@ -13,8 +13,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class LootProperties {
 
     /**
-     * When {@code false} (production default), manual grant/summon endpoints are disabled
-     * and the frontend hides dev-only affordances.
+     * When {@code false} (production default), manual loot grants and streak
+     * mutation endpoints are disabled and the frontend hides dev-only affordances.
      */
     private boolean enableDevGrants = false;
 }

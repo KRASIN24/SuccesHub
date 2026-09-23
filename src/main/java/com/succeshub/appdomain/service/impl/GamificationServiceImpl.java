@@ -21,7 +21,7 @@ public class GamificationServiceImpl implements GamificationService {
     private final GamificationTimeUtil timeUtil;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public XpPreviewDto previewXp(String userId, int difficulty, int durationMinutes, int priority, boolean weeklyChallenge) {
         UserProfile profile = userProfileService.requireProfile(userId);
         userProfileService.resetDailyCountersIfNeeded(profile, timeUtil.today());

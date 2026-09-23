@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
@@ -17,13 +19,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @Transactional
     public ProfileDto getOrCreateProfile(String keycloakId, String displayName) {
-        UserProfile profile = repository.findByKeycloakId(keycloakId)
-                .orElseGet(() -> {
-                    UserProfile p = new UserProfile();
-                    p.setKeycloakId(keycloakId);
-                    p.setDisplayName(displayName);
-                    return repository.save(p);
-                });
+        UserProfile profile = findOrCreateProfile(keycloakId, displayName);
 
         if (displayName != null
                 && !displayName.equals(profile.getDisplayName())
@@ -38,12 +34,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @Transactional
     public ProfileDto updateDisplayName(String keycloakId, String displayName) {
-        UserProfile profile = repository.findByKeycloakId(keycloakId)
-                .orElseGet(() -> {
-                    UserProfile p = new UserProfile();
-                    p.setKeycloakId(keycloakId);
-                    return repository.save(p);
-                });
+        UserProfile profile = findOrCreateProfile(keycloakId, null);
 
         profile.setDisplayName(displayName.trim());
         profile.setDisplayNameCustomized(true);
@@ -62,12 +53,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @Transactional
     public UserProfile requireProfile(String keycloakId) {
-        return repository.findByKeycloakId(keycloakId)
-                .orElseGet(() -> {
-                    UserProfile profile = new UserProfile();
-                    profile.setKeycloakId(keycloakId);
-                    return repository.save(profile);
-                });
+        return findOrCreateProfile(keycloakId, null);
     }
 
     @Override
@@ -82,6 +68,16 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public ProfileDto mapToDto(UserProfile profile) {
         return toDto(profile);
+    }
+
+    private UserProfile findOrCreateProfile(String keycloakId, String displayName) {
+        return repository.findByKeycloakId(keycloakId)
+                .orElseGet(() -> {
+                    repository.insertIfAbsent(UUID.randomUUID(), keycloakId, displayName);
+                    return repository.findByKeycloakId(keycloakId)
+                            .orElseThrow(() -> new IllegalStateException(
+                                    "Profile creation did not produce a row for user: " + keycloakId));
+                });
     }
 
     private ProfileDto toDto(UserProfile p) {
