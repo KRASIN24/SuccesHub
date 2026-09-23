@@ -24,4 +24,10 @@ export class ProfileService {
   refreshProfile(): Observable<UserProfile> {
     return this.getProfile();
   }
+
+  updateDisplayName(displayName: string): Observable<UserProfile> {
+    return this.api
+      .patch<UserProfile>('/profile/display-name', { displayName })
+      .pipe(tap((profile) => this.profileState.set(profile)));
+  }
 }

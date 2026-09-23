@@ -1,16 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { AppPreferencesService } from './app-preferences.service';
 
 type RevealTier = 'default' | 'silver' | 'gold';
 
 /**
  * Lightweight procedural SFX for loot box open / reveal.
  * Uses Web Audio API so no asset files are required.
+ * Respects Settings → Sound effects via {@link AppPreferencesService}.
  */
 @Injectable({ providedIn: 'root' })
 export class LootAudioService {
+  private readonly prefs = inject(AppPreferencesService);
   private ctx: AudioContext | null = null;
 
   playChestOpen(): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
     const ctx = this.context();
     if (!ctx) return;
 
@@ -57,6 +61,7 @@ export class LootAudioService {
   }
 
   playReveal(tier: RevealTier = 'default'): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
     const ctx = this.context();
     if (!ctx) return;
 
@@ -83,6 +88,7 @@ export class LootAudioService {
 
   /** Crystalline two-note "ting" for flipping a reveal card face-up. */
   playCardFlip(): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
     const ctx = this.context();
     if (!ctx) return;
 
