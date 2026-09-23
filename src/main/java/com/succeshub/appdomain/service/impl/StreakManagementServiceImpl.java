@@ -60,7 +60,7 @@ public class StreakManagementServiceImpl implements StreakManagementService {
     private final GamificationTimeUtil timeUtil;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public StreakCalendarDto getCalendar(String userId, YearMonth month) {
         UserProfile profile = userProfileService.requireProfile(userId);
         LocalDate first = month.atDay(1);

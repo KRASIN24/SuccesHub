@@ -148,7 +148,7 @@ public class DailyRitualServiceImpl implements DailyRitualService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ForecastDto getForecast(String userId) {
         UserProfile profile = userProfileService.requireProfile(userId);
         int streak = profile.getCurrentStreak();
