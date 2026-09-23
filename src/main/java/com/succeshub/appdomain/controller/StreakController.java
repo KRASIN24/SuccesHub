@@ -7,6 +7,7 @@ import com.succeshub.appdomain.dto.gamification.GamificationDto.StreakActionResu
 import com.succeshub.appdomain.dto.gamification.GamificationDto.StreakCalendarDto;
 import com.succeshub.appdomain.dto.gamification.GamificationDto.UseItemResultDto;
 import com.succeshub.appdomain.service.StreakManagementService;
+import com.succeshub.config.LootProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +34,7 @@ import java.util.UUID;
 public class StreakController {
 
     private final StreakManagementService streakManagementService;
+    private final LootProperties lootProperties;
 
     /**
      * Returns a month of streak activity with each day classified for calendar rendering.
@@ -56,9 +58,11 @@ public class StreakController {
     /**
      * Changes the current streak by a signed delta (dev/testing tool).
      */
-    @Operation(summary = "Adjust streak", description = "Adds or removes days from the current streak; clamped at zero.")
+    @Operation(summary = "Adjust streak",
+            description = "Dev/testing tool: adds or removes days from the current streak; clamped at zero.")
     @ApiResponse(responseCode = "200", description = "Streak updated")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Streak testing tools disabled")
     @PostMapping("/streak/adjust")
     public ResponseEntity<StreakActionResultDto> adjustStreak(
             @AuthenticationPrincipal OidcUser principal,
@@ -66,15 +70,20 @@ public class StreakController {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
+        if (!lootProperties.isEnableDevGrants()) {
+            return ResponseEntity.status(403).build();
+        }
         return ResponseEntity.ok(streakManagementService.adjustStreak(principal.getSubject(), request.delta()));
     }
 
     /**
      * Sets the current streak to an absolute value (dev/testing tool).
      */
-    @Operation(summary = "Set streak", description = "Sets the streak to a non-negative value and recomputes the tier.")
+    @Operation(summary = "Set streak",
+            description = "Dev/testing tool: sets the streak to a non-negative value and recomputes the tier.")
     @ApiResponse(responseCode = "200", description = "Streak updated")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Streak testing tools disabled")
     @PostMapping("/streak/set")
     public ResponseEntity<StreakActionResultDto> setStreak(
             @AuthenticationPrincipal OidcUser principal,
@@ -82,19 +91,26 @@ public class StreakController {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
+        if (!lootProperties.isEnableDevGrants()) {
+            return ResponseEntity.status(403).build();
+        }
         return ResponseEntity.ok(streakManagementService.setStreak(principal.getSubject(), request.value()));
     }
 
     /**
      * Resets the current streak to zero (dev/testing tool).
      */
-    @Operation(summary = "Reset streak", description = "Sets streak to zero and tier to NONE.")
+    @Operation(summary = "Reset streak", description = "Dev/testing tool: sets streak to zero and tier to NONE.")
     @ApiResponse(responseCode = "200", description = "Streak reset")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Streak testing tools disabled")
     @PostMapping("/streak/reset")
     public ResponseEntity<StreakActionResultDto> resetStreak(@AuthenticationPrincipal OidcUser principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
+        }
+        if (!lootProperties.isEnableDevGrants()) {
+            return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(streakManagementService.resetStreak(principal.getSubject()));
     }
