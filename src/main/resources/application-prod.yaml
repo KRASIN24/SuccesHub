@@ -1,7 +1,13 @@
 # Production overrides — activate with: --spring.profiles.active=prod
+# Set SUCCESSHUB_* env vars (see docs/deploy.md). Defaults below still work for local prod-profile smoke tests.
 succeshub:
   loot:
     enable-dev-grants: false
+  auth:
+    # Prefer env in real deploy; these document the expected keys.
+    frontend-url: ${SUCCESSHUB_FRONTEND_URL:http://localhost:4200/}
+    cors-allowed-origins: ${SUCCESSHUB_CORS_ORIGINS:http://localhost:4200}
+    keycloak-logout-uri: ${SUCCESSHUB_KEYCLOAK_LOGOUT_URI:http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout}
 
 spring:
   jpa:

@@ -177,6 +177,8 @@ npm run test:ci
 
 Spring profiles: **`dev`** (default — Swagger on, loot dev grants on) · **`prod`** (quieter, no grants, Swagger off). Details in [docs/local-dev.md](docs/local-dev.md).
 
+Non-local hosts: override SPA / CORS / Keycloak / DB via `SUCCESSHUB_*` env vars — see [docs/deploy.md](docs/deploy.md).
+
 ---
 
 ## What’s intentionally out of scope

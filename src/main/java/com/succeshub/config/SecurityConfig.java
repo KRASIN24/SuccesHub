@@ -31,21 +31,27 @@ import java.util.Set;
 /**
  * Backend-For-Frontend (BFF) security setup.
  *
- * The browser only ever holds an opaque {@code JSESSIONID} session cookie; the
+ * <p>The browser only ever holds an opaque {@code JSESSIONID} session cookie; the
  * OAuth2/OIDC tokens are obtained and kept server-side via {@code oauth2Login}.
  * CSRF is protected with a double-submit cookie that the Angular client reads
  * (XSRF-TOKEN) and echoes back (X-XSRF-TOKEN).
+ *
+ * <p>SPA origin, CORS, and Keycloak logout URL come from {@link AuthProperties}
+ * so non-local deployments override them without code changes.
  */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String FRONTEND_URL = "http://localhost:4200/";
-    private static final String KEYCLOAK_LOGOUT_URI =
-            "http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout";
+    private final AuthProperties authProperties;
+
+    public SecurityConfig(AuthProperties authProperties) {
+        this.authProperties = authProperties;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        String frontendUrl = authProperties.frontendUrlWithSlash();
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
@@ -72,7 +78,7 @@ public class SecurityConfig {
                         )
                         // Always return to the SPA (absolute URL) so the redirect
                         // doesn't get expanded to the backend host behind the proxy.
-                        .defaultSuccessUrl(FRONTEND_URL, true)
+                        .defaultSuccessUrl(frontendUrl, true)
                 )
                 .logout(logout -> logout
                         .logoutSuccessHandler(oidcLogoutSuccessHandler())
@@ -94,19 +100,20 @@ public class SecurityConfig {
      * Sends an RP-initiated logout to Keycloak so the Keycloak SSO session is
      * also terminated, then returns the browser to the SPA.
      *
-     * Built manually (rather than via {@code OidcClientInitiatedLogoutSuccessHandler})
+     * <p>Built manually (rather than via {@code OidcClientInitiatedLogoutSuccessHandler})
      * because the provider is configured with explicit endpoints instead of
      * {@code issuer-uri}, so the discovered {@code end_session_endpoint} is not
      * available in the client registration metadata.
      */
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {
         return (request, response, authentication) -> {
-            String targetUrl = FRONTEND_URL;
+            String frontendUrl = authProperties.frontendUrlWithSlash();
+            String targetUrl = frontendUrl;
             if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser) {
                 targetUrl = UriComponentsBuilder
-                        .fromUriString(KEYCLOAK_LOGOUT_URI)
+                        .fromUriString(authProperties.getKeycloakLogoutUri())
                         .queryParam("id_token_hint", oidcUser.getIdToken().getTokenValue())
-                        .queryParam("post_logout_redirect_uri", FRONTEND_URL)
+                        .queryParam("post_logout_redirect_uri", frontendUrl)
                         .build()
                         .toUriString();
             }
@@ -142,7 +149,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        List<String> origins = authProperties.getCorsAllowedOrigins();
+        config.setAllowedOrigins(origins == null || origins.isEmpty()
+                ? List.of("http://localhost:4200")
+                : List.copyOf(origins));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
