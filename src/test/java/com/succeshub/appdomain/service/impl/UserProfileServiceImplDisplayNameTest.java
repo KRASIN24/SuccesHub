@@ -26,6 +26,7 @@ class UserProfileServiceImplDisplayNameTest {
 
     @Test
     void updateDisplayName_marksProfileAsCustomized() {
+        // Arrange
         UserProfile profile = new UserProfile();
         profile.setKeycloakId("kc-1");
         profile.setDisplayName("Old Name");
@@ -33,8 +34,10 @@ class UserProfileServiceImplDisplayNameTest {
         when(repository.findByKeycloakId("kc-1")).thenReturn(Optional.of(profile));
         when(repository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        // Act
         var dto = service.updateDisplayName("kc-1", "  New Name  ");
 
+        // Assert
         assertEquals("New Name", dto.displayName());
         ArgumentCaptor<UserProfile> captor = ArgumentCaptor.forClass(UserProfile.class);
         verify(repository).save(captor.capture());
@@ -44,6 +47,7 @@ class UserProfileServiceImplDisplayNameTest {
 
     @Test
     void getOrCreateProfile_doesNotOverwriteCustomizedName() {
+        // Arrange
         UserProfile profile = new UserProfile();
         profile.setKeycloakId("kc-1");
         profile.setDisplayName("Custom Name");
@@ -51,8 +55,10 @@ class UserProfileServiceImplDisplayNameTest {
 
         when(repository.findByKeycloakId("kc-1")).thenReturn(Optional.of(profile));
 
+        // Act
         var dto = service.getOrCreateProfile("kc-1", "Keycloak Name");
 
+        // Assert
         assertEquals("Custom Name", dto.displayName());
     }
 }
