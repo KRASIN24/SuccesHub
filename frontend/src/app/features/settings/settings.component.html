@@ -156,22 +156,28 @@
 
           <div class="side-card side-card--checks">
             <app-glitch-checkbox
-              label="Daily Reminder"
-              glitchText="DAILY_REMINDER"
-              [checked]="preferences().dailyGoalReminder"
-              (checkedChange)="setPreference('dailyGoalReminder', $event)"
+              label="Loot earned"
+              glitchText="LOOT_EARNED"
+              [checked]="preferences().notifyLootEarned"
+              (checkedChange)="setPreference('notifyLootEarned', $event)"
             />
             <app-glitch-checkbox
-              label="Streak Alert"
+              label="Achievements"
+              glitchText="ACHIEVEMENT"
+              [checked]="preferences().notifyAchievementUnlocked"
+              (checkedChange)="setPreference('notifyAchievementUnlocked', $event)"
+            />
+            <app-glitch-checkbox
+              label="Streak milestones"
               glitchText="STREAK_ALERT"
-              [checked]="preferences().showStreakReminder"
-              (checkedChange)="setPreference('showStreakReminder', $event)"
+              [checked]="preferences().notifyStreakMilestone"
+              (checkedChange)="setPreference('notifyStreakMilestone', $event)"
             />
             <app-glitch-checkbox
-              label="Weekly Summary"
-              glitchText="WEEKLY_SUMMARY"
-              [checked]="preferences().weeklySummary"
-              (checkedChange)="setPreference('weeklySummary', $event)"
+              label="Boss defeated"
+              glitchText="BOSS_SLAIN"
+              [checked]="preferences().notifyBossDefeated"
+              (checkedChange)="setPreference('notifyBossDefeated', $event)"
             />
           </div>
         </div>

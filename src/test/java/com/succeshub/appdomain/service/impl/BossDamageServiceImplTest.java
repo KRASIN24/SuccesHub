@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 class BossDamageServiceImplTest {
 
     @Mock GoalRepository goalRepository;
+    @Mock ApplicationEventPublisher eventPublisher;
 
     private GamificationProperties properties;
     private BossDamageServiceImpl service;
@@ -41,7 +43,7 @@ class BossDamageServiceImplTest {
     void setUp() {
         properties = new GamificationProperties();
         properties.setBossDamageFactor(2);
-        service = new BossDamageServiceImpl(goalRepository, properties);
+        service = new BossDamageServiceImpl(goalRepository, properties, eventPublisher);
 
         goalId = UUID.randomUUID();
         goal = new Goal();

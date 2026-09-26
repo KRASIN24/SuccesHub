@@ -51,7 +51,8 @@ class LootBoxServiceImplStreakTest {
         properties.setWeeklyLootMinQualifyingDays(3);
         service = new LootBoxServiceImpl(
                 lootBoxRepository, contentRepository, rewardDefinitionRepository,
-                inventoryRepository, taskRepository, overrideRepository, properties, timeUtil);
+                inventoryRepository, taskRepository, overrideRepository, properties, timeUtil,
+                org.mockito.Mockito.mock(org.springframework.context.ApplicationEventPublisher.class));
 
         lenient().when(lootBoxRepository.save(any(UserLootBox.class))).thenAnswer(inv -> {
             UserLootBox box = inv.getArgument(0);

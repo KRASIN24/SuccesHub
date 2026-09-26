@@ -35,9 +35,83 @@
       }
     }
 
-    <button type="button" class="icon-btn" aria-label="Notifications">
-      <span class="material-icons">notifications_none</span>
-    </button>
+    <div class="notif-wrap">
+      <button
+        type="button"
+        class="icon-btn"
+        [class.icon-btn--active]="panelOpen()"
+        (click)="togglePanel($event)"
+        [attr.aria-expanded]="panelOpen()"
+        aria-haspopup="true"
+        aria-controls="notif-panel"
+        aria-label="Notifications"
+      >
+        <span class="material-icons">{{
+          notifications.unreadCount() > 0 ? 'notifications' : 'notifications_none'
+        }}</span>
+        @if (notifications.unreadCount(); as unread) {
+          @if (unread > 0) {
+            <span class="notif-badge" aria-hidden="true">{{
+              unread > 99 ? '99+' : unread
+            }}</span>
+          }
+        }
+      </button>
+
+      @if (panelOpen()) {
+        <div
+          id="notif-panel"
+          class="notif-panel"
+          role="menu"
+          aria-label="Notification inbox"
+        >
+          <div class="notif-panel__head">
+            <span class="notif-panel__title">Notifications</span>
+            @if (notifications.unreadCount() > 0) {
+              <button
+                type="button"
+                class="notif-panel__mark-all"
+                (click)="markAllRead($event)"
+              >
+                Mark all read
+              </button>
+            }
+          </div>
+
+          @if (notifications.items().length === 0) {
+            <p class="notif-panel__empty">No notifications yet.</p>
+          } @else {
+            <ul class="notif-list">
+              @for (row of notifications.items(); track row.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="notif-row"
+                    [class.notif-row--unread]="!row.read"
+                    role="menuitem"
+                    (click)="openNotification(row, $event)"
+                  >
+                    <span class="material-icons notif-row__icon">{{
+                      iconFor(row.type)
+                    }}</span>
+                    <span class="notif-row__text">
+                      <span class="notif-row__title">{{ row.title }}</span>
+                      <span class="notif-row__body">{{ row.body }}</span>
+                      <span class="notif-row__time">{{
+                        relativeTime(row.createdAt)
+                      }}</span>
+                    </span>
+                    @if (!row.read) {
+                      <span class="notif-row__dot" aria-label="Unread"></span>
+                    }
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
 
     <a
       class="nav-avatar"

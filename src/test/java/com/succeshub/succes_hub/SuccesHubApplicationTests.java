@@ -12,6 +12,7 @@ import com.succeshub.appdomain.repository.UserInventoryRepository;
 import com.succeshub.appdomain.repository.UserLootBoxRepository;
 import com.succeshub.appdomain.repository.UserProfileRepository;
 import com.succeshub.appdomain.repository.XpEventRepository;
+import com.succeshub.appdomain.repository.NotificationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -63,6 +64,8 @@ class SuccesHubApplicationTests {
 	private LootBoxContentRepository lootBoxContentRepository;
 	@MockitoBean
 	private StreakDayOverrideRepository streakDayOverrideRepository;
+	@MockitoBean
+	private NotificationRepository notificationRepository;
 
 	@Test
 	void contextLoads() {
@@ -102,6 +105,13 @@ class SuccesHubApplicationTests {
 	void apiGamificationDailyRequiresAuthentication() throws Exception {
 		// Act & Assert
 		mockMvc.perform(get("/api/gamification/daily"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void apiNotificationsRequiresAuthentication() throws Exception {
+		// Act & Assert
+		mockMvc.perform(get("/api/notifications"))
 				.andExpect(status().isUnauthorized());
 	}
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2026-09-26-01-create-notification" author="krasin">
+        <createTable tableName="notification" schemaName="succeshub">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_url" type="VARCHAR(255)"/>
+            <column name="reference_id" type="UUID"/>
+            <column name="is_read" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="notification" schemaName="succeshub" indexName="idx_notification_user_created">
+            <column name="user_id"/>
+            <column name="created_at"/>
+        </createIndex>
+        <createIndex tableName="notification" schemaName="succeshub" indexName="idx_notification_user_unread">
+            <column name="user_id"/>
+            <column name="is_read"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
