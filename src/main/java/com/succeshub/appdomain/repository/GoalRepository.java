@@ -58,4 +58,11 @@ public interface GoalRepository extends JpaRepository<Goal, UUID> {
      * @return number of matching goals
      */
     long countByUserIdAndStatus(String userId, Goal.Status status);
+
+    /**
+     * Deletes every goal owned by the user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

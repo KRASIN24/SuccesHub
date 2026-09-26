@@ -54,6 +54,16 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // After Keycloak logout from "Create account", land here with ?register=1
+    // and immediately start the BFF registration OAuth flow.
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('register') === '1') {
+        this.auth.register();
+        return;
+      }
+    }
+
     if (this.auth.isLoggedIn()) {
       this.lootPending.refresh();
       this.cosmetics.refresh();

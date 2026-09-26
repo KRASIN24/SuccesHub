@@ -41,4 +41,19 @@ public interface UserLootBoxRepository extends JpaRepository<UserLootBox, UUID> 
      * @return box when found and owned
      */
     Optional<UserLootBox> findByIdAndUserId(UUID id, String userId);
+
+    /**
+     * Returns all loot boxes for a user (used when cascading delete).
+     *
+     * @param userId Keycloak subject ID
+     * @return all boxes
+     */
+    List<UserLootBox> findByUserId(String userId);
+
+    /**
+     * Deletes loot boxes for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

@@ -47,7 +47,14 @@ export class AuthService {
    */
   loadCurrentUser(): Observable<User | null> {
     return this.http.get<User>(`${environment.apiUrl}/user`).pipe(
-      tap((user) => this._currentUser.set(user)),
+      tap((user) => {
+        this._currentUser.set(user);
+        try {
+          sessionStorage.removeItem('sh-reg-draft-v1');
+        } catch {
+          /* ignore */
+        }
+      }),
       catchError(() => {
         this._currentUser.set(null);
         return of(null);
@@ -57,7 +64,26 @@ export class AuthService {
 
   /** Starts the OIDC login by redirecting the whole browser to the backend. */
   login(): void {
+    // #region agent log
+    fetch('http://127.0.0.1:7452/ingest/37b8ef57-bd0f-4015-8754-90251ebe3ff8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0d3552'},body:JSON.stringify({sessionId:'0d3552',hypothesisId:'A',location:'auth.service.ts:login',message:'spa-login-redirect',data:{href:window.location.href,hasSessionCookie:document.cookie.includes('JSESSIONID'),hasOauthCookie:document.cookie.includes('SUCCHUB_OAUTH2')},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    try {
+      sessionStorage.removeItem('sh-reg-draft-v1');
+    } catch {
+      /* ignore */
+    }
     window.location.href = '/oauth2/authorization/keycloak';
+  }
+
+  /**
+   * Starts Keycloak self-registration via the BFF so the OAuth state cookie is
+   * set before the browser leaves for :8080.
+   */
+  register(): void {
+    // #region agent log
+    fetch('http://127.0.0.1:7452/ingest/37b8ef57-bd0f-4015-8754-90251ebe3ff8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0d3552'},body:JSON.stringify({sessionId:'0d3552',hypothesisId:'D',location:'auth.service.ts:register',message:'spa-register-redirect',data:{href:window.location.href},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    window.location.href = '/oauth2/authorization/keycloak?register=1';
   }
 
   /**
@@ -66,21 +92,46 @@ export class AuthService {
    * from the XSRF-TOKEN cookie and submitted as the _csrf parameter.
    */
   logout(): void {
-    const form = document.createElement('form');
-    form.method = 'post';
-    form.action = '/logout';
+    // #region agent log
+    fetch('http://127.0.0.1:7452/ingest/37b8ef57-bd0f-4015-8754-90251ebe3ff8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0d3552'},body:JSON.stringify({sessionId:'0d3552',hypothesisId:'L',location:'auth.service.ts:logout',message:'spa-logout-submit',data:{hasXsrf:!!this.readCookie('XSRF-TOKEN'),href:window.location.href},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
 
-    const csrfToken = this.readCookie('XSRF-TOKEN');
-    if (csrfToken) {
+    const submitLogout = () => {
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.action = '/logout';
+
+      const csrfToken = this.readCookie('XSRF-TOKEN');
+      if (!csrfToken) {
+        // Without CSRF Spring returns 403 and the sidebar button looks dead.
+        window.location.href =
+          'http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout'
+          + '?client_id=succeshub-backend'
+          + '&post_logout_redirect_uri='
+          + encodeURIComponent('http://localhost:4200/');
+        return;
+      }
+
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = '_csrf';
       input.value = csrfToken;
       form.appendChild(input);
+
+      this._currentUser.set(null);
+      document.body.appendChild(form);
+      form.submit();
+    };
+
+    // Ensure the XSRF cookie exists (first paint can race the CsrfCookieFilter).
+    if (!this.readCookie('XSRF-TOKEN')) {
+      this.http.get(`${environment.apiUrl}/user`, { observe: 'response' }).pipe(
+        catchError(() => of(null))
+      ).subscribe(() => submitLogout());
+      return;
     }
 
-    document.body.appendChild(form);
-    form.submit();
+    submitLogout();
   }
 
   private readCookie(name: string): string | null {

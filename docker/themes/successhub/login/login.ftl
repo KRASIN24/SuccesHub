@@ -1,5 +1,5 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
+<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=false; section>
     <#if section = "header">
         <span class="sh-eyebrow">Elite Access</span>
         <span class="sh-title-line">Access the</span>
@@ -79,19 +79,25 @@
                         <svg class="sh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
                     </button>
                 </div>
+
+                <#if realm.registrationAllowed && !registrationDisabled??>
+                    <p class="sh-create-account">
+                        New here?
+                        <#--
+                          End Keycloak SSO, then go straight to the BFF registration
+                          OAuth entry (avoid landing on /?register=1 where authGuard
+                          races into login() and bounces back to the login page).
+                        -->
+                        <a tabindex="6" id="sh-create-account"
+                           href="http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout?client_id=succeshub-backend&post_logout_redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Foauth2%2Fauthorization%2Fkeycloak%3Fregister%3D1">Create account</a>
+                    </p>
+                </#if>
             </form>
         </#if>
         </div>
     </div>
     <#elseif section = "info" >
-        <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
-            <div id="kc-registration-container">
-                <div id="kc-registration">
-                    <span>${msg("noAccount")} <a tabindex="6"
-                                                 href="${url.registrationUrl}">${msg("doRegister")}</a></span>
-                </div>
-            </div>
-        </#if>
+        <#-- Create-account link is rendered in the form above for visibility. -->
     <#elseif section = "socialProviders" >
         <#if realm.password && social.providers??>
             <div id="kc-social-providers" class="${properties.kcFormSocialAccountSectionClass!}">

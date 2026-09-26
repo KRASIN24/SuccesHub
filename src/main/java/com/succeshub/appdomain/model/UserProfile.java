@@ -89,6 +89,10 @@ public class UserProfile {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    /** When set, account is in the 30-day deletion grace period. */
+    @Column(name = "deactivated_at")
+    private Instant deactivatedAt;
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;

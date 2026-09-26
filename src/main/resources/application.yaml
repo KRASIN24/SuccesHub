@@ -58,6 +58,14 @@ springdoc:
 
 server:
   port: 8082
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        name: JSESSIONID
+        path: /
+        http-only: true
+        same-site: lax
 
 logging:
   level:
@@ -69,3 +77,10 @@ retry:
   max-attempts: 3
   backoff:
     delay: 2000
+
+succeshub:
+  keycloak:
+    server-url: http://localhost:8080
+    realm: succeshub-realm
+    admin-client-id: succeshub-admin
+    admin-client-secret: admin-changeme
