@@ -5,6 +5,11 @@
   "displayName": "SuccessHub",
   "displayNameHtml": "<b>SUCCESS</b>HUB",
   "loginTheme": "successhub",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
   "otpPolicyDigits": 6,
@@ -32,12 +37,21 @@
       "enabled": true,
       "defaultAction": false,
       "priority": 20
+    },
+    {
+      "alias": "UPDATE_EMAIL",
+      "name": "Update Email",
+      "providerId": "UPDATE_EMAIL",
+      "enabled": true,
+      "defaultAction": false,
+      "priority": 30
     }
   ],
   "users": [
     {
       "username": "testuser",
       "enabled": true,
+      "email": "testuser@succeshub.local",
       "emailVerified": true,
       "credentials": [
         {
@@ -46,6 +60,14 @@
         }
       ],
       "realmRoles": ["USER"]
+    },
+    {
+      "username": "service-account-succeshub-admin",
+      "enabled": true,
+      "serviceAccountClientId": "succeshub-admin",
+      "clientRoles": {
+        "realm-management": ["manage-users", "view-users", "query-users"]
+      }
     }
   ],
   "roles": {
@@ -63,6 +85,8 @@
       "secret": "changeme",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
+      "rootUrl": "http://localhost:4200",
+      "baseUrl": "http://localhost:4200/",
       "redirectUris": ["http://localhost:4200/*"],
       "webOrigins": ["http://localhost:4200"],
       "attributes": {
@@ -82,8 +106,33 @@
             "access.token.claim": "true",
             "userinfo.token.claim": "true"
           }
+        },
+        {
+          "name": "audience-account",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "account",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
         }
       ]
+    },
+    {
+      "clientId": "succeshub-admin",
+      "name": "SuccessHub Admin (service account)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "admin-changeme",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "redirectUris": [],
+      "webOrigins": []
     }
   ]
 }
