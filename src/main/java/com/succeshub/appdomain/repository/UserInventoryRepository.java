@@ -29,4 +29,11 @@ public interface UserInventoryRepository extends JpaRepository<UserInventory, UU
      * @return matching stack if present
      */
     Optional<UserInventory> findByUserIdAndRewardDefinitionId(String userId, UUID rewardDefinitionId);
+
+    /**
+     * Deletes inventory for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

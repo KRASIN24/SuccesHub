@@ -2,6 +2,7 @@ package com.succeshub.succes_hub;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Spring Boot entry point. Component scan covers appdomain services, controllers,
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		"com.succeshub.coreinfra",
 		"com.succeshub.appdomain"
 })
+@EnableScheduling
 public class SuccesHubApplication {
 
 	public static void main(String[] args) {

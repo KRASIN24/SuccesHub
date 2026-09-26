@@ -52,4 +52,11 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     @Modifying(clearAutomatically = true)
     @Query("update Notification n set n.read = true where n.userId = :userId and n.read = false")
     int markAllRead(@Param("userId") String userId);
+
+    /**
+     * Deletes all notifications for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

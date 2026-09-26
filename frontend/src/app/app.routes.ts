@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { activeAccountGuard } from './core/guards/active-account.guard';
 
 export const routes: Routes = [
   {
@@ -8,29 +9,38 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'dashboard',
+    path: 'account/reactivate',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/account/reactivate-account.component').then(
+        (m) => m.ReactivateAccountComponent
+      ),
+    title: 'Reactivate account — SuccesHub',
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/home/home.component').then((m) => m.HomeComponent),
     title: 'Dashboard — SuccesHub',
   },
   {
     path: 'tasks',
-    canActivate: [authGuard],
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/tasks/tasks.component').then((m) => m.TasksComponent),
     title: 'Quest Log — SuccesHub',
   },
   {
     path: 'goals',
-    canActivate: [authGuard],
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/goals/goals.component').then((m) => m.GoalsComponent),
     title: 'Boss Battle — SuccesHub',
   },
   {
     path: 'achievements',
-    canActivate: [authGuard],
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/achievements/achievements.component').then(
         (m) => m.AchievementsComponent
@@ -39,7 +49,7 @@ export const routes: Routes = [
   },
   {
     path: 'loot-boxes',
-    canActivate: [authGuard],
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/loot-boxes/loot-boxes.component').then((m) => m.LootBoxesComponent),
     title: 'The Celestial Cache — SuccesHub',
@@ -51,7 +61,7 @@ export const routes: Routes = [
   },
   {
     path: 'profile',
-    canActivate: [authGuard],
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/profile/profile.component').then((m) => m.ProfileComponent),
     title: 'Profile — SuccesHub',
@@ -59,7 +69,7 @@ export const routes: Routes = [
   },
   {
     path: 'settings',
-    canActivate: [authGuard],
+    canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/settings/settings.component').then(
         (m) => m.SettingsComponent

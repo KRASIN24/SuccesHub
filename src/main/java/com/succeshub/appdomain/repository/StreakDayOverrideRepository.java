@@ -40,4 +40,11 @@ public interface StreakDayOverrideRepository extends JpaRepository<StreakDayOver
      * @return {@code true} when an override exists
      */
     boolean existsByUserIdAndDay(String userId, LocalDate day);
+
+    /**
+     * Deletes streak day overrides for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

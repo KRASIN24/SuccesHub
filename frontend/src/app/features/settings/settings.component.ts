@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { AccountService } from '../../core/services/account.service';
 import { ProfileService } from '../../core/services/profile.service';
 import {
   AppPreferences,
@@ -13,6 +14,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { GlitchCheckboxComponent } from '../../shared/components/glitch-checkbox/glitch-checkbox.component';
 import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
+
+type AccountDialog = 'email' | 'password' | 'delete' | null;
 
 @Component({
   selector: 'app-settings',
@@ -31,6 +34,7 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme
 })
 export class SettingsComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly accountService = inject(AccountService);
   protected readonly profileService = inject(ProfileService);
   private readonly prefsService = inject(AppPreferencesService);
   protected readonly localeService = inject(LocaleService);
@@ -42,7 +46,17 @@ export class SettingsComponent implements OnInit {
   readonly saveError = signal<string | null>(null);
   readonly saving = signal(false);
 
+  readonly dialog = signal<AccountDialog>(null);
+  readonly accountBusy = signal(false);
+  readonly accountError = signal<string | null>(null);
+  readonly mfaEnabled = signal(false);
+
   draftDisplayName = '';
+  draftEmail = '';
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  deleteConfirmation = '';
 
   readonly preferences = this.prefsService.preferences;
   readonly user = this.authService.currentUser;
@@ -50,6 +64,18 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.draftDisplayName = this.profileService.profile()?.displayName ?? '';
+    this.draftEmail = this.user()?.email ?? '';
+    this.accountService.getStatus().subscribe({
+      next: (status) => {
+        this.mfaEnabled.set(status.mfaEnabled);
+        if (status.email) {
+          this.draftEmail = status.email;
+        }
+      },
+      error: () => {
+        /* status is best-effort; Settings still works */
+      },
+    });
     if (this.profileService.profile()) {
       this.loading.set(false);
     } else {
@@ -109,24 +135,115 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  /** In-Settings email flow — wire to BFF/Keycloak in a later bite. */
+  openDialog(kind: Exclude<AccountDialog, null>): void {
+    this.accountError.set(null);
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.deleteConfirmation = '';
+    this.draftEmail = this.user()?.email ?? this.draftEmail;
+    this.dialog.set(kind);
+  }
+
+  closeDialog(): void {
+    this.dialog.set(null);
+    this.accountError.set(null);
+    this.accountBusy.set(false);
+  }
+
   updateEmail(): void {
-    this.flashSuccess('Update email will be available in Settings soon.');
+    this.openDialog('email');
   }
 
-  /** In-Settings password flow — wire to BFF/Keycloak in a later bite. */
   changePassword(): void {
-    this.flashSuccess('Change password will be available in Settings soon.');
+    this.openDialog('password');
   }
 
-  /** In-Settings 2FA flow — wire to BFF/Keycloak in a later bite. */
   setupTwoFactor(): void {
-    this.flashSuccess('Two-factor setup will be available in Settings soon.');
+    this.accountBusy.set(true);
+    this.accountError.set(null);
+    this.accountService.mfaSetup().subscribe({
+      next: (res) => {
+        window.location.href = res.redirectUrl;
+      },
+      error: (err) => {
+        console.error('Failed to start MFA setup', err);
+        this.accountBusy.set(false);
+        this.saveError.set(err?.error?.message ?? 'Could not start two-factor setup.');
+      },
+    });
   }
 
-  /** In-Settings delete flow — wire to BFF/Keycloak in a later bite. */
   deleteAccount(): void {
-    this.flashSuccess('Account deletion will be available in Settings soon.');
+    this.openDialog('delete');
+  }
+
+  submitEmail(): void {
+    const email = this.draftEmail.trim();
+    if (!email) {
+      this.accountError.set('Email is required.');
+      return;
+    }
+    this.accountBusy.set(true);
+    this.accountError.set(null);
+    this.accountService.updateEmail(email).subscribe({
+      next: () => {
+        this.accountBusy.set(false);
+        this.closeDialog();
+        this.authService.loadCurrentUser().subscribe();
+        this.flashSuccess('Email updated. Sign out and back in if the sidebar still shows the old address.');
+      },
+      error: (err) => {
+        this.accountBusy.set(false);
+        this.accountError.set(err?.error?.message ?? 'Failed to update email.');
+      },
+    });
+  }
+
+  submitPassword(): void {
+    if (!this.currentPassword || !this.newPassword) {
+      this.accountError.set('Fill in all password fields.');
+      return;
+    }
+    if (this.newPassword.length < 8) {
+      this.accountError.set('New password must be at least 8 characters.');
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.accountError.set('New password and confirmation do not match.');
+      return;
+    }
+    this.accountBusy.set(true);
+    this.accountError.set(null);
+    this.accountService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.accountBusy.set(false);
+        this.closeDialog();
+        this.flashSuccess('Password changed.');
+      },
+      error: (err) => {
+        this.accountBusy.set(false);
+        this.accountError.set(err?.error?.message ?? 'Failed to change password.');
+      },
+    });
+  }
+
+  submitDelete(): void {
+    if (this.deleteConfirmation !== 'DELETE') {
+      this.accountError.set('Type DELETE to confirm.');
+      return;
+    }
+    this.accountBusy.set(true);
+    this.accountError.set(null);
+    this.accountService.deleteAccount('DELETE').subscribe({
+      next: () => {
+        this.authService.logout();
+      },
+      error: (err) => {
+        this.accountBusy.set(false);
+        this.accountError.set(err?.error?.message ?? 'Failed to delete account.');
+      },
+    });
   }
 
   private flashSuccess(message: string): void {

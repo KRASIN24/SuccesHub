@@ -139,4 +139,11 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
      */
     List<Task> findByUserIdAndStatusAndDifficultyGreaterThanEqualAndWeeklyChallengeFalseOrderByCreatedAtDesc(
             String userId, Task.Status status, int difficulty);
+
+    /**
+     * Deletes every task owned by the user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }
