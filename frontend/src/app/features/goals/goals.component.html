@@ -17,74 +17,71 @@
 } @else {
   <div class="boss-battle">
     <header class="page-head">
-      <span class="eyebrow">Current Campaigns</span>
-      <h1 class="page-title">Boss Battle <span class="gold">Mode</span></h1>
-      <p class="page-intro">
-        Visualize your long-term ambitions as celestial leviathans. Each strike brings you closer
-        to ultimate mastery. Conquer the void, one objective at a time.
-      </p>
+      <span class="eyebrow">{{ 'goals.eyebrow' | translate }}</span>
+      <h1 class="page-title">{{ 'goals.title' | translate }} <span class="gold">{{ 'goals.titleGold' | translate }}</span></h1>
+      <p class="page-intro">{{ 'goals.intro' | translate }}</p>
     </header>
 
     <section class="section">
       <div class="section-head">
-        <h2 class="section-title">Active Encounters</h2>
-        <span class="section-meta">{{ activeGoals().length }} Entities Detected</span>
+        <h2 class="section-title">{{ 'goals.activeEncounters' | translate }}</h2>
+        <span class="section-meta">{{ i18n.t('goals.entitiesDetected', { count: activeGoals().length }) }}</span>
         @if (!showAddForm()) {
           <button type="button" class="summon-btn" (click)="openAddForm()">
             <span class="material-icons">add</span>
-            Summon Boss
+            {{ 'goals.summonBoss' | translate }}
           </button>
         }
       </div>
 
       @if (showAddForm()) {
         <form class="add-goal-form surface-card" (ngSubmit)="saveGoal()">
-          <h3 class="form-title">Summon New Boss</h3>
+          <h3 class="form-title">{{ 'goals.summonNewBoss' | translate }}</h3>
           @if (saveError()) {
             <p class="form-error">{{ saveError() }}</p>
           }
           <div class="form-grid">
             <label class="form-field span-2">
-              <span class="field-label">Boss Name</span>
+              <span class="field-label">{{ 'goals.bossName' | translate }}</span>
               <input
                 type="text"
                 [(ngModel)]="newGoalName"
                 name="goalName"
-                placeholder="e.g. Emergency Fund Leviathan"
+                [placeholder]="'goals.bossNamePlaceholder' | translate"
                 required
               />
             </label>
             <label class="form-field">
-              <span class="field-label">Tier</span>
+              <span class="field-label">{{ 'goals.tier' | translate }}</span>
               <select [(ngModel)]="newGoalTier" name="goalTier">
-                <option value="Standard Beast">Standard Beast</option>
-                <option value="Elite Threat">Elite Threat</option>
-                <option value="Legendary Leviathan">Legendary Leviathan</option>
+                <option value="Standard Beast">{{ 'goals.tierStandard' | translate }}</option>
+                <option value="Elite Threat">{{ 'goals.tierElite' | translate }}</option>
+                <option value="Legendary Leviathan">{{ 'goals.tierLegendary' | translate }}</option>
               </select>
             </label>
             <label class="form-field">
-              <span class="field-label">Icon</span>
+              <span class="field-label">{{ 'goals.icon' | translate }}</span>
               <select [(ngModel)]="newGoalIcon" name="goalIcon">
-                <option value="savings">Savings</option>
-                <option value="fitness_center">Fitness</option>
-                <option value="school">Learning</option>
-                <option value="work">Career</option>
-                <option value="self_improvement">Growth</option>
-                <option value="menu_book">Reading</option>
-                <option value="rocket_launch">Launch</option>
+                <option value="savings">{{ 'goals.iconSavings' | translate }}</option>
+                <option value="fitness_center">{{ 'goals.iconFitness' | translate }}</option>
+                <option value="school">{{ 'goals.iconLearning' | translate }}</option>
+                <option value="work">{{ 'goals.iconCareer' | translate }}</option>
+                <option value="self_improvement">{{ 'goals.iconGrowth' | translate }}</option>
+                <option value="menu_book">{{ 'goals.iconReading' | translate }}</option>
+                <option value="rocket_launch">{{ 'goals.iconLaunch' | translate }}</option>
               </select>
             </label>
             <label class="form-field span-2">
-              <span class="field-label">Target Description</span>
+              <span class="field-label">{{ 'goals.targetDescription' | translate }}</span>
               <input
                 type="text"
                 [(ngModel)]="newGoalTargetDescription"
                 name="goalTargetDescription"
-                placeholder="e.g. Save €10,000"
+                [placeholder]="'goals.targetPlaceholder' | translate"
               />
             </label>
             <label class="form-field">
-              <span class="field-label">Target Value</span>
+              <span class="field-label">{{ 'goals.targetValue' | translate }}</span>
               <input
                 type="number"
                 min="1"
@@ -94,7 +91,7 @@
               />
             </label>
             <label class="form-field">
-              <span class="field-label">XP Reward</span>
+              <span class="field-label">{{ 'goals.xpReward' | translate }}</span>
               <input
                 type="number"
                 min="0"
@@ -105,15 +102,15 @@
             </label>
             <label class="form-field checkbox-field">
               <input type="checkbox" [(ngModel)]="newGoalFeatured" name="goalFeatured" />
-              <span class="field-label">Featured boss</span>
+              <span class="field-label">{{ 'goals.featuredBoss' | translate }}</span>
             </label>
           </div>
           <div class="form-actions">
             <button type="button" class="btn-secondary" (click)="cancelAddForm()" [disabled]="saving()">
-              Cancel
+              {{ 'common.cancel' | translate }}
             </button>
             <button type="submit" class="btn-primary" [disabled]="saving() || !newGoalName.trim()">
-              {{ saving() ? 'Summoning…' : 'Summon Boss' }}
+              {{ saving() ? ('goals.summoning' | translate) : ('goals.summonBoss' | translate) }}
             </button>
           </div>
         </form>
@@ -138,8 +135,8 @@
 
             <div class="boss-health">
               <div class="health-labels">
-                <span class="health-key">Health (Progress)</span>
-                <span class="health-val">{{ healthRemaining(boss) }}% Remaining</span>
+                <span class="health-key">{{ 'goals.healthProgress' | translate }}</span>
+                <span class="health-val">{{ i18n.t('goals.remaining', { pct: healthRemaining(boss) }) }}</span>
               </div>
               <div class="health-track">
                 <div class="health-fill" [style.width.%]="progress(boss)"></div>
@@ -147,18 +144,18 @@
             </div>
 
             <div class="boss-foot">
-              <span class="boss-target">Target: {{ boss.targetDescription || boss.targetValue }}</span>
-              <span class="boss-hint">Link tasks on Strategy Canvas to deal damage</span>
+              <span class="boss-target">{{ i18n.t('goals.target', { value: boss.targetDescription || boss.targetValue }) }}</span>
+              <span class="boss-hint">{{ 'goals.bossHint' | translate }}</span>
             </div>
           </article>
         } @empty {
           <div class="empty-bosses">
             <span class="material-icons empty-icon">shield</span>
-            <p class="empty-text">No active bosses yet. Summon your first campaign target to begin the hunt.</p>
+            <p class="empty-text">{{ 'goals.emptyBosses' | translate }}</p>
             @if (!showAddForm()) {
               <button type="button" class="summon-btn summon-btn--large" (click)="openAddForm()">
                 <span class="material-icons">add</span>
-                Summon Boss
+                {{ 'goals.summonBoss' | translate }}
               </button>
             }
           </div>
@@ -168,7 +165,7 @@
 
     <section class="section">
       <div class="section-head line">
-        <h2 class="section-title">Conquered Foes</h2>
+        <h2 class="section-title">{{ 'goals.conqueredFoes' | translate }}</h2>
       </div>
 
       <div class="foes-grid">
@@ -177,11 +174,11 @@
             <div class="foe-avatar">
               <span class="material-icons">{{ foe.icon || 'emoji_events' }}</span>
             </div>
-            <p class="foe-slain">Slain {{ (foe.completedAt || foe.createdAt) | date:'mediumDate' }}</p>
+            <p class="foe-slain">{{ i18n.t('goals.slain', { date: ((foe.completedAt || foe.createdAt) | date:'mediumDate') || '' }) }}</p>
             <p class="foe-name">{{ foe.name }}</p>
           </article>
         } @empty {
-          <p class="empty-foes" style="color: rgba(255,255,255,0.4); font-size: 14px; padding: 24px 0;">No campaign targets have been eliminated yet in this iteration.</p>
+          <p class="empty-foes">{{ 'goals.emptyFoes' | translate }}</p>
         }
       </div>
     </section>
@@ -189,17 +186,17 @@
     @if (summary(); as summ) {
       <section class="insights">
         <div class="insight-panel surface-card">
-          <h3 class="insight-title">Tactical Insights</h3>
+          <h3 class="insight-title">{{ 'goals.tacticalInsights' | translate }}</h3>
           <p class="insight-text">
-            {{ weeklyInsight()?.summaryText || 'Complete linked tasks to chip away at boss health and earn competence insights.' }}
+            {{ weeklyInsight()?.summaryText || ('goals.insightsFallback' | translate) }}
           </p>
           <div class="insight-stats">
             <div class="stat-box">
-              <span class="stat-label">Current Streak</span>
-              <span class="stat-value">{{ profile()?.currentStreak || 0 }} Days</span>
+              <span class="stat-label">{{ 'goals.currentStreak' | translate }}</span>
+              <span class="stat-value">{{ i18n.t('goals.days', { count: profile()?.currentStreak || 0 }) }}</span>
             </div>
             <div class="stat-box">
-              <span class="stat-label">Global Rank</span>
+              <span class="stat-label">{{ 'goals.globalRank' | translate }}</span>
               <span class="stat-value">#{{ profile()?.globalRank || 'N/A' }}</span>
             </div>
           </div>
@@ -212,11 +209,11 @@
           >
             <div class="ring-inner">
               <span class="ring-pct">{{ summ.overallPercent }}%</span>
-              <span class="ring-cap">Completion</span>
+              <span class="ring-cap">{{ 'goals.completion' | translate }}</span>
             </div>
           </div>
-          <p class="campaign-title">Grand Campaign</p>
-          <p class="campaign-sub">{{ summ.completedGoals }} / {{ summ.totalGoals }} bosses eliminated to achieve Paragon status</p>
+          <p class="campaign-title">{{ 'goals.grandCampaign' | translate }}</p>
+          <p class="campaign-sub">{{ i18n.t('goals.campaignSub', { completed: summ.completedGoals, total: summ.totalGoals }) }}</p>
         </div>
       </section>
     }

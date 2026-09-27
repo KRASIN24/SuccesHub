@@ -21,6 +21,8 @@ import { LoadingSkeletonComponent } from '../../shared/components/loading-skelet
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-home',
@@ -32,6 +34,7 @@ import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-too
     ErrorStateComponent,
     FrameOrnamentsComponent,
     DevToolsChipComponent,
+    TranslatePipe,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -39,6 +42,7 @@ import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-too
 export class HomeComponent implements OnInit {
   protected readonly profileService = inject(ProfileService);
   protected readonly cosmetics = inject(EquippedCosmeticsService);
+  protected readonly i18n = inject(TranslateService);
   private readonly taskService = inject(TaskService);
   private readonly achievementService = inject(AchievementService);
   private readonly gamificationService = inject(GamificationService);

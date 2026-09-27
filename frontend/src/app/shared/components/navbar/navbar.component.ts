@@ -16,11 +16,12 @@ import { EquippedCosmeticsService } from '../../../core/services/equipped-cosmet
 import { NotificationService } from '../../../core/services/notification.service';
 import { AppNotification } from '../../../core/models/notification.model';
 import { FrameOrnamentsComponent } from '../frame-ornaments/frame-ornaments.component';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, FrameOrnamentsComponent],
+  imports: [RouterLink, DecimalPipe, FrameOrnamentsComponent, TranslatePipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })

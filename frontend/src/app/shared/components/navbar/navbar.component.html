@@ -5,7 +5,7 @@
         type="button"
         class="icon-btn menu-btn"
         (click)="onMenuToggle()"
-        aria-label="Open navigation"
+        [attr.aria-label]="'navbar.openNav' | translate"
       >
         <span class="material-icons">menu</span>
       </button>
@@ -16,20 +16,20 @@
   <div class="topbar-right">
     @if (profileService.profile(); as prof) {
       <div class="stat-chip">
-        <span class="stat-key">XP:</span>
+        <span class="stat-key">{{ 'navbar.xp' | translate }}:</span>
         <span class="stat-val gold">{{ prof.currentXp | number }}</span>
       </div>
       <div class="stat-chip rank">
-        <span class="stat-key">LVL:</span>
+        <span class="stat-key">{{ 'navbar.lvl' | translate }}:</span>
         <span class="stat-val">{{ prof.level }}</span>
       </div>
       <div class="stat-chip">
-        <span class="stat-key">STREAK:</span>
+        <span class="stat-key">{{ 'navbar.streak' | translate }}:</span>
         <span class="stat-val">{{ prof.currentStreak }}d</span>
       </div>
       @if (cosmetics.equippedTitle(); as title) {
         <div class="stat-chip title-chip" [title]="title.label">
-          <span class="stat-key">TITLE:</span>
+          <span class="stat-key">{{ 'navbar.title' | translate }}:</span>
           <span class="stat-val gold">{{ title.label }}</span>
         </div>
       }
@@ -44,7 +44,7 @@
         [attr.aria-expanded]="panelOpen()"
         aria-haspopup="true"
         aria-controls="notif-panel"
-        aria-label="Notifications"
+        [attr.aria-label]="'navbar.notifications' | translate"
       >
         <span class="material-icons">{{
           notifications.unreadCount() > 0 ? 'notifications' : 'notifications_none'
@@ -63,23 +63,23 @@
           id="notif-panel"
           class="notif-panel"
           role="menu"
-          aria-label="Notification inbox"
+          [attr.aria-label]="'navbar.notifInbox' | translate"
         >
           <div class="notif-panel__head">
-            <span class="notif-panel__title">Notifications</span>
+            <span class="notif-panel__title">{{ 'navbar.notifications' | translate }}</span>
             @if (notifications.unreadCount() > 0) {
               <button
                 type="button"
                 class="notif-panel__mark-all"
                 (click)="markAllRead($event)"
               >
-                Mark all read
+                {{ 'navbar.markAllRead' | translate }}
               </button>
             }
           </div>
 
           @if (notifications.items().length === 0) {
-            <p class="notif-panel__empty">No notifications yet.</p>
+            <p class="notif-panel__empty">{{ 'navbar.empty' | translate }}</p>
           } @else {
             <ul class="notif-list">
               @for (row of notifications.items(); track row.id) {
@@ -102,7 +102,7 @@
                       }}</span>
                     </span>
                     @if (!row.read) {
-                      <span class="notif-row__dot" aria-label="Unread"></span>
+                      <span class="notif-row__dot" [attr.aria-label]="'navbar.unread' | translate"></span>
                     }
                   </button>
                 </li>
@@ -119,8 +119,8 @@
       routerLink="/profile"
       [attr.aria-label]="
         cosmetics.equippedFrame()
-          ? 'Account · ' + cosmetics.equippedFrame()!.label
-          : 'Account'
+          ? ('navbar.account' | translate) + ' · ' + cosmetics.equippedFrame()!.label
+          : ('navbar.account' | translate)
       "
     >
       <div

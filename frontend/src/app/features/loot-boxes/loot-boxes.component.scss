@@ -670,13 +670,14 @@ a {
   min-height: 320px;
   padding: 32px;
   border-radius: 16px;
-  border: 1px solid var(--border-faint);
-  background: var(--panel-alt);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   cursor: pointer;
   transition: border-color 0.15s ease, transform 0.15s ease;
+  box-shadow: var(--shadow-card);
 
   &:hover {
     transform: translateY(-2px);
@@ -882,7 +883,7 @@ a {
   line-height: 16px;
   letter-spacing: 4.8px;
   text-transform: uppercase;
-  color: var(--color-text-faint);
+  color: var(--color-text-muted);
   text-align: center;
 }
 
@@ -893,10 +894,12 @@ a {
   a {
     font-size: 16px;
     line-height: 24px;
-    color: var(--text-muted);
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 
     &:hover {
-      color: var(--text-white);
+      color: var(--gold-bright);
     }
   }
 }

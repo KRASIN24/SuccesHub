@@ -59,11 +59,11 @@
           <div class="hero__copy-row">
             <div>
               <p class="hero__eyebrow">{{ 'loot.eyebrow' | translate }}</p>
-              <h1 class="hero__title">{{ selectedBox()!.name }}</h1>
+              <h1 class="hero__title">{{ boxLabel(selectedBox()!) }}</h1>
             </div>
             <app-dev-tools-chip tool="cache"></app-dev-tools-chip>
           </div>
-          <p class="hero__subtitle">{{ selectedBox()!.blurb }}</p>
+          <p class="hero__subtitle">{{ boxBlurb(selectedBox()!) }}</p>
         </div>
 
         <div class="hero__cta-wrap">
@@ -174,9 +174,9 @@
       </section>
 
       <footer class="footer">
-        <p class="footer__version">SuccessHub Reward Ecosystem v4.2.0</p>
+        <p class="footer__version">{{ 'loot.version' | translate }}</p>
         <nav class="footer__links">
-          <a href="javascript:void(0)" *ngFor="let link of footerLinks">{{ link.label }}</a>
+          <a href="javascript:void(0)" *ngFor="let link of footerLinks">{{ link.labelKey | translate }}</a>
         </nav>
       </footer>
     </main>
@@ -197,7 +197,7 @@
               <img [src]="activeBoxImageUrl()" [alt]="activeBox()!.name" />
             </div>
           }
-          <p class="charging__label">{{ i18n.t('loot.unsealing', { name: activeBox()?.name || '' }) }}</p>
+          <p class="charging__label">{{ i18n.t('loot.unsealing', { name: activeBox() ? boxLabel(activeBox()!) : '' }) }}</p>
         </div>
       } @else {
         <div class="reveal" [class.reveal--complete]="allRevealed()">

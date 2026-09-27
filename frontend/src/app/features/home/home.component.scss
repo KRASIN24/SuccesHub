@@ -85,7 +85,8 @@
   font-size: 0.66rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  /* Hex interior is always dark — do not use theme-muted (dark in light mode). */
+  color: #d3c5af;
 }
 
 .xp-block {
@@ -160,6 +161,14 @@
   margin-bottom: 1.5rem;
 }
 
+.panel-block {
+  padding: 1.25rem 1.35rem 1.5rem;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-card);
+}
+
 .block-title {
   margin: 0;
   font-size: 1.6rem;
@@ -171,7 +180,7 @@
 .subtle-pill {
   color: var(--color-text-muted);
   background: var(--color-surface-2);
-  border-color: var(--color-border);
+  border-color: var(--color-border-strong);
 }
 
 .task-list {
@@ -189,12 +198,33 @@
   gap: 1.25rem;
   padding: 1.25rem 1.5rem;
   border-radius: var(--radius-card);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover {
     border-color: var(--color-border-strong);
+  }
+
+  &.empty-tasks {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    color: var(--color-text-muted);
+    list-style: none;
+
+    .material-icons {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: var(--color-text-faint);
+    }
+
+    p {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
   }
 
   &.is-done {

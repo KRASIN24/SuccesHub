@@ -13,6 +13,8 @@ import { LoadingSkeletonComponent } from '../../shared/components/loading-skelet
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';
 import { StreakPanelComponent } from './streak-panel/streak-panel.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 type Category = 'UTILITY' | 'TITLE' | 'AVATAR_FRAME';
 
@@ -34,6 +36,7 @@ interface OverviewStat {
     ErrorStateComponent,
     StreakPanelComponent,
     FrameOrnamentsComponent,
+    TranslatePipe,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
@@ -44,6 +47,7 @@ export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly achievementsApi = inject(AchievementService);
   private readonly tasksApi = inject(TaskService);
+  protected readonly i18n = inject(TranslateService);
   /** Shared equipped TITLE / FRAME — also drives navbar + dashboard chrome. */
   protected readonly cosmetics = inject(EquippedCosmeticsService);
 
@@ -87,31 +91,32 @@ export class ProfileComponent implements OnInit {
   });
 
   readonly overviewStats = computed<OverviewStat[]>(() => {
+    this.i18n.revision();
     const p = this.profile();
     const unlocked = this.achievementsUnlocked();
     const total = this.achievementsTotal();
     return [
       {
-        category: 'Consistency',
-        label: 'Day streak',
+        category: this.i18n.t('profile.statConsistency'),
+        label: this.i18n.t('profile.labelDayStreak'),
         icon: 'local_fire_department',
         value: p?.currentStreak ?? 0,
       },
       {
-        category: 'Potential',
-        label: 'Level XP',
+        category: this.i18n.t('profile.statPotential'),
+        label: this.i18n.t('profile.labelLevelXp'),
         icon: 'database',
         value: (p?.currentXp ?? 0).toLocaleString(),
       },
       {
-        category: 'Execution',
-        label: 'Tasks completed',
+        category: this.i18n.t('profile.statExecution'),
+        label: this.i18n.t('profile.labelTasksCompleted'),
         icon: 'check_circle',
         value: this.tasksCompleted(),
       },
       {
-        category: 'Legacy',
-        label: 'Achievements',
+        category: this.i18n.t('profile.statLegacy'),
+        label: this.i18n.t('profile.labelAchievements'),
         icon: 'trophy',
         value: unlocked,
         suffix: total > 0 ? `/${total}` : undefined,

@@ -29,7 +29,7 @@ interface RecentHistoryEntry {
 }
 
 interface FooterLink {
-  label: string;
+  labelKey: string;
 }
 
 interface RewardTier {
@@ -58,10 +58,8 @@ const LOOT_ART: Record<string, string> = {
 const RECENT_HISTORY_MAX = 8;
 const HISTORY_BOX_LIMIT = 3;
 
-const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
+const TIER_TEMPLATES: Omit<RewardTier, 'name' | 'description' | 'tierLabel'>[] = [
   {
-    description: ['Daily utility and small boosts.'],
-    tierLabel: 'Common Tier',
     progress: 100,
     accent: '#d4d4d4',
     softAccent: '#737373',
@@ -75,8 +73,6 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     shape: 'circle',
   },
   {
-    description: ['Milestone loot with better odds.'],
-    tierLabel: 'Rare Tier',
     progress: 66.67,
     accent: '#f5be42',
     softAccent: '#f5be42',
@@ -90,8 +86,6 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     shape: 'rounded',
   },
   {
-    description: ['Top rewards: titles and legendaries.'],
-    tierLabel: 'Epic Tier',
     progress: 25,
     accent: '#ffb2b7',
     softAccent: '#ffb2b7',
@@ -105,6 +99,12 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     shape: 'circle',
   },
 ];
+
+const TIER_I18N = [
+  { labelKey: 'loot.tierCommon', descKey: 'loot.tierDescCommon' },
+  { labelKey: 'loot.tierRare', descKey: 'loot.tierDescRare' },
+  { labelKey: 'loot.tierEpic', descKey: 'loot.tierDescEpic' },
+] as const;
 
 @Component({
   selector: 'app-loot-boxes',
@@ -132,9 +132,9 @@ export class LootBoxesComponent implements OnInit {
   readonly accentIcon = 'https://www.figma.com/api/mcp/asset/af0f7201-80fd-4bcb-9736-a5b8ad19a27d';
 
   readonly footerLinks: FooterLink[] = [
-    { label: 'Manifest History' },
-    { label: 'Drop Rates' },
-    { label: 'Exchange' },
+    { labelKey: 'loot.manifestHistory' },
+    { labelKey: 'loot.dropRatesLink' },
+    { labelKey: 'loot.exchange' },
   ];
 
   readonly loading = signal(true);
@@ -201,10 +201,29 @@ export class LootBoxesComponent implements OnInit {
   });
 
   get rewardTiers(): RewardTier[] {
+    this.i18n.revision();
     return this.boxTypes().map((box, i) => {
       const template = TIER_TEMPLATES[Math.min(i, TIER_TEMPLATES.length - 1)];
-      return { name: box.name, ...template };
+      const keys = TIER_I18N[Math.min(i, TIER_I18N.length - 1)];
+      return {
+        name: this.boxLabel(box),
+        description: [this.i18n.t(keys.descKey)],
+        tierLabel: this.i18n.t(keys.labelKey),
+        ...template,
+      };
     });
+  }
+
+  boxLabel(box: BoxType): string {
+    const key = `loot.boxes.${box.id}.name`;
+    const translated = this.i18n.t(key);
+    return translated === key ? box.name : translated;
+  }
+
+  boxBlurb(box: BoxType): string {
+    const key = `loot.boxes.${box.id}.blurb`;
+    const translated = this.i18n.t(key);
+    return translated === key ? box.blurb : translated;
   }
 
   /**
@@ -292,7 +311,7 @@ export class LootBoxesComponent implements OnInit {
     const entries: RecentHistoryEntry[] = opened.contents.map((item, i) => ({
       entryId: `${opened.id}-${i}-${item.key}`,
       item,
-      boxName: box.name,
+      boxName: this.boxLabel(box),
       pulledAt,
     }));
     const next = [...entries, ...this.recentHistory()].slice(0, RECENT_HISTORY_MAX);
@@ -300,7 +319,7 @@ export class LootBoxesComponent implements OnInit {
   }
 
   private mapHistoryFromApi(boxes: LootBox[], boxTypes: BoxType[]): RecentHistoryEntry[] {
-    const nameByType = new Map(boxTypes.map((b) => [b.id, b.name]));
+    const nameByType = new Map(boxTypes.map((b) => [b.id, this.boxLabel(b)]));
     const entries: RecentHistoryEntry[] = [];
 
     for (const box of boxes) {
