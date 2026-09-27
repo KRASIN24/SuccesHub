@@ -13,6 +13,8 @@ import {
 } from './animated-loot-chest/animated-loot-chest.component';
 import { RevealCardComponent } from './reveal-card/reveal-card.component';
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 type Phase = 'idle' | 'charging' | 'revealing';
 type GlowTier = 'default' | 'silver' | 'gold';
@@ -114,6 +116,7 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     AnimatedLootChestComponent,
     RevealCardComponent,
     DevToolsChipComponent,
+    TranslatePipe,
   ],
   templateUrl: './loot-boxes.component.html',
   styleUrl: './loot-boxes.component.scss',
@@ -122,6 +125,7 @@ export class LootBoxesComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
   private readonly lootAudio = inject(LootAudioService);
   private readonly lootPending = inject(LootPendingService);
+  protected readonly i18n = inject(TranslateService);
 
   readonly navPrevIcon = 'https://www.figma.com/api/mcp/asset/c32ac360-fb11-43c3-8a87-8987a3ddb081';
   readonly navNextIcon = 'https://www.figma.com/api/mcp/asset/58580b05-b667-4c70-86a2-93d7ba92670c';
@@ -168,14 +172,14 @@ export class LootBoxesComponent implements OnInit {
   /** Recent pulls, newest first — loaded from server history. */
   readonly recentHistory = signal<RecentHistoryEntry[]>([]);
 
-  readonly primaryLabel = computed(() => 'Open Cache');
+  readonly primaryLabel = computed(() => this.i18n.t('loot.openCache'));
 
   readonly ctaHint = computed(() => {
     const pending = this.selectedPendingCount();
     if (pending > 0) {
-      return `${pending} cache${pending === 1 ? '' : 's'} ready to open`;
+      return this.i18n.t('loot.cachesReady', { count: pending });
     }
-    return 'Complete tasks or streak milestones to earn caches';
+    return this.i18n.t('loot.earnCaches');
   });
 
   readonly canOpen = computed(() => {
@@ -481,11 +485,11 @@ export class LootBoxesComponent implements OnInit {
   glowHeadline(): string {
     switch (this.glow()) {
       case 'gold':
-        return 'Legendary pull';
+        return this.i18n.t('loot.legendaryPull');
       case 'silver':
-        return 'Rare find';
+        return this.i18n.t('loot.rareFind');
       default:
-        return 'Your haul';
+        return this.i18n.t('loot.yourHaul');
     }
   }
 

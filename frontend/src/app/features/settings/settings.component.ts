@@ -92,7 +92,7 @@ export class SettingsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to load profile', err);
-          this.error.set('Could not load profile data.');
+          this.error.set(this.i18n.t('settings.loadFailed'));
           this.loading.set(false);
         },
       });
@@ -101,7 +101,7 @@ export class SettingsComponent implements OnInit {
 
   setPreference(key: keyof AppPreferences, value: boolean): void {
     this.prefsService.update({ [key]: value });
-    this.flashSuccess('Preferences saved.');
+    this.flashSuccess(this.i18n.t('settings.prefsSaved'));
   }
 
   setDarkTheme(dark: boolean): void {
@@ -109,7 +109,7 @@ export class SettingsComponent implements OnInit {
     this.profileService.updatePreferences({ darkTheme: dark }).subscribe({
       next: () => this.flashSuccess(this.i18n.t('settings.prefsSaved')),
       error: () => {
-        this.saveError.set('Could not save theme preference.');
+        this.saveError.set(this.i18n.t('settings.themeSaveFailed'));
         this.profileService.refreshProfile().subscribe();
       },
     });
@@ -121,7 +121,7 @@ export class SettingsComponent implements OnInit {
     this.profileService.updatePreferences({ locale: code }).subscribe({
       next: () => this.flashSuccess(this.i18n.t('settings.languageSaved')),
       error: () => {
-        this.saveError.set('Could not save language preference.');
+        this.saveError.set(this.i18n.t('settings.languageSaveFailed'));
         this.profileService.refreshProfile().subscribe();
       },
     });
@@ -130,11 +130,11 @@ export class SettingsComponent implements OnInit {
   saveIdentity(): void {
     const name = this.draftDisplayName.trim();
     if (!name) {
-      this.saveError.set('Display name is required.');
+      this.saveError.set(this.i18n.t('settings.displayNameRequired'));
       return;
     }
     if (name === this.profileService.profile()?.displayName) {
-      this.flashSuccess('Identity already up to date.');
+      this.flashSuccess(this.i18n.t('settings.identityUpToDate'));
       return;
     }
 
@@ -144,12 +144,12 @@ export class SettingsComponent implements OnInit {
     this.profileService.updateDisplayName(name).subscribe({
       next: () => {
         this.saving.set(false);
-        this.flashSuccess('Identity updated.');
+        this.flashSuccess(this.i18n.t('settings.identityUpdated'));
       },
       error: (err) => {
         console.error('Failed to update display name', err);
         this.saving.set(false);
-        this.saveError.set(err?.error?.message ?? 'Failed to save display name.');
+        this.saveError.set(err?.error?.message ?? this.i18n.t('settings.identitySaveFailed'));
       },
     });
   }
@@ -188,7 +188,7 @@ export class SettingsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to start MFA setup', err);
         this.accountBusy.set(false);
-        this.saveError.set(err?.error?.message ?? 'Could not start two-factor setup.');
+        this.saveError.set(err?.error?.message ?? this.i18n.t('settings.mfaStartFailed'));
       },
     });
   }
@@ -200,7 +200,7 @@ export class SettingsComponent implements OnInit {
   submitEmail(): void {
     const email = this.draftEmail.trim();
     if (!email) {
-      this.accountError.set('Email is required.');
+      this.accountError.set(this.i18n.t('settings.emailRequired'));
       return;
     }
     this.accountBusy.set(true);
@@ -210,26 +210,26 @@ export class SettingsComponent implements OnInit {
         this.accountBusy.set(false);
         this.closeDialog();
         this.authService.loadCurrentUser().subscribe();
-        this.flashSuccess('Email updated. Sign out and back in if the sidebar still shows the old address.');
+        this.flashSuccess(this.i18n.t('settings.emailUpdated'));
       },
       error: (err) => {
         this.accountBusy.set(false);
-        this.accountError.set(err?.error?.message ?? 'Failed to update email.');
+        this.accountError.set(err?.error?.message ?? this.i18n.t('settings.emailSaveFailed'));
       },
     });
   }
 
   submitPassword(): void {
     if (!this.currentPassword || !this.newPassword) {
-      this.accountError.set('Fill in all password fields.');
+      this.accountError.set(this.i18n.t('settings.passwordFieldsRequired'));
       return;
     }
     if (this.newPassword.length < 8) {
-      this.accountError.set('New password must be at least 8 characters.');
+      this.accountError.set(this.i18n.t('settings.passwordTooShort'));
       return;
     }
     if (this.newPassword !== this.confirmPassword) {
-      this.accountError.set('New password and confirmation do not match.');
+      this.accountError.set(this.i18n.t('settings.passwordMismatch'));
       return;
     }
     this.accountBusy.set(true);
@@ -238,18 +238,18 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.accountBusy.set(false);
         this.closeDialog();
-        this.flashSuccess('Password changed.');
+        this.flashSuccess(this.i18n.t('settings.passwordChanged'));
       },
       error: (err) => {
         this.accountBusy.set(false);
-        this.accountError.set(err?.error?.message ?? 'Failed to change password.');
+        this.accountError.set(err?.error?.message ?? this.i18n.t('settings.passwordSaveFailed'));
       },
     });
   }
 
   submitDelete(): void {
     if (this.deleteConfirmation !== 'DELETE') {
-      this.accountError.set('Type DELETE to confirm.');
+      this.accountError.set(this.i18n.t('settings.deleteConfirmFailed'));
       return;
     }
     this.accountBusy.set(true);
@@ -260,7 +260,7 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         this.accountBusy.set(false);
-        this.accountError.set(err?.error?.message ?? 'Failed to delete account.');
+        this.accountError.set(err?.error?.message ?? this.i18n.t('settings.deleteFailed'));
       },
     });
   }

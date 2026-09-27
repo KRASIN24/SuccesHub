@@ -44,15 +44,17 @@ export class TranslateService {
     }
   }
 
-  t(key: string): string {
+  t(key: string, params?: Record<string, string | number>): string {
     // Touch revision so template bindings depending on this service refresh.
     this.revision();
     const fromActive = this.resolve(this.dict(), key);
-    if (fromActive != null) {
-      return fromActive;
+    let raw = fromActive ?? this.resolve(this.fallback, key) ?? key;
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        raw = raw.replaceAll(`{{${k}}}`, String(v));
+      }
     }
-    const fromEn = this.resolve(this.fallback, key);
-    return fromEn ?? key;
+    return raw;
   }
 
   private async loadPack(code: string): Promise<Dict> {

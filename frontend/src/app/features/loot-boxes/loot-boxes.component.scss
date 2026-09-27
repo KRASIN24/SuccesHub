@@ -6,6 +6,7 @@
 :host {
   display: block;
   --loot-sync-duration: 4s;
+  --bg: var(--color-app-bg);
   --panel: var(--color-surface-container);
   --panel-alt: var(--color-surface-container-high);
   --border-faint: var(--color-border);
@@ -361,7 +362,7 @@ a {
   line-height: 15px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--color-text);
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
@@ -852,7 +853,7 @@ a {
   color: var(--text-dim);
 
   span:nth-child(2) {
-    color: #cbd5e1;
+    color: var(--color-text-muted);
   }
 
   span:nth-child(3) {
@@ -881,7 +882,7 @@ a {
   line-height: 16px;
   letter-spacing: 4.8px;
   text-transform: uppercase;
-  color: #525252;
+  color: var(--color-text-faint);
   text-align: center;
 }
 
@@ -1008,7 +1009,7 @@ a {
     font-size: 0.8rem;
     letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: #e6ddce;
+    color: var(--color-on-surface);
     text-shadow: 0 1px 10px rgba(0, 0, 0, 0.85);
   }
 }
@@ -1044,11 +1045,11 @@ a {
     }
 
     &--rare {
-      color: #cbd5e1;
+      color: var(--color-text-muted);
     }
 
     &--common {
-      color: #d3c5af;
+      color: var(--color-on-surface-variant);
     }
   }
 
@@ -1057,7 +1058,7 @@ a {
     font-size: 0.7rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #e6ddce;
+    color: var(--color-on-surface);
     opacity: 0.9;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
     transition:

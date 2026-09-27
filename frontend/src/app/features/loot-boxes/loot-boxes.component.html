@@ -22,7 +22,7 @@
             aria-label="Previous chest"
           >
             <img [src]="navPrevIcon" alt="" />
-            <span class="hero__nav-tooltip">Previous Chest</span>
+            <span class="hero__nav-tooltip">{{ 'loot.prevChest' | translate }}</span>
           </button>
 
           <div class="hero__hexagon">
@@ -51,14 +51,14 @@
             aria-label="Next chest"
           >
             <img [src]="navNextIcon" alt="" />
-            <span class="hero__nav-tooltip">Next Chest</span>
+            <span class="hero__nav-tooltip">{{ 'loot.nextChest' | translate }}</span>
           </button>
         </div>
 
         <div class="hero__copy">
           <div class="hero__copy-row">
             <div>
-              <p class="hero__eyebrow">The Celestial Cache</p>
+              <p class="hero__eyebrow">{{ 'loot.eyebrow' | translate }}</p>
               <h1 class="hero__title">{{ selectedBox()!.name }}</h1>
             </div>
             <app-dev-tools-chip tool="cache"></app-dev-tools-chip>
@@ -85,8 +85,8 @@
 
       <section class="history">
         <div class="history__heading">
-          <p class="history__eyebrow">Latest Pulls</p>
-          <h2 class="history__title">Recent History</h2>
+          <p class="history__eyebrow">{{ 'loot.latestPulls' | translate }}</p>
+          <h2 class="history__title">{{ 'loot.recentHistory' | translate }}</h2>
         </div>
 
         @if (recentHistory().length > 0) {
@@ -104,14 +104,14 @@
             }
           </div>
         } @else {
-          <p class="history__empty">Open a cache to build your pull history.</p>
+          <p class="history__empty">{{ 'loot.historyEmpty' | translate }}</p>
         }
       </section>
 
       <section class="tiers">
         <div class="tiers__heading">
-          <p class="tiers__eyebrow">Universal Tiers</p>
-          <h2 class="tiers__title">Available Artifacts</h2>
+          <p class="tiers__eyebrow">{{ 'loot.universalTiers' | translate }}</p>
+          <h2 class="tiers__title">{{ 'loot.availableArtifacts' | translate }}</h2>
         </div>
 
         <div class="tiers__grid">
@@ -143,7 +143,7 @@
             <div class="tier-card__body">
               <h3 class="tier-card__name">{{ tier.name }}</h3>
               @if (pendingCountAt(i) > 0) {
-                <p class="tier-card__keys">{{ pendingCountAt(i) }} ready to open</p>
+                <p class="tier-card__keys">{{ i18n.t('loot.readyToOpen', { count: pendingCountAt(i) }) }}</p>
               }
               <p class="tier-card__desc">
                 <span *ngFor="let line of tier.description">{{ line }}<br /></span>
@@ -151,7 +151,7 @@
 
               @if (boxTypes()[i]; as box) {
                 <div class="tier-card__odds">
-                  <p class="tier-card__odds-label">Drop rates</p>
+                  <p class="tier-card__odds-label">{{ 'loot.dropRates' | translate }}</p>
                   <div class="tier-card__odds-bar">
                     <span class="tier-card__odds-common" [style.width.%]="weightPct(box, 'COMMON')"></span>
                     <span class="tier-card__odds-rare" [style.width.%]="weightPct(box, 'RARE')"></span>
@@ -197,12 +197,12 @@
               <img [src]="activeBoxImageUrl()" [alt]="activeBox()!.name" />
             </div>
           }
-          <p class="charging__label">Unsealing the {{ activeBox()?.name }}…</p>
+          <p class="charging__label">{{ i18n.t('loot.unsealing', { name: activeBox()?.name || '' }) }}</p>
         </div>
       } @else {
         <div class="reveal" [class.reveal--complete]="allRevealed()">
           <p class="reveal__eyebrow" [ngClass]="revealEyebrowClass()">{{ glowHeadline() }}</p>
-          <p class="reveal__hint">Tap each card to reveal your reward</p>
+          <p class="reveal__hint">{{ 'loot.tapToReveal' | translate }}</p>
           <div class="reveal__cards">
             @for (item of rolled(); track item) {
               <app-reveal-card
@@ -215,7 +215,7 @@
           </div>
           <div class="reveal__footer">
             @if (allRevealed()) {
-              <button type="button" class="reveal__collect" (click)="collect()">Collect</button>
+              <button type="button" class="reveal__collect" (click)="collect()">{{ 'loot.collect' | translate }}</button>
             }
           </div>
         </div>

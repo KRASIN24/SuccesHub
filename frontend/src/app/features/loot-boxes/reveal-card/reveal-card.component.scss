@@ -1,10 +1,10 @@
 :host {
   --panel: var(--color-surface-container);
-  --panel-alt: #2b292d;
-  --text-white: #ffffff;
-  --text-dim: #d3c5af;
-  --rc-accent: #d3c5af;
-  --rc-glow: rgba(211, 197, 175, 0.22);
+  --panel-alt: var(--color-surface-container-high);
+  --text-white: var(--color-text);
+  --text-dim: var(--color-on-surface-variant);
+  --rc-accent: var(--color-on-surface-variant);
+  --rc-glow: color-mix(in srgb, var(--color-on-surface-variant) 22%, transparent);
 
   position: relative;
   display: block;

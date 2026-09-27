@@ -122,7 +122,7 @@
 .xp-track {
   height: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
   overflow: hidden;
 }
 
@@ -298,7 +298,7 @@
 
 .merit.locked {
   .merit-hex {
-    background: rgba(255, 255, 255, 0.03);
+    background: color-mix(in srgb, var(--color-text) 5%, transparent);
     border-color: var(--color-border);
     color: var(--color-text-faint);
   }
@@ -575,7 +575,7 @@
 .forecast-meta {
   margin: 0.35rem 0 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--color-text-muted);
 }
 
 .forecast-meta {
