@@ -2,6 +2,7 @@ package com.succeshub.appdomain.controller;
 
 import com.succeshub.appdomain.dto.ProfileDto;
 import com.succeshub.appdomain.dto.UpdateDisplayNameRequest;
+import com.succeshub.appdomain.dto.UpdatePreferencesRequest;
 import com.succeshub.appdomain.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -70,6 +71,30 @@ public class ProfileController {
         ProfileDto dto = userProfileService.updateDisplayName(
                 principal.getSubject(),
                 request.displayName().trim());
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * Updates dark/light theme and interface locale for the authenticated user.
+     */
+    @Operation(
+            summary = "Update UI preferences",
+            description = "Persists dark/light theme and interface locale on the user profile. Null fields are left unchanged."
+    )
+    @ApiResponse(responseCode = "200", description = "Preferences updated")
+    @ApiResponse(responseCode = "400", description = "Invalid locale or body")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @PatchMapping("/preferences")
+    public ResponseEntity<ProfileDto> updatePreferences(
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestBody UpdatePreferencesRequest request) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        ProfileDto dto = userProfileService.updatePreferences(
+                principal.getSubject(),
+                request.darkTheme(),
+                request.locale());
         return ResponseEntity.ok(dto);
     }
 }
