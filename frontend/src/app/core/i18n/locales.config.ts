@@ -20,7 +20,6 @@ export const DEFAULT_LOCALE = 'en-US';
 export const SUPPORTED_LOCALES: readonly AppLocale[] = [
   { code: 'en-US', label: 'English (US)', nativeLabel: 'English' },
   { code: 'pl-PL', label: 'Polish', nativeLabel: 'Polski' },
-  { code: 'de-DE', label: 'German', nativeLabel: 'Deutsch' },
 ] as const;
 
 export function isSupportedLocale(code: string): boolean {

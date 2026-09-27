@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "dashboard": "Pulpit",
+    "tasks": "Zadania",
+    "goals": "Cele",
+    "achievements": "Osiągnięcia",
+    "cache": "Skarbiec",
+    "profile": "Profil",
+    "settings": "Ustawienia"
+  },
+  "settings": {
+    "appearance": "Wygląd",
+    "visualTheme": "Motyw",
+    "visualThemeDesc": "Ciemny lub jasny wygląd",
+    "language": "Język",
+    "languageDesc": "Język interfejsu",
+    "prefsSaved": "Zapisano preferencje.",
+    "languageSaved": "Zapisano język interfejsu.",
+    "soundEffects": "Efekty dźwiękowe",
+    "animations": "Animacje"
+  },
+  "common": {
+    "signOut": "Wyloguj",
+    "save": "Zapisz",
+    "cancel": "Anuluj"
+  }
+}

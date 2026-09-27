@@ -5,16 +5,18 @@ import {
   SUPPORTED_LOCALES,
   isSupportedLocale,
 } from '../i18n/locales.config';
+import { TranslateService } from '../i18n/translate.service';
 import { AppPreferencesService } from './app-preferences.service';
 
 /**
  * Locale / language selection for MVP i18n.
- * Persists via {@link AppPreferencesService} and sets {@code <html lang>}.
- * Wire ngx-translate (or Angular i18n) to {@link locale} when translation packs land.
+ * Persists via {@link AppPreferencesService}, sets {@code <html lang>},
+ * and drives {@link TranslateService} packs.
  */
 @Injectable({ providedIn: 'root' })
 export class LocaleService {
   private readonly prefs = inject(AppPreferencesService);
+  private readonly translate = inject(TranslateService);
 
   readonly supportedLocales: readonly AppLocale[] = SUPPORTED_LOCALES;
 
@@ -29,15 +31,28 @@ export class LocaleService {
       SUPPORTED_LOCALES[0]
   );
 
-  /** Call once at app startup so html lang matches stored preference. */
-  init(): void {
-    this.applyToDocument(this.locale());
+  /** Call once at app startup so html lang + packs match stored preference. */
+  async init(): Promise<void> {
+    const code = this.locale();
+    this.applyToDocument(code);
+    await this.translate.init(code);
+  }
+
+  /**
+   * Applies locale locally without writing prefs (server hydration).
+   */
+  async hydrate(code: string): Promise<void> {
+    const next = isSupportedLocale(code) ? code : DEFAULT_LOCALE;
+    this.prefs.update({ locale: next });
+    this.applyToDocument(next);
+    await this.translate.use(next);
   }
 
   setLocale(code: string): void {
     const next = isSupportedLocale(code) ? code : DEFAULT_LOCALE;
     this.prefs.update({ locale: next });
     this.applyToDocument(next);
+    void this.translate.use(next);
   }
 
   private applyToDocument(code: string): void {

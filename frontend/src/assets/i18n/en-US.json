@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "goals": "Goals",
+    "achievements": "Achievements",
+    "cache": "Cache",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "settings": {
+    "appearance": "Appearance",
+    "visualTheme": "Visual Theme",
+    "visualThemeDesc": "Dark or light appearance",
+    "language": "Language",
+    "languageDesc": "Interface language",
+    "prefsSaved": "Preferences saved.",
+    "languageSaved": "Language preference saved.",
+    "soundEffects": "Sound Effects",
+    "animations": "Animations"
+  },
+  "common": {
+    "signOut": "Sign out",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}
