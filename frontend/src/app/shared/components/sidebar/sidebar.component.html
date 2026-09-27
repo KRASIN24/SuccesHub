@@ -14,10 +14,10 @@
         class="nav-link"
         [routerLink]="item.route"
         routerLinkActive="active"
-        [attr.aria-label]="item.label"
+        [attr.aria-label]="item.labelKey | translate"
       >
         <span class="material-icons nav-icon">{{ item.icon }}</span>
-        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-label">{{ item.labelKey | translate }}</span>
         @if (item.showPendingBadge && lootPending.totalPendingCount() > 0) {
           <span class="nav-badge" aria-label="Pending caches">
             {{ lootPending.totalPendingCount() }}
@@ -30,7 +30,7 @@
 
   <a routerLink="/goals" class="gold-btn new-objective">
     <span class="material-icons">add</span>
-    New Objective
+    {{ 'nav.newObjective' | translate }}
   </a>
 
   <div class="nav-spacer"></div>
@@ -41,15 +41,15 @@
         class="nav-link subtle"
         [routerLink]="item.route"
         routerLinkActive="active"
-        [attr.aria-label]="item.label"
+        [attr.aria-label]="item.labelKey | translate"
       >
         <span class="material-icons nav-icon">{{ item.icon }}</span>
-        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-label">{{ item.labelKey | translate }}</span>
       </a>
     }
-    <button type="button" class="nav-link subtle" (click)="logout()" aria-label="Logout">
+    <button type="button" class="nav-link subtle" (click)="logout()" [attr.aria-label]="'common.signOut' | translate">
       <span class="material-icons nav-icon">logout</span>
-      <span class="nav-label">Logout</span>
+      <span class="nav-label">{{ 'common.signOut' | translate }}</span>
     </button>
   </div>
 </nav>

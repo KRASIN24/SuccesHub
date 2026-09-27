@@ -1,11 +1,28 @@
 <!doctype html>
-<html lang="en" class="app-dark">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>SuccesHub</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('successhub_prefs');
+        var prefs = raw ? JSON.parse(raw) : null;
+        var dark = prefs && typeof prefs.darkTheme === 'boolean' ? prefs.darkTheme : true;
+        var locale = prefs && prefs.locale ? String(prefs.locale) : 'en-US';
+        document.documentElement.classList.toggle('app-dark', dark);
+        document.documentElement.lang = locale;
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+        var meta = document.querySelector('meta[name="color-scheme"]');
+        if (meta) meta.setAttribute('content', dark ? 'dark' : 'light');
+      } catch (e) {
+        document.documentElement.classList.add('app-dark');
+      }
+    })();
+  </script>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +30,19 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
 </head>
-<body class="mat-typography app-dark" style="background-color: #0a0a0c; color: #ededee;">
+<body class="mat-typography">
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('successhub_prefs');
+        var prefs = raw ? JSON.parse(raw) : null;
+        var dark = prefs && typeof prefs.darkTheme === 'boolean' ? prefs.darkTheme : true;
+        document.body.classList.toggle('app-dark', dark);
+      } catch (e) {
+        document.body.classList.add('app-dark');
+      }
+    })();
+  </script>
   <app-root></app-root>
 </body>
 </html>

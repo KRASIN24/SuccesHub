@@ -1,6 +1,12 @@
 /**
  * Supported UI locales for SuccessHub.
  * Add entries here as translation packs land in MVP.
+ *
+ * Adding a language:
+ * 1. Append an {@link AppLocale} here.
+ * 2. Copy {@code assets/i18n/en-US.json} → {@code assets/i18n/{code}.json} and translate.
+ * 3. Keep the same key tree — especially {@code rewards.*} and {@code achievements.*} —
+ *    so catalog items localize without backend changes.
  */
 export interface AppLocale {
   /** BCP 47 code, e.g. en-US */
@@ -15,12 +21,11 @@ export const DEFAULT_LOCALE = 'en-US';
 
 /**
  * Registry of languages the app can switch to.
- * Translation files / ngx-translate packs should match these codes.
+ * Packs live at {@code /assets/i18n/{code}.json}.
  */
 export const SUPPORTED_LOCALES: readonly AppLocale[] = [
   { code: 'en-US', label: 'English (US)', nativeLabel: 'English' },
   { code: 'pl-PL', label: 'Polish', nativeLabel: 'Polski' },
-  { code: 'de-DE', label: 'German', nativeLabel: 'Deutsch' },
 ] as const;
 
 export function isSupportedLocale(code: string): boolean {

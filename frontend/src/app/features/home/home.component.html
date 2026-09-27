@@ -37,22 +37,22 @@
             <div class="hex-outer" [attr.data-frame]="cosmetics.equippedFrame()?.key ?? null">
               <div class="hex-inner">
                 <span class="hex-level-value">{{ prof.level }}</span>
-                <span class="hex-level-label">Current Level</span>
+                <span class="hex-level-label">{{ 'home.currentLevel' | translate }}</span>
               </div>
             </div>
           </div>
           @if (cosmetics.equippedFrame(); as frame) {
-            <p class="hero-frame-label">{{ frame.label }}</p>
+            <p class="hero-frame-label">{{ frame | rewardLabel }}</p>
           }
         </div>
 
         @if (cosmetics.equippedTitle(); as title) {
-          <p class="hero-title">{{ title.label }}</p>
+          <p class="hero-title">{{ title | rewardLabel }}</p>
         }
 
         <div class="xp-block">
           <div class="xp-head">
-            <span class="xp-title">XP Progression</span>
+            <span class="xp-title">{{ 'home.xpProgression' | translate }}</span>
             <span class="xp-count">
               {{ prof.currentXp | number }} <span class="muted">/ {{ prof.nextLevelXp | number }}</span>
             </span>
@@ -60,27 +60,22 @@
           <div class="xp-track">
             <div class="xp-fill" [style.width.%]="xpPercent"></div>
           </div>
-        </div>
-
-        @if (daily(); as day) {
-          <div class="xp-block ritual-block">
-            <div class="xp-head">
-              <span class="xp-title">
-                <span class="material-icons ritual-icon">local_fire_department</span>
-                {{ day.currentStreak }}d streak · {{ day.streakTier }}
+          @if (daily(); as day) {
+            <div class="xp-foot">
+              <span class="xp-streak">
+                <span class="material-icons ritual-icon" aria-hidden="true">local_fire_department</span>
+                {{ day.currentStreak }}
               </span>
-              <span class="xp-count">
-                {{ day.xpEarnedToday | number }} <span class="muted">/ {{ day.xpEarnedToday + day.dailyXpRemaining | number }} daily</span>
+              <span class="xp-count xp-count--daily">
+                {{ day.xpEarnedToday | number }}
+                <span class="muted">/ {{ day.xpEarnedToday + day.dailyXpRemaining | number }} {{ 'home.dailyXp' | translate }}</span>
               </span>
-            </div>
-            <div class="xp-track daily-track">
-              <div class="xp-fill daily-fill" [style.width.%]="dailyXpPercent"></div>
             </div>
             @if (day.streakShields > 0) {
-              <p class="ritual-meta">{{ day.streakShields }} streak shield(s) ready</p>
+              <p class="ritual-meta">{{ i18n.t('home.streakShields', { count: day.streakShields }) }}</p>
             }
-          </div>
-        }
+          }
+        </div>
       </section>
     }
 
@@ -88,25 +83,25 @@
       <section class="celebrate-banner">
         <div>
           <div class="celebrate-banner__row">
-            <p class="celebrate-title">Qualifying day complete</p>
+            <p class="celebrate-title">{{ 'home.qualifyingDay' | translate }}</p>
             <app-dev-tools-chip tool="ritual"></app-dev-tools-chip>
           </div>
-          <p class="celebrate-copy">Seal today to lock the beat — past days are already settled by the daily sync.</p>
+          <p class="celebrate-copy">{{ 'home.qualifyingCopy' | translate }}</p>
         </div>
         <button type="button" class="celebrate-btn" [disabled]="celebrating()" (click)="celebrateDay()">
-          {{ celebrating() ? 'Sealing…' : 'Seal the day' }}
+          {{ celebrating() ? ('home.sealing' | translate) : ('home.sealDay' | translate) }}
         </button>
       </section>
     } @else if (daily()?.daySealed) {
       <section class="celebrate-banner celebrate-banner--sealed">
         <div>
           <div class="celebrate-banner__row">
-            <p class="celebrate-title">Day sealed</p>
+            <p class="celebrate-title">{{ 'home.daySealed' | translate }}</p>
             <app-dev-tools-chip tool="ritual"></app-dev-tools-chip>
           </div>
-          <p class="celebrate-copy">Streak progress is locked in. Keep executing — tomorrow’s ritual will count this day.</p>
+          <p class="celebrate-copy">{{ 'home.daySealedCopy' | translate }}</p>
         </div>
-        <span class="sealed-chip">Sealed</span>
+        <span class="sealed-chip">{{ 'home.sealed' | translate }}</span>
       </section>
     } @else {
       <div class="dev-ritual-anchor">
@@ -118,8 +113,8 @@
       <div class="col-main">
         <section class="panel-block">
           <div class="block-head">
-            <h2 class="block-title">Today's Missions</h2>
-            <span class="xp-pill subtle-pill">{{ tasksRemaining }} scheduled</span>
+            <h2 class="block-title">{{ 'home.todaysMissions' | translate }}</h2>
+            <span class="xp-pill subtle-pill">{{ i18n.t('home.scheduled', { count: tasksRemaining }) }}</span>
           </div>
 
           <ul class="task-list">
@@ -135,7 +130,7 @@
                   <p class="task-title">
                     {{ task.title }}
                     @if (task.weeklyChallenge) {
-                      <span class="weekly-badge">Weekly</span>
+                      <span class="weekly-badge">{{ 'home.weekly' | translate }}</span>
                     }
                   </p>
                   <p class="task-detail">{{ task.description }}</p>
@@ -143,9 +138,9 @@
                 <span class="xp-pill">D{{ task.difficulty }} · {{ task.durationMinutes }}m</span>
               </li>
             } @empty {
-              <li class="task-item empty-tasks" style="padding: 32px; text-align: center; color: rgba(255,255,255,0.4); list-style: none;">
-                <span class="material-icons" style="font-size: 32px; margin-bottom: 8px;">event_available</span>
-                <p style="margin: 0 0 12px; font-size: 14px;">No tasks committed to today. Schedule from your backlog below or on the Strategy Canvas.</p>
+              <li class="task-item empty-tasks">
+                <span class="material-icons">event_available</span>
+                <p>{{ 'home.emptyMissions' | translate }}</p>
               </li>
             }
           </ul>
@@ -154,8 +149,8 @@
         @if (unscheduled().length > 0) {
           <section class="panel-block">
             <div class="block-head">
-              <h2 class="block-title">Commit to Today</h2>
-              <a routerLink="/tasks" class="link-muted">Strategy Canvas →</a>
+              <h2 class="block-title">{{ 'home.commitToday' | translate }}</h2>
+              <a routerLink="/tasks" class="link-muted">{{ 'home.strategyCanvasLink' | translate }}</a>
             </div>
             <ul class="task-list compact">
               @for (task of unscheduled(); track task.id) {
@@ -163,7 +158,7 @@
                   <div class="task-body">
                     <p class="task-title">{{ task.title }}</p>
                   </div>
-                  <button type="button" class="schedule-btn" (click)="scheduleTask(task)">+ Today</button>
+                  <button type="button" class="schedule-btn" (click)="scheduleTask(task)">{{ 'home.addToday' | translate }}</button>
                 </li>
               }
             </ul>
@@ -173,8 +168,8 @@
         @if ((daily()?.weeklyChallenges?.length ?? 0) > 0) {
           <section class="panel-block">
             <div class="block-head">
-              <h2 class="block-title">Weekly Challenges</h2>
-              <a routerLink="/tasks" class="link-muted">Open Strategy Canvas →</a>
+              <h2 class="block-title">{{ 'home.weeklyChallenges' | translate }}</h2>
+              <a routerLink="/tasks" class="link-muted">{{ 'home.openStrategyCanvas' | translate }}</a>
             </div>
             <ul class="task-list">
               @for (task of daily()?.weeklyChallenges ?? []; track task.id) {
@@ -184,17 +179,17 @@
                       <a class="task-deep-link" [routerLink]="['/tasks']" [queryParams]="{ focus: task.id }">
                         {{ task.title }}
                       </a>
-                      <span class="weekly-badge">Weekly</span>
+                      <span class="weekly-badge">{{ 'home.weekly' | translate }}</span>
                     </p>
                     @if (task.description) {
                       <p class="task-detail">{{ task.description }}</p>
                     }
                   </div>
                   @if (task.status === 'DONE') {
-                    <span class="xp-pill subtle-pill">Done</span>
+                    <span class="xp-pill subtle-pill">{{ 'home.done' | translate }}</span>
                   } @else {
                     <button type="button" class="schedule-btn" (click)="completeWeeklyChallenge(task)">
-                      Complete · +50% XP
+                      {{ 'home.completeXp' | translate }}
                     </button>
                   }
                 </li>
@@ -204,17 +199,17 @@
         }
 
         <section class="panel-block">
-          <h3 class="merits-title">Earned Merits</h3>
+          <h3 class="merits-title">{{ 'home.earnedMerits' | translate }}</h3>
           <div class="merits">
             @for (merit of merits(); track merit.id) {
               <div class="merit" [class.locked]="merit.locked">
-                <div class="merit-hex" [title]="merit.description">
+                <div class="merit-hex" [title]="merit | achievementDesc">
                   <span class="material-icons">{{ merit.icon }}</span>
                 </div>
-                <span class="merit-label">{{ merit.label }}</span>
+                <span class="merit-label">{{ merit | achievementLabel }}</span>
               </div>
             } @empty {
-              <p class="empty-merits" style="color: rgba(255,255,255,0.4); font-size: 14px;">No merits initialized yet.</p>
+              <p class="empty-merits">{{ 'home.noMerits' | translate }}</p>
             }
           </div>
         </section>
@@ -224,10 +219,10 @@
         @if (forecast(); as fc) {
           <div class="widget surface-card">
             <div class="widget-head">
-              <span class="eyebrow">Tomorrow's Forecast</span>
+              <span class="eyebrow">{{ 'home.forecast' | translate }}</span>
               <span class="material-icons widget-icon">trending_up</span>
             </div>
-            <p class="forecast-line">Next streak bonus at <strong>{{ fc.nextStreakMilestone }}d</strong> (+{{ fc.nextStreakBonusRate * 100 | number:'1.0-0' }}%)</p>
+            <p class="forecast-line">Next streak bonus at <strong>{{ fc.nextStreakMilestone }}</strong> (+{{ fc.nextStreakBonusRate * 100 | number:'1.0-0' }}%)</p>
             <p class="forecast-meta">Up to {{ fc.weeklyChallengeCount }} weekly challenges (difficulty ≥ {{ fc.weeklyChallengeMinDifficulty }})</p>
           </div>
         }
@@ -235,7 +230,7 @@
         @if (lunarData(); as lunar) {
           <div class="widget surface-card">
             <div class="widget-head">
-              <span class="eyebrow">Lunar Phase</span>
+              <span class="eyebrow">{{ 'home.lunarPhase' | translate }}</span>
               <span class="material-icons widget-icon">nightlight</span>
             </div>
             <p class="lunar-name">{{ lunar.phaseName }}</p>
@@ -245,7 +240,7 @@
 
         @if (marketData(); as market) {
           <div class="widget surface-card">
-            <span class="eyebrow">Sovereign Index</span>
+            <span class="eyebrow">{{ 'home.sovereignIndex' | translate }}</span>
             <div class="index-rows">
               @for (row of market.prices; track row.pair) {
                 <div class="index-row">
@@ -271,7 +266,7 @@
     </div>
 
     <footer class="dash-footer">
-      <p class="foot-line">SUCCESSHUB V1.0 · THE SOVEREIGN INTERFACE</p>
+      <p class="foot-line">{{ 'home.footer' | translate }}</p>
       <div class="foot-links">
         <a href="#">Privacy</a>
         <a href="#">Terms</a>

@@ -2,8 +2,8 @@
 
   <header class="settings-topbar">
     <div>
-      <h1 class="settings-topbar__title">Configuration</h1>
-      <p class="settings-topbar__subtitle">Celestial Control Center</p>
+      <h1 class="settings-topbar__title">{{ 'settings.title' | translate }}</h1>
+      <p class="settings-topbar__subtitle">{{ 'settings.subtitle' | translate }}</p>
     </div>
   </header>
 
@@ -26,13 +26,13 @@
 
       <section class="settings-main">
         <div class="section-heading">
-          <h2 class="section-heading__title section-heading__title--lg">Account Settings</h2>
+          <h2 class="section-heading__title section-heading__title--lg">{{ 'settings.accountSettings' | translate }}</h2>
           <span class="section-heading__rule section-heading__rule--strong" aria-hidden="true"></span>
         </div>
 
         <div class="account-card">
           <div class="field">
-            <label class="field__label" for="display-name">Display name</label>
+            <label class="field__label" for="display-name">{{ 'settings.displayName' | translate }}</label>
             <div class="field__row">
               <input
                 id="display-name"
@@ -40,12 +40,12 @@
                 type="text"
                 [(ngModel)]="draftDisplayName"
                 maxlength="64"
-                placeholder="Your display name"
+                [placeholder]="'settings.displayNamePlaceholder' | translate"
                 (keyup.enter)="saveIdentity()"
               />
               <app-glitch-button
                 class="field__action"
-                label="Update Identity"
+                [label]="'settings.updateIdentity' | translate"
                 [disabled]="saving()"
                 (pressed)="saveIdentity()"
               />
@@ -53,27 +53,27 @@
           </div>
 
           <div class="field">
-            <span class="field__label" id="settings-email-label">Email</span>
+            <span class="field__label" id="settings-email-label">{{ 'settings.email' | translate }}</span>
             <div class="field__row">
               <div
                 class="field__static"
                 [class.field__static--empty]="!user()?.email"
                 aria-labelledby="settings-email-label"
               >
-                {{ user()?.email || 'Not set' }}
+                {{ user()?.email || ('settings.notSet' | translate) }}
               </div>
               <button
                 type="button"
                 class="field__btn"
                 (click)="updateEmail()"
               >
-                Update email
+                {{ 'settings.updateEmail' | translate }}
               </button>
             </div>
           </div>
 
           <div class="field">
-            <span class="field__label" id="settings-password-label">Password</span>
+            <span class="field__label" id="settings-password-label">{{ 'settings.password' | translate }}</span>
             <div class="field__row">
               <div
                 class="field__static field__static--mask"
@@ -87,7 +87,7 @@
                 class="field__btn"
                 (click)="changePassword()"
               >
-                Change password
+                {{ 'settings.changePassword' | translate }}
               </button>
             </div>
           </div>
@@ -101,16 +101,16 @@
       <aside class="settings-side">
 
         <div class="side-block">
-          <div class="section-heading">
-            <h2 class="section-heading__title">Appearance</h2>
+            <div class="section-heading">
+            <h2 class="section-heading__title">{{ 'settings.appearance' | translate }}</h2>
             <span class="section-heading__rule" aria-hidden="true"></span>
           </div>
 
           <div class="side-card">
             <div class="pref-row pref-row--theme">
               <div>
-                <p class="pref-row__label">Visual Theme</p>
-                <p class="pref-row__desc">Dark or light appearance</p>
+                <p class="pref-row__label">{{ 'settings.visualTheme' | translate }}</p>
+                <p class="pref-row__desc">{{ 'settings.visualThemeDesc' | translate }}</p>
               </div>
               <app-theme-toggle
                 [dark]="preferences().darkTheme"
@@ -119,9 +119,9 @@
             </div>
 
             <div class="pref-block">
-              <p class="pref-block__desc">Audio for loot and reveals</p>
+              <p class="pref-block__desc">{{ 'settings.soundDesc' | translate }}</p>
               <app-glitch-checkbox
-                label="Sound Effects"
+                [label]="'settings.soundEffects' | translate"
                 glitchText="SOUND_EFFECTS"
                 [checked]="preferences().soundEffects"
                 (checkedChange)="setPreference('soundEffects', $event)"
@@ -130,18 +130,18 @@
 
             <div class="pref-row">
               <div>
-                <label class="pref-row__label" for="settings-language">Language</label>
-                <p class="pref-row__desc">Interface language</p>
+                <label class="pref-row__label" for="settings-language">{{ 'settings.language' | translate }}</label>
+                <p class="pref-row__desc">{{ 'settings.languageDesc' | translate }}</p>
               </div>
               <select
                 id="settings-language"
                 class="lang-select"
                 [ngModel]="localeService.locale()"
                 (ngModelChange)="onLocaleChange($event)"
-                aria-label="Interface language"
+                [attr.aria-label]="'settings.languageDesc' | translate"
               >
                 @for (loc of localeService.supportedLocales; track loc.code) {
-                  <option [value]="loc.code">{{ loc.label }}</option>
+                  <option [value]="loc.code">{{ loc.nativeLabel }} ({{ loc.label }})</option>
                 }
               </select>
             </div>
@@ -150,31 +150,31 @@
 
         <div class="side-block">
           <div class="section-heading">
-            <h2 class="section-heading__title">Notifications</h2>
+            <h2 class="section-heading__title">{{ 'settings.notifications' | translate }}</h2>
             <span class="section-heading__rule" aria-hidden="true"></span>
           </div>
 
           <div class="side-card side-card--checks">
             <app-glitch-checkbox
-              label="Loot earned"
+              [label]="'settings.notifyLoot' | translate"
               glitchText="LOOT_EARNED"
               [checked]="preferences().notifyLootEarned"
               (checkedChange)="setPreference('notifyLootEarned', $event)"
             />
             <app-glitch-checkbox
-              label="Achievements"
+              [label]="'settings.notifyAchievements' | translate"
               glitchText="ACHIEVEMENT"
               [checked]="preferences().notifyAchievementUnlocked"
               (checkedChange)="setPreference('notifyAchievementUnlocked', $event)"
             />
             <app-glitch-checkbox
-              label="Streak milestones"
+              [label]="'settings.notifyStreak' | translate"
               glitchText="STREAK_ALERT"
               [checked]="preferences().notifyStreakMilestone"
               (checkedChange)="setPreference('notifyStreakMilestone', $event)"
             />
             <app-glitch-checkbox
-              label="Boss defeated"
+              [label]="'settings.notifyBoss' | translate"
               glitchText="BOSS_SLAIN"
               [checked]="preferences().notifyBossDefeated"
               (checkedChange)="setPreference('notifyBossDefeated', $event)"
@@ -184,19 +184,19 @@
 
         <div class="side-block">
           <div class="section-heading">
-            <h2 class="section-heading__title">Security</h2>
+            <h2 class="section-heading__title">{{ 'settings.security' | translate }}</h2>
             <span class="section-heading__rule" aria-hidden="true"></span>
           </div>
 
           <div class="side-card">
             <div class="pref-row pref-row--stack">
               <div>
-                <p class="pref-row__label">Two-factor authentication</p>
+                <p class="pref-row__label">{{ 'settings.twoFactor' | translate }}</p>
                 <p class="pref-row__desc">
                   @if (mfaEnabled()) {
-                    Authenticator app is configured for this account.
+                    {{ 'settings.twoFactorOn' | translate }}
                   } @else {
-                    Add an authenticator app for an extra sign-in step.
+                    {{ 'settings.twoFactorOff' | translate }}
                   }
                 </p>
               </div>
@@ -206,7 +206,7 @@
                 [disabled]="accountBusy()"
                 (click)="setupTwoFactor()"
               >
-                {{ mfaEnabled() ? 'Manage two-factor authentication' : 'Set up two-factor authentication' }}
+                {{ mfaEnabled() ? ('settings.manageTwoFactor' | translate) : ('settings.setupTwoFactor' | translate) }}
               </button>
             </div>
           </div>
@@ -217,15 +217,12 @@
     <section class="danger-zone" aria-labelledby="danger-zone-title">
       <div class="danger-card">
         <div class="danger-card__copy">
-          <h3 id="danger-zone-title" class="danger-card__title">Deactivate account</h3>
-          <p class="danger-card__body">
-            Starts a 30-day grace period. Progress is kept until then; sign in again to cancel.
-            After 30 days the account and data are permanently deleted.
-          </p>
+          <h3 id="danger-zone-title" class="danger-card__title">{{ 'settings.deactivateTitle' | translate }}</h3>
+          <p class="danger-card__body">{{ 'settings.deactivateBody' | translate }}</p>
         </div>
         <div class="danger-card__actions">
           <button type="button" class="btn-danger-outline" (click)="deleteAccount()">
-            Deactivate account
+            {{ 'settings.deactivateCta' | translate }}
           </button>
         </div>
       </div>
@@ -241,9 +238,9 @@
       [attr.aria-labelledby]="'account-dialog-title'"
     >
       @if (dialogKind === 'email') {
-        <h3 id="account-dialog-title" class="account-dialog__title">Update email</h3>
-        <p class="account-dialog__hint">Changes your Keycloak login email.</p>
-        <label class="field__label" for="account-email">Email</label>
+        <h3 id="account-dialog-title" class="account-dialog__title">{{ 'settings.updateEmail' | translate }}</h3>
+        <p class="account-dialog__hint">{{ 'settings.emailHint' | translate }}</p>
+        <label class="field__label" for="account-email">{{ 'settings.email' | translate }}</label>
         <input
           id="account-email"
           class="field__input"
@@ -255,9 +252,9 @@
           <p class="field__error">{{ accountError() }}</p>
         }
         <div class="account-dialog__actions">
-          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">Cancel</button>
+          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">{{ 'common.cancel' | translate }}</button>
           <app-glitch-button
-            label="Save email"
+            [label]="'settings.saveEmail' | translate"
             [disabled]="accountBusy()"
             (pressed)="submitEmail()"
           />
@@ -265,8 +262,8 @@
       }
 
       @if (dialogKind === 'password') {
-        <h3 id="account-dialog-title" class="account-dialog__title">Change password</h3>
-        <label class="field__label" for="account-current-password">Current password</label>
+        <h3 id="account-dialog-title" class="account-dialog__title">{{ 'settings.changePassword' | translate }}</h3>
+        <label class="field__label" for="account-current-password">{{ 'settings.currentPassword' | translate }}</label>
         <input
           id="account-current-password"
           class="field__input"
@@ -274,7 +271,7 @@
           [(ngModel)]="currentPassword"
           autocomplete="current-password"
         />
-        <label class="field__label" for="account-new-password">New password</label>
+        <label class="field__label" for="account-new-password">{{ 'settings.newPassword' | translate }}</label>
         <input
           id="account-new-password"
           class="field__input"
@@ -282,7 +279,7 @@
           [(ngModel)]="newPassword"
           autocomplete="new-password"
         />
-        <label class="field__label" for="account-confirm-password">Confirm new password</label>
+        <label class="field__label" for="account-confirm-password">{{ 'settings.confirmPassword' | translate }}</label>
         <input
           id="account-confirm-password"
           class="field__input"
@@ -294,9 +291,9 @@
           <p class="field__error">{{ accountError() }}</p>
         }
         <div class="account-dialog__actions">
-          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">Cancel</button>
+          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">{{ 'common.cancel' | translate }}</button>
           <app-glitch-button
-            label="Save password"
+            [label]="'settings.savePassword' | translate"
             [disabled]="accountBusy()"
             (pressed)="submitPassword()"
           />
@@ -304,14 +301,9 @@
       }
 
       @if (dialogKind === 'delete') {
-        <h3 id="account-dialog-title" class="account-dialog__title">Deactivate account</h3>
-        <p class="account-dialog__hint">
-          Your account will be <strong>deactivated</strong> for <strong>30 days</strong>.
-          Progress is kept; after that it is permanently deleted.
-          Sign in again within 30 days and choose Reactivate to cancel.
-          Type <strong>DELETE</strong> to confirm.
-        </p>
-        <label class="field__label" for="account-delete-confirm">Type DELETE</label>
+        <h3 id="account-dialog-title" class="account-dialog__title">{{ 'settings.deactivateTitle' | translate }}</h3>
+        <p class="account-dialog__hint">{{ 'settings.deleteHint' | translate }}</p>
+        <label class="field__label" for="account-delete-confirm">{{ 'settings.typeDelete' | translate }}</label>
         <input
           id="account-delete-confirm"
           class="field__input field__input--confirm"
@@ -325,14 +317,14 @@
           <p class="field__error">{{ accountError() }}</p>
         }
         <div class="account-dialog__actions">
-          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">Cancel</button>
+          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">{{ 'common.cancel' | translate }}</button>
           <button
             type="button"
             class="btn-danger-outline"
             [disabled]="accountBusy()"
             (click)="submitDelete()"
           >
-            Deactivate account
+            {{ 'settings.deactivateCta' | translate }}
           </button>
         </div>
       }

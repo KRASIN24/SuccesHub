@@ -50,10 +50,10 @@
   padding: 40px;
   border-radius: 40px;
   background:
-    linear-gradient(19deg, rgba(245, 190, 66, 0.05) 0%, rgba(245, 190, 66, 0) 50%),
-    rgba(33, 31, 35, 0.45);
-  border: 1px solid rgba(245, 190, 66, 0.08);
-  backdrop-filter: blur(6px);
+    linear-gradient(19deg, rgba(245, 190, 66, 0.08) 0%, rgba(245, 190, 66, 0) 50%),
+    var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border-strong, rgba(20, 16, 12, 0.18));
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
   overflow: visible;
 }
 
@@ -69,7 +69,7 @@
   height: 186px;
   clip-path: var(--hero-hex-clip);
   background: linear-gradient(160deg, #f6cf63, #b98520);
-  padding: 2px;
+  padding: 3px;
   display: grid;
   place-items: center;
 }
@@ -85,10 +85,16 @@
   width: 100%;
   height: 100%;
   clip-path: var(--hero-hex-clip);
-  background: radial-gradient(circle at 50% 35%, #2a2418, #141317 72%);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f4f1 100%);
+  box-shadow: inset 0 0 0 1px rgba(196, 146, 26, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:host-context(.app-dark) .profile-hero__hex-inner {
+  background: radial-gradient(circle at 50% 35%, #2a2418, #141317 72%);
+  box-shadow: none;
 }
 
 .profile-hero__initials {
@@ -96,7 +102,11 @@
   font-size: 48px;
   font-weight: 700;
   line-height: 1;
-  color: var(--gold-bright);
+  color: #a67c1a;
+}
+
+:host-context(.app-dark) .profile-hero__initials {
+  color: #f0c14d;
 }
 
 .profile-hero__body {
@@ -119,14 +129,14 @@
   display: inline-flex;
   padding: 5px 13px;
   border-radius: 9999px;
-  border: 1px solid rgba(245, 190, 66, 0.2);
-  background: rgba(245, 190, 66, 0.1);
+  border: 1px solid rgba(196, 146, 26, 0.45);
+  background: rgba(196, 146, 26, 0.14);
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--color-primary, #f5be42);
+  color: var(--color-gold-dim, #8a6a14);
 }
 
 .profile-hero__uid {
@@ -134,7 +144,7 @@
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 40%, transparent);
+  color: var(--color-text-muted, #5c574f);
 }
 
 .profile-hero__name {
@@ -144,7 +154,7 @@
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.04em;
-  color: var(--color-on-surface, #e7e1e6);
+  color: var(--color-text, #1a1816);
 }
 
 .profile-hero__ascend {
@@ -165,8 +175,7 @@
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.6;
+  color: var(--color-text-muted, #5c574f);
 }
 
 .profile-hero__level-value {
@@ -206,7 +215,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: right;
-  color: var(--color-on-surface-variant, #d3c5af);
+  color: var(--color-text-muted, #5c574f);
 }
 
 .profile-overview {
@@ -221,8 +230,9 @@
   gap: 4px;
   padding: 32px;
   border-radius: 24px;
-  background: var(--color-surface-container, #211f23);
-  border: 1px solid var(--border-faint);
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border-strong, rgba(20, 16, 12, 0.18));
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
 }
 
 .overview-stat__head {
@@ -243,8 +253,7 @@
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.4;
+  color: var(--color-text-muted, #5c574f);
 }
 
 .overview-stat__value {
@@ -253,15 +262,14 @@
   font-size: 36px;
   font-weight: 700;
   line-height: 40px;
-  color: var(--color-on-surface, #e7e1e6);
+  color: var(--color-text, #1a1816);
 }
 
 .overview-stat__suffix {
   margin-left: 4px;
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.3;
+  color: var(--color-text-faint, #8a847a);
 }
 
 .overview-stat__label {
@@ -269,8 +277,7 @@
   font-size: 12px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.6;
+  color: var(--color-text-muted, #5c574f);
 }
 
 @media (max-width: 900px) {
@@ -331,14 +338,13 @@
   font-size: 24px;
   line-height: 32px;
   letter-spacing: -0.02em;
-  color: var(--color-on-surface, #e7e1e6);
+  color: var(--color-text, #1a1816);
 }
 
 .inventory__sub {
   margin: 0;
   font-size: 13px;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.7;
+  color: var(--color-text-muted, #5c574f);
 }
 
 .inventory__empty {
@@ -349,11 +355,11 @@
   padding: 40px 32px;
   border: 1px solid var(--border-faint);
   border-radius: 24px;
-  background: var(--color-surface-container, #211f23);
+  background: #ffffff;
 
   .material-symbols-outlined {
     font-size: 40px;
-    color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 35%, transparent);
+    color: var(--color-text-faint, #8a847a);
   }
 
   p {
@@ -362,6 +368,14 @@
     font-size: 14px;
     line-height: 22px;
     color: var(--text-muted);
+  }
+}
+
+:host-context(.app-dark) .inventory__empty {
+  background: var(--color-surface-container, #211f23);
+
+  .material-symbols-outlined {
+    color: color-mix(in srgb, var(--color-on-surface-variant, #d3c5af) 35%, transparent);
   }
 }
 
@@ -403,15 +417,13 @@
   line-height: 16px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.5;
+  color: var(--color-text-muted, #5c574f);
 }
 
 .inventory__group-meta {
   margin: 0;
   font-size: 12px;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.55;
+  color: var(--color-text-muted, #5c574f);
 }
 
 .inventory__chip-row {
@@ -426,29 +438,31 @@
   gap: 10px;
   padding: 12px 18px;
   border-radius: 24px;
-  border: 1px solid var(--border-faint);
-  background: var(--color-surface-container, #211f23);
-  color: var(--color-on-surface, #e7e1e6);
-  /* COMMON — muted bronze/taupe (distinct from silver rare) */
-  --inv-rarity: #c9854a;
+  border: 1px solid var(--color-border-strong, rgba(20, 16, 12, 0.18));
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #1a1816);
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
+  /* COMMON */
+  --inv-rarity: #9a5a22;
   transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 
   &[data-rarity='RARE'] {
-    --inv-rarity: #9eb6cc;
+    --inv-rarity: #3d5a73;
   }
 
   &[data-rarity='LEGENDARY'] {
-    --inv-rarity: #f5be42;
+    --inv-rarity: #8a6a14;
   }
 
   &:hover {
-    border-color: rgba(245, 190, 66, 0.35);
+    border-color: color-mix(in srgb, var(--color-gold) 55%, var(--color-border-strong));
   }
 
   &--equipped {
-    border-color: rgba(245, 190, 66, 0.55);
-    background: rgba(245, 190, 66, 0.12);
-    color: var(--gold-bright);
+    border-color: var(--color-gold);
+    background: color-mix(in srgb, var(--color-gold) 14%, var(--color-surface));
+    color: var(--color-text);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-gold) 35%, transparent);
   }
 }
 
@@ -470,6 +484,7 @@
   font-family: var(--font-display, 'Space Grotesk', sans-serif);
   font-size: 13px;
   font-weight: 700;
+  color: var(--color-text);
 }
 
 .inventory-chip__rarity {
@@ -478,7 +493,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--inv-rarity);
-  opacity: 0.9;
+  font-weight: 700;
 }
 
 .inventory-chip__status {
@@ -487,7 +502,8 @@
   line-height: 14px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--gold-bright);
+  color: var(--color-gold-dim, #8a6a14);
+  font-weight: 700;
 }
 
 .inventory__frame-grid {
@@ -509,29 +525,31 @@
   gap: 10px;
   padding: 32px 16px 22px;
   border-radius: 24px;
-  border: 1px solid var(--border-faint);
-  background: var(--color-surface-container, #211f23);
-  color: var(--color-on-surface, #e7e1e6);
-  /* COMMON — muted bronze/taupe (distinct from silver rare) */
-  --inv-rarity: #c9854a;
+  border: 1px solid var(--color-border-strong, rgba(20, 16, 12, 0.18));
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #1a1816);
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
+  --inv-rarity: #9a5a22;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   overflow: visible;
 
   &[data-rarity='RARE'] {
-    --inv-rarity: #9eb6cc;
+    --inv-rarity: #3d5a73;
   }
 
   &[data-rarity='LEGENDARY'] {
-    --inv-rarity: #f5be42;
+    --inv-rarity: #8a6a14;
   }
 
   &:hover {
-    border-color: rgba(245, 190, 66, 0.35);
+    border-color: color-mix(in srgb, var(--color-gold) 55%, var(--color-border-strong));
   }
 
   &--equipped {
-    border-color: rgba(245, 190, 66, 0.55);
-    box-shadow: 0 0 24px rgba(245, 190, 66, 0.14);
+    border-color: var(--color-gold);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-gold) 40%, transparent),
+      var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
   }
 }
 
@@ -549,8 +567,11 @@
   width: 100%;
   height: 100%;
   clip-path: var(--hero-hex-clip);
-  /* Hollow hex: punch through to the card surface so only the rim + ornaments show. */
-  background: var(--color-surface-container, #211f23);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f4f1 100%);
+}
+
+:host-context(.app-dark) .frame-preview__inner {
+  background: #141417;
 }
 
 .inventory-frame__label {
@@ -558,6 +579,7 @@
   font-size: 13px;
   font-weight: 700;
   text-align: center;
+  color: var(--color-text);
 }
 
 .inventory-frame__rarity {
@@ -567,7 +589,7 @@
   text-transform: uppercase;
   text-align: center;
   color: var(--inv-rarity);
-  opacity: 0.9;
+  font-weight: 700;
 }
 
 .inventory-frame__status {
@@ -577,7 +599,8 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-align: center;
-  color: var(--gold-bright);
+  color: var(--color-gold-dim, #8a6a14);
+  font-weight: 700;
 }
 
 @media (max-width: 720px) {

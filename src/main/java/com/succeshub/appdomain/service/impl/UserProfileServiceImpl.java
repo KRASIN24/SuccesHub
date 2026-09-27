@@ -8,9 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
+
+    private static final Set<String> SUPPORTED_LOCALES = Set.of("en-US", "pl-PL");
 
     private final UserProfileRepository repository;
 
@@ -47,6 +51,29 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         profile.setDisplayName(displayName.trim());
         profile.setDisplayNameCustomized(true);
+        return toDto(repository.save(profile));
+    }
+
+    @Override
+    @Transactional
+    public ProfileDto updatePreferences(String keycloakId, Boolean darkTheme, String locale) {
+        if (locale != null && !SUPPORTED_LOCALES.contains(locale)) {
+            throw new IllegalArgumentException("Unsupported locale: " + locale);
+        }
+
+        UserProfile profile = repository.findByKeycloakId(keycloakId)
+                .orElseGet(() -> {
+                    UserProfile p = new UserProfile();
+                    p.setKeycloakId(keycloakId);
+                    return repository.save(p);
+                });
+
+        if (darkTheme != null) {
+            profile.setDarkTheme(darkTheme);
+        }
+        if (locale != null) {
+            profile.setLocale(locale);
+        }
         return toDto(repository.save(profile));
     }
 
@@ -92,7 +119,9 @@ public class UserProfileServiceImpl implements UserProfileService {
                 p.getCurrentXp(),
                 p.getNextLevelXp(),
                 p.getCurrentStreak(),
-                p.getGlobalRank()
+                p.getGlobalRank(),
+                p.isDarkTheme(),
+                p.getLocale()
         );
     }
 }

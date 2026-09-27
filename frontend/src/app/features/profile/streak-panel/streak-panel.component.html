@@ -1,9 +1,9 @@
-<section class="streak-panel app-dark">
+<section class="streak-panel">
   <div class="streak-panel__heading">
     <div class="streak-panel__heading-row">
       <div>
-        <h2 class="streak-panel__title">Streak</h2>
-        <p class="streak-panel__sub">Repair missed days and bank shields to defend the chain.</p>
+        <h2 class="streak-panel__title">{{ 'streak.title' | translate }}</h2>
+        <p class="streak-panel__sub">{{ 'streak.subtitle' | translate }}</p>
       </div>
       <app-dev-tools-chip tool="streak"></app-dev-tools-chip>
     </div>
@@ -16,11 +16,11 @@
   <div class="streak-grid">
     <div class="streak-calendar-card">
       @if (!calendar() && loading()) {
-        <div class="streak-calendar-card__loading">Loading calendar…</div>
+        <div class="streak-calendar-card__loading">{{ 'streak.loading' | translate }}</div>
       } @else if (!calendar() && error()) {
         <div class="streak-calendar-card__error">
           <p>{{ error() }}</p>
-          <button type="button" class="streak-btn" (click)="retry()">Retry</button>
+          <button type="button" class="streak-btn" (click)="retry()">{{ 'streak.retry' | translate }}</button>
         </div>
       } @else if (calendar()) {
         <p-datepicker
@@ -41,24 +41,24 @@
         @if (error()) {
           <div class="streak-calendar-card__inline-error">
             <p>{{ error() }}</p>
-            <button type="button" class="streak-btn" (click)="retry()">Retry</button>
+            <button type="button" class="streak-btn" (click)="retry()">{{ 'streak.retry' | translate }}</button>
           </div>
         }
 
         <ul class="streak-legend">
-          <li><span class="legend-dot legend-dot--completed"></span>Done</li>
-          <li><span class="legend-dot legend-dot--missed"></span>Missed</li>
-          <li><span class="legend-dot legend-dot--shielded"></span>Shielded</li>
-          <li><span class="legend-dot legend-dot--today"></span>Today</li>
+          <li><span class="legend-dot legend-dot--completed"></span>{{ 'streak.done' | translate }}</li>
+          <li><span class="legend-dot legend-dot--missed"></span>{{ 'streak.missed' | translate }}</li>
+          <li><span class="legend-dot legend-dot--shielded"></span>{{ 'streak.shielded' | translate }}</li>
+          <li><span class="legend-dot legend-dot--today"></span>{{ 'streak.today' | translate }}</li>
         </ul>
 
         <div class="streak-selection">
           @if (selectedKey()) {
             <p class="streak-selection__label">
               {{ selectedKey() }} —
-              <strong>{{ selectedStatus() || 'No activity' }}</strong>
+              <strong>{{ selectedStatus() || ('streak.noActivity' | translate) }}</strong>
               @if (calendar(); as cal) {
-                <span class="streak-selection__shields">· {{ cal.shieldsAvailable }} shields ready</span>
+                <span class="streak-selection__shields">{{ i18n.t('streak.shieldsReady', { count: cal.shieldsAvailable }) }}</span>
               }
             </p>
             <button
@@ -68,13 +68,13 @@
               (click)="protectSelectedDay()"
             >
               <span class="material-symbols-outlined">shield</span>
-              Protect this day
+              {{ 'streak.protectDay' | translate }}
             </button>
             @if (selectedStatus() === 'MISSED' && (calendar()?.shieldsAvailable ?? 0) === 0) {
-              <p class="streak-selection__hint">No shields available — earn or use a Streak Shield card first.</p>
+              <p class="streak-selection__hint">{{ 'streak.noShields' | translate }}</p>
             }
           } @else {
-            <p class="streak-selection__hint">Select a red (missed) day to spend a shield and repair your streak.</p>
+            <p class="streak-selection__hint">{{ 'streak.selectMissed' | translate }}</p>
           }
         </div>
       }
@@ -82,19 +82,19 @@
 
     <div class="streak-side">
       <div class="streak-cards">
-        <h3 class="streak-side__title">Shields &amp; boosts</h3>
+        <h3 class="streak-side__title">{{ 'streak.shieldsBoosts' | translate }}</h3>
         @if (shieldCards().length === 0 && boostCards().length === 0) {
-          <p class="streak-cards__empty">No usable cards yet. Open caches to earn shields and boosts.</p>
+          <p class="streak-cards__empty">{{ 'streak.cardsEmpty' | translate }}</p>
         }
 
         @for (card of shieldCards(); track card.id) {
           <article class="streak-card streak-card--shield">
             <span class="material-symbols-outlined streak-card__icon">{{ card.reward.icon }}</span>
             <div class="streak-card__body">
-              <p class="streak-card__label">{{ card.reward.label }} <span class="streak-card__qty">×{{ card.quantity }}</span></p>
-              <p class="streak-card__effect">{{ card.reward.effect || 'Protects your streak from a missed day.' }}</p>
+              <p class="streak-card__label">{{ card.reward | rewardLabel }} <span class="streak-card__qty">×{{ card.quantity }}</span></p>
+              <p class="streak-card__effect">{{ card.reward | rewardEffect:('streak.effectFallbackShield' | translate) }}</p>
             </div>
-            <button type="button" class="streak-btn" [disabled]="busy()" (click)="useCard(card)">Bank</button>
+            <button type="button" class="streak-btn" [disabled]="busy()" (click)="useCard(card)">{{ 'streak.bank' | translate }}</button>
           </article>
         }
 
@@ -102,10 +102,10 @@
           <article class="streak-card streak-card--boost">
             <span class="material-symbols-outlined streak-card__icon">{{ card.reward.icon }}</span>
             <div class="streak-card__body">
-              <p class="streak-card__label">{{ card.reward.label }} <span class="streak-card__qty">×{{ card.quantity }}</span></p>
-              <p class="streak-card__effect">{{ card.reward.effect || 'Grants bonus XP.' }}</p>
+              <p class="streak-card__label">{{ card.reward | rewardLabel }} <span class="streak-card__qty">×{{ card.quantity }}</span></p>
+              <p class="streak-card__effect">{{ card.reward | rewardEffect:('streak.effectFallbackBoost' | translate) }}</p>
             </div>
-            <button type="button" class="streak-btn" [disabled]="busy()" (click)="useCard(card)">Use</button>
+            <button type="button" class="streak-btn" [disabled]="busy()" (click)="useCard(card)">{{ 'streak.use' | translate }}</button>
           </article>
         }
       </div>

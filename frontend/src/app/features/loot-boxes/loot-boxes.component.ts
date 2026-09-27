@@ -13,6 +13,9 @@ import {
 } from './animated-loot-chest/animated-loot-chest.component';
 import { RevealCardComponent } from './reveal-card/reveal-card.component';
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
+import { RewardLabelPipe } from '../../core/i18n/reward-label.pipe';
 
 type Phase = 'idle' | 'charging' | 'revealing';
 type GlowTier = 'default' | 'silver' | 'gold';
@@ -27,7 +30,7 @@ interface RecentHistoryEntry {
 }
 
 interface FooterLink {
-  label: string;
+  labelKey: string;
 }
 
 interface RewardTier {
@@ -56,10 +59,8 @@ const LOOT_ART: Record<string, string> = {
 const RECENT_HISTORY_MAX = 8;
 const HISTORY_BOX_LIMIT = 3;
 
-const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
+const TIER_TEMPLATES: Omit<RewardTier, 'name' | 'description' | 'tierLabel'>[] = [
   {
-    description: ['Daily utility and small boosts.'],
-    tierLabel: 'Common Tier',
     progress: 100,
     accent: '#d4d4d4',
     softAccent: '#737373',
@@ -73,8 +74,6 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     shape: 'circle',
   },
   {
-    description: ['Milestone loot with better odds.'],
-    tierLabel: 'Rare Tier',
     progress: 66.67,
     accent: '#f5be42',
     softAccent: '#f5be42',
@@ -88,8 +87,6 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     shape: 'rounded',
   },
   {
-    description: ['Top rewards: titles and legendaries.'],
-    tierLabel: 'Epic Tier',
     progress: 25,
     accent: '#ffb2b7',
     softAccent: '#ffb2b7',
@@ -104,6 +101,12 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
   },
 ];
 
+const TIER_I18N = [
+  { labelKey: 'loot.tierCommon', descKey: 'loot.tierDescCommon' },
+  { labelKey: 'loot.tierRare', descKey: 'loot.tierDescRare' },
+  { labelKey: 'loot.tierEpic', descKey: 'loot.tierDescEpic' },
+] as const;
+
 @Component({
   selector: 'app-loot-boxes',
   standalone: true,
@@ -114,6 +117,8 @@ const TIER_TEMPLATES: Omit<RewardTier, 'name'>[] = [
     AnimatedLootChestComponent,
     RevealCardComponent,
     DevToolsChipComponent,
+    TranslatePipe,
+    RewardLabelPipe,
   ],
   templateUrl: './loot-boxes.component.html',
   styleUrl: './loot-boxes.component.scss',
@@ -122,15 +127,16 @@ export class LootBoxesComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
   private readonly lootAudio = inject(LootAudioService);
   private readonly lootPending = inject(LootPendingService);
+  protected readonly i18n = inject(TranslateService);
 
-  readonly navPrevIcon = 'https://www.figma.com/api/mcp/asset/c32ac360-fb11-43c3-8a87-8987a3ddb081';
-  readonly navNextIcon = 'https://www.figma.com/api/mcp/asset/58580b05-b667-4c70-86a2-93d7ba92670c';
-  readonly accentIcon = 'https://www.figma.com/api/mcp/asset/af0f7201-80fd-4bcb-9736-a5b8ad19a27d';
+  readonly navPrevIcon = 'chevron_left';
+  readonly navNextIcon = 'chevron_right';
+  readonly accentIcon = 'auto_awesome';
 
   readonly footerLinks: FooterLink[] = [
-    { label: 'Manifest History' },
-    { label: 'Drop Rates' },
-    { label: 'Exchange' },
+    { labelKey: 'loot.manifestHistory' },
+    { labelKey: 'loot.dropRatesLink' },
+    { labelKey: 'loot.exchange' },
   ];
 
   readonly loading = signal(true);
@@ -168,14 +174,14 @@ export class LootBoxesComponent implements OnInit {
   /** Recent pulls, newest first — loaded from server history. */
   readonly recentHistory = signal<RecentHistoryEntry[]>([]);
 
-  readonly primaryLabel = computed(() => 'Open Cache');
+  readonly primaryLabel = computed(() => this.i18n.t('loot.openCache'));
 
   readonly ctaHint = computed(() => {
     const pending = this.selectedPendingCount();
     if (pending > 0) {
-      return `${pending} cache${pending === 1 ? '' : 's'} ready to open`;
+      return this.i18n.t('loot.cachesReady', { count: pending });
     }
-    return 'Complete tasks or streak milestones to earn caches';
+    return this.i18n.t('loot.earnCaches');
   });
 
   readonly canOpen = computed(() => {
@@ -197,10 +203,29 @@ export class LootBoxesComponent implements OnInit {
   });
 
   get rewardTiers(): RewardTier[] {
+    this.i18n.revision();
     return this.boxTypes().map((box, i) => {
       const template = TIER_TEMPLATES[Math.min(i, TIER_TEMPLATES.length - 1)];
-      return { name: box.name, ...template };
+      const keys = TIER_I18N[Math.min(i, TIER_I18N.length - 1)];
+      return {
+        name: this.boxLabel(box),
+        description: [this.i18n.t(keys.descKey)],
+        tierLabel: this.i18n.t(keys.labelKey),
+        ...template,
+      };
     });
+  }
+
+  boxLabel(box: BoxType): string {
+    const key = `loot.boxes.${box.id}.name`;
+    const translated = this.i18n.t(key);
+    return translated === key ? box.name : translated;
+  }
+
+  boxBlurb(box: BoxType): string {
+    const key = `loot.boxes.${box.id}.blurb`;
+    const translated = this.i18n.t(key);
+    return translated === key ? box.blurb : translated;
   }
 
   /**
@@ -288,7 +313,7 @@ export class LootBoxesComponent implements OnInit {
     const entries: RecentHistoryEntry[] = opened.contents.map((item, i) => ({
       entryId: `${opened.id}-${i}-${item.key}`,
       item,
-      boxName: box.name,
+      boxName: this.boxLabel(box),
       pulledAt,
     }));
     const next = [...entries, ...this.recentHistory()].slice(0, RECENT_HISTORY_MAX);
@@ -296,7 +321,7 @@ export class LootBoxesComponent implements OnInit {
   }
 
   private mapHistoryFromApi(boxes: LootBox[], boxTypes: BoxType[]): RecentHistoryEntry[] {
-    const nameByType = new Map(boxTypes.map((b) => [b.id, b.name]));
+    const nameByType = new Map(boxTypes.map((b) => [b.id, this.boxLabel(b)]));
     const entries: RecentHistoryEntry[] = [];
 
     for (const box of boxes) {
@@ -481,11 +506,11 @@ export class LootBoxesComponent implements OnInit {
   glowHeadline(): string {
     switch (this.glow()) {
       case 'gold':
-        return 'Legendary pull';
+        return this.i18n.t('loot.legendaryPull');
       case 'silver':
-        return 'Rare find';
+        return this.i18n.t('loot.rareFind');
       default:
-        return 'Your haul';
+        return this.i18n.t('loot.yourHaul');
     }
   }
 

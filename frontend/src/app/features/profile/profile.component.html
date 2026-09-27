@@ -34,8 +34,8 @@
 
           <div class="profile-hero__body">
             <div class="profile-hero__meta-row">
-              <span class="profile-hero__rank">RANK: {{ rankLabel() }}</span>
-              <span class="profile-hero__uid">SYSTEM UID: {{ systemUid() }}</span>
+              <span class="profile-hero__rank">{{ i18n.t('profile.rank', { rank: rankLabel() }) }}</span>
+              <span class="profile-hero__uid">{{ i18n.t('profile.systemUid', { uid: systemUid() }) }}</span>
             </div>
 
             <h1 class="profile-hero__name">
@@ -45,15 +45,15 @@
             @if (profile(); as p) {
               <div class="profile-hero__ascend">
                 <div class="profile-hero__level-block">
-                  <p class="profile-hero__level-label">Ascension tier</p>
-                  <p class="profile-hero__level-value">Level {{ p.level }}</p>
+                  <p class="profile-hero__level-label">{{ 'profile.ascensionTier' | translate }}</p>
+                  <p class="profile-hero__level-value">{{ i18n.t('profile.level', { level: p.level }) }}</p>
                 </div>
                 <div class="profile-hero__xp-block">
                   <div class="profile-hero__xp-track">
                     <div class="profile-hero__xp-fill" [style.width.%]="xpPercent()"></div>
                   </div>
                   <p class="profile-hero__xp-caption">
-                    {{ p.currentXp }} / {{ p.nextLevelXp }} XP TO LVL {{ p.level + 1 }}
+                    {{ i18n.t('profile.xpCaption', { current: p.currentXp, next: p.nextLevelXp, level: p.level + 1 }) }}
                   </p>
                 </div>
               </div>
@@ -87,22 +87,22 @@
 
       <section class="inventory">
         <div class="inventory__heading">
-          <h2 class="inventory__title">Collection</h2>
-          <p class="inventory__sub">Equip one title and one frame</p>
+          <h2 class="inventory__title">{{ 'profile.collection' | translate }}</h2>
+          <p class="inventory__sub">{{ 'profile.collectionSub' | translate }}</p>
         </div>
 
         @if (titleStacks().length === 0 && frameStacks().length === 0) {
           <div class="inventory__empty">
             <span class="material-symbols-outlined">inventory_2</span>
-            <p>Nothing here yet. Open a cache to unlock titles and frames.</p>
-            <a routerLink="/loot-boxes" class="inventory__cta">Go to Celestial Cache</a>
+            <p>{{ 'profile.emptyInventory' | translate }}</p>
+            <a routerLink="/loot-boxes" class="inventory__cta">{{ 'profile.goToCache' | translate }}</a>
           </div>
         } @else {
           @if (titleStacks().length > 0) {
             <div class="inventory__group">
               <div class="inventory__group-head">
-                <h3 class="inventory__group-label">Titles</h3>
-                <p class="inventory__group-meta">{{ titleStacks().length }} unlocked</p>
+                <h3 class="inventory__group-label">{{ 'profile.titles' | translate }}</h3>
+                <p class="inventory__group-meta">{{ i18n.t('profile.unlocked', { count: titleStacks().length }) }}</p>
               </div>
               <div class="inventory__chip-row">
                 @for (stack of titleStacks(); track stack.reward.key) {
@@ -118,11 +118,11 @@
                       {{ stack.reward.icon }}
                     </span>
                     <span class="inventory-chip__text">
-                      <span class="inventory-chip__label">{{ stack.reward.label }}</span>
-                      <span class="inventory-chip__rarity">{{ stack.reward.rarity }}</span>
+                      <span class="inventory-chip__label">{{ stack.reward | rewardLabel }}</span>
+                      <span class="inventory-chip__rarity">{{ stack.reward.rarity | rarityLabel }}</span>
                     </span>
                     @if (stack.equipped) {
-                      <span class="inventory-chip__status">Equipped</span>
+                      <span class="inventory-chip__status">{{ 'profile.equipped' | translate }}</span>
                     }
                   </button>
                 }
@@ -133,8 +133,8 @@
           @if (frameStacks().length > 0) {
             <div class="inventory__group">
               <div class="inventory__group-head">
-                <h3 class="inventory__group-label">Avatar frames</h3>
-                <p class="inventory__group-meta">{{ frameStacks().length }} unlocked</p>
+                <h3 class="inventory__group-label">{{ 'profile.frames' | translate }}</h3>
+                <p class="inventory__group-meta">{{ i18n.t('profile.unlocked', { count: frameStacks().length }) }}</p>
               </div>
               <div class="inventory__frame-grid">
                 @for (stack of frameStacks(); track stack.reward.key) {
@@ -153,9 +153,9 @@
                         <div class="frame-preview__inner" aria-hidden="true"></div>
                       </div>
                     </div>
-                    <span class="inventory-frame__label">{{ stack.reward.label }}</span>
-                    <span class="inventory-frame__rarity">{{ stack.reward.rarity }}</span>
-                    <span class="inventory-frame__status">{{ stack.equipped ? 'Equipped' : '' }}</span>
+                    <span class="inventory-frame__label">{{ stack.reward | rewardLabel }}</span>
+                    <span class="inventory-frame__rarity">{{ stack.reward.rarity | rarityLabel }}</span>
+                    <span class="inventory-frame__status">{{ stack.equipped ? ('profile.equipped' | translate) : '' }}</span>
                   </button>
                 }
               </div>

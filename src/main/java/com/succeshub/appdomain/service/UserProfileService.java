@@ -29,6 +29,18 @@ public interface UserProfileService {
     ProfileDto updateDisplayName(String keycloakId, String displayName);
 
     /**
+     * Updates UI theme and/or interface locale on the profile.
+     * Null arguments leave the existing value unchanged.
+     *
+     * @param keycloakId OIDC subject ({@code sub}) of the authenticated user
+     * @param darkTheme  when non-null, prefer dark ({@code true}) or light ({@code false})
+     * @param locale     when non-null, BCP 47 code from the allow-list ({@code en-US}, {@code pl-PL})
+     * @return updated profile snapshot
+     * @throws IllegalArgumentException when {@code locale} is non-null and not allow-listed
+     */
+    ProfileDto updatePreferences(String keycloakId, Boolean darkTheme, String locale);
+
+    /**
      * Adds XP to the user's profile and applies any resulting level-ups.
      *
      * @param keycloakId OIDC subject ({@code sub}) of the user receiving XP

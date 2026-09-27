@@ -12,6 +12,8 @@ import { Goal } from '../../core/models/goal.model';
 import { XpPreview } from '../../core/models/gamification.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 interface QuestColumn {
   id: string;
@@ -25,11 +27,12 @@ interface QuestColumn {
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent, ErrorStateComponent],
+  imports: [CommonModule, FormsModule, LoadingSkeletonComponent, ErrorStateComponent, TranslatePipe],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.scss',
 })
 export class TasksComponent implements OnInit {
+  protected readonly i18n = inject(TranslateService);
   private readonly taskService = inject(TaskService);
   private readonly goalService = inject(GoalService);
   private readonly gamificationService = inject(GamificationService);

@@ -3,9 +3,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { LootPendingService } from '../../../core/services/loot-pending.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   icon: string;
   route: string;
   showPendingBadge?: boolean;
@@ -14,7 +15,7 @@ interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   host: {
@@ -49,15 +50,15 @@ export class SidebarComponent implements OnInit {
   }
 
   readonly navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'grid_view', route: '/dashboard' },
-    { label: 'Tasks', icon: 'check_circle', route: '/tasks' },
-    { label: 'Goals', icon: 'my_location', route: '/goals' },
-    { label: 'Achievements', icon: 'military_tech', route: '/achievements' },
-    { label: 'Cache', icon: 'inventory_2', route: '/loot-boxes', showPendingBadge: true },
-    { label: 'Profile', icon: 'person', route: '/profile' },
+    { labelKey: 'nav.dashboard', icon: 'grid_view', route: '/dashboard' },
+    { labelKey: 'nav.tasks', icon: 'check_circle', route: '/tasks' },
+    { labelKey: 'nav.goals', icon: 'my_location', route: '/goals' },
+    { labelKey: 'nav.achievements', icon: 'military_tech', route: '/achievements' },
+    { labelKey: 'nav.cache', icon: 'inventory_2', route: '/loot-boxes', showPendingBadge: true },
+    { labelKey: 'nav.profile', icon: 'person', route: '/profile' },
   ];
 
   readonly bottomItems: NavItem[] = [
-    { label: 'Settings', icon: 'settings', route: '/settings' },
+    { labelKey: 'nav.settings', icon: 'settings', route: '/settings' },
   ];
 }

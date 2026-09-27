@@ -11,15 +11,18 @@ import { UserProfile } from '../../core/models/profile.model';
 import { WeeklyInsight } from '../../core/models/gamification.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-goals',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent, ErrorStateComponent],
+  imports: [CommonModule, FormsModule, LoadingSkeletonComponent, ErrorStateComponent, TranslatePipe],
   templateUrl: './goals.component.html',
   styleUrl: './goals.component.scss',
 })
 export class GoalsComponent implements OnInit {
+  protected readonly i18n = inject(TranslateService);
   private readonly goalService = inject(GoalService);
   private readonly profileService = inject(ProfileService);
   private readonly gamificationService = inject(GamificationService);

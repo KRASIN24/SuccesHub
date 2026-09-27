@@ -12,7 +12,8 @@
 }
 
 .hex-level {
-  filter: drop-shadow(0 0 28px rgba(232, 179, 62, 0.35));
+  /* Soft gold halo — no near-black ink bloom on white. */
+  filter: drop-shadow(0 8px 20px rgba(196, 146, 26, 0.22));
   text-align: center;
   overflow: visible;
 }
@@ -25,13 +26,26 @@
 }
 
 .hex-level--framed {
-  filter: drop-shadow(0 0 36px rgba(232, 179, 62, 0.5));
+  filter: drop-shadow(0 8px 22px rgba(196, 146, 26, 0.28));
 }
 
 .hex-level--framed .hex-outer {
+  background: linear-gradient(160deg, #f0c14d, #a67c1a);
+  box-shadow: 0 0 0 3px rgba(196, 146, 26, 0.28);
+  padding: 3px;
+}
+
+:host-context(.app-dark) .hex-level {
+  filter: drop-shadow(0 0 28px rgba(232, 179, 62, 0.35));
+}
+
+:host-context(.app-dark) .hex-level--framed {
+  filter: drop-shadow(0 0 36px rgba(232, 179, 62, 0.5));
+}
+
+:host-context(.app-dark) .hex-level--framed .hex-outer {
   background: linear-gradient(160deg, #f6cf63, #8d6e1a);
   box-shadow: 0 0 0 4px rgba(246, 207, 99, 0.4), 0 0 32px rgba(232, 179, 62, 0.5);
-  padding: 3px;
 }
 
 .hero-frame-label {
@@ -39,7 +53,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-gold);
+  color: var(--color-text-muted, #5c574f);
 }
 
 .hero-title {
@@ -48,6 +62,14 @@
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+  color: var(--color-text, #1a1816);
+}
+
+:host-context(.app-dark) .hero-frame-label {
+  color: var(--color-gold, #e8b33e);
+}
+
+:host-context(.app-dark) .hero-title {
   color: var(--color-gold-bright, #f5be42);
 }
 
@@ -55,8 +77,8 @@
   width: 210px;
   height: 232px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: linear-gradient(160deg, #f6cf63, #b98520);
-  padding: 2px;
+  background: linear-gradient(160deg, #f0c14d, #a67c1a);
+  padding: 3px;
   display: grid;
   place-items: center;
 }
@@ -65,7 +87,9 @@
   width: 100%;
   height: 100%;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: radial-gradient(circle at 50% 40%, #1c1a14, #0c0c0e 70%);
+  /* Shared light plate — same as Cache hex. */
+  background: linear-gradient(180deg, #ffffff 0%, #f6f4f1 100%);
+  box-shadow: inset 0 0 0 1px rgba(196, 146, 26, 0.14);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,19 +97,32 @@
   gap: 0.25rem;
 }
 
+:host-context(.app-dark) .hex-inner {
+  background: radial-gradient(circle at 50% 40%, #1c1a14, #0c0c0e 70%);
+  box-shadow: none;
+}
+
 .hex-level-value {
   font-family: var(--font-display);
   font-size: 4.5rem;
   font-weight: 700;
   line-height: 1;
-  color: var(--color-gold);
+  color: #a67c1a;
 }
 
 .hex-level-label {
   font-size: 0.66rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: #5c574f;
+}
+
+:host-context(.app-dark) .hex-level-value {
+  color: var(--color-gold-bright, #f6cf63);
+}
+
+:host-context(.app-dark) .hex-level-label {
+  color: var(--color-text-muted, #9a9aa2);
 }
 
 .xp-block {
@@ -94,11 +131,20 @@
   margin-top: 2.75rem;
 }
 
-.xp-head {
+.xp-head,
+.xp-foot {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.85rem;
+  gap: 1rem;
+}
+
+.xp-head {
+  margin-bottom: 0.55rem;
+}
+
+.xp-foot {
+  margin-top: 0.65rem;
 }
 
 .xp-title {
@@ -113,16 +159,33 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-text);
+  text-align: right;
+  white-space: nowrap;
 
   .muted {
     color: var(--color-text-faint);
   }
 }
 
+.xp-count--daily {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.xp-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-gold, #e8b33e);
+  line-height: 1;
+}
+
 .xp-track {
   height: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
   overflow: hidden;
 }
 
@@ -145,6 +208,7 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  min-width: 0;
 }
 
 .col-aside {
@@ -160,6 +224,15 @@
   margin-bottom: 1.5rem;
 }
 
+.panel-block {
+  padding: 1.25rem 1.35rem 1.5rem;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+}
+
 .block-title {
   margin: 0;
   font-size: 1.6rem;
@@ -171,7 +244,7 @@
 .subtle-pill {
   color: var(--color-text-muted);
   background: var(--color-surface-2);
-  border-color: var(--color-border);
+  border-color: var(--color-border-strong);
 }
 
 .task-list {
@@ -189,12 +262,33 @@
   gap: 1.25rem;
   padding: 1.25rem 1.5rem;
   border-radius: var(--radius-card);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover {
     border-color: var(--color-border-strong);
+  }
+
+  &.empty-tasks {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    color: var(--color-text-muted);
+    list-style: none;
+
+    .material-icons {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: var(--color-text-faint);
+    }
+
+    p {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
   }
 
   &.is-done {
@@ -262,27 +356,34 @@
 }
 
 .merits {
-  display: flex;
-  gap: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 1.25rem 0.75rem;
+  align-items: start;
 }
 
 .merit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .merit-hex {
   width: 72px;
   height: 80px;
+  flex-shrink: 0;
+  /* clip-path + CSS border = jagged/double edges — outline via drop-shadow instead */
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   display: grid;
   place-items: center;
-  background: rgba(232, 179, 62, 0.1);
-  border: 1px solid rgba(232, 179, 62, 0.4);
+  background: color-mix(in srgb, var(--color-gold) 14%, var(--color-surface, #ffffff));
+  border: none;
   color: var(--color-gold);
   position: relative;
+  filter: drop-shadow(0 0 0.7px color-mix(in srgb, var(--color-gold) 75%, transparent));
 
   .material-icons {
     font-size: 26px;
@@ -290,17 +391,25 @@
 }
 
 .merit-label {
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.25;
+  max-width: 100%;
+  /* Prefer whole-word wrap — never orphan a single letter */
+  overflow-wrap: normal;
+  word-break: keep-all;
+  hyphens: none;
+  text-wrap: balance;
 }
 
 .merit.locked {
   .merit-hex {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: var(--color-border);
+    background: color-mix(in srgb, var(--color-text) 6%, var(--color-surface, #ffffff));
     color: var(--color-text-faint);
+    filter: drop-shadow(0 0 0.7px color-mix(in srgb, var(--color-text) 18%, transparent));
   }
   .merit-label {
     color: var(--color-text-faint);
@@ -442,30 +551,16 @@
   }
 }
 
-.ritual-block {
-  margin-top: 1rem;
-  width: 100%;
-  max-width: 420px;
-}
-
 .ritual-icon {
-  font-size: 1rem;
-  vertical-align: middle;
+  font-size: 1.05rem;
+  line-height: 1;
   color: #ff9800;
 }
 
 .ritual-meta {
-  margin: 0.5rem 0 0;
+  margin: 0.45rem 0 0;
   font-size: 0.75rem;
   color: var(--color-text-muted);
-}
-
-.daily-track {
-  opacity: 0.85;
-}
-
-.daily-fill {
-  background: linear-gradient(90deg, #ff9800, #f6cf63);
 }
 
 .celebrate-banner {
@@ -575,7 +670,7 @@
 .forecast-meta {
   margin: 0.35rem 0 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--color-text-muted);
 }
 
 .forecast-meta {

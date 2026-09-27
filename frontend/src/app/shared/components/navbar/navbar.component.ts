@@ -16,11 +16,36 @@ import { EquippedCosmeticsService } from '../../../core/services/equipped-cosmet
 import { NotificationService } from '../../../core/services/notification.service';
 import { AppNotification } from '../../../core/models/notification.model';
 import { FrameOrnamentsComponent } from '../frame-ornaments/frame-ornaments.component';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { TranslateService } from '../../../core/i18n/translate.service';
+import { RewardLabelPipe } from '../../../core/i18n/reward-label.pipe';
+
+const BOX_NAME_BY_EN: Record<string, string> = {
+  'Glowing Orb': 'ARCANE_ORB',
+  'Treasure Chest': 'IRON_CHEST',
+  'Divine Vault': 'SOVEREIGN_VAULT',
+};
+
+const LOOT_REASON_BY_EN: Record<string, string> = {
+  'an achievement unlock': 'achievement',
+  'your weekly ritual': 'weekly',
+  'a grant': 'grant',
+  'your progress': 'progress',
+};
+
+/** English API labels → achievement keys (notification bodies store the English label). */
+const ACHIEVEMENT_KEY_BY_EN_LABEL: Record<string, string> = {
+  Speedster: 'SPEEDSTER',
+  Pioneer: 'PIONEER',
+  Archivist: 'ARCHIVIST',
+  Consistent: 'CONSISTENT',
+  Sovereign: 'SOVEREIGN',
+};
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, FrameOrnamentsComponent],
+  imports: [RouterLink, DecimalPipe, FrameOrnamentsComponent, TranslatePipe, RewardLabelPipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
@@ -29,6 +54,7 @@ export class NavbarComponent implements OnInit {
   protected readonly auth = inject(AuthService);
   protected readonly cosmetics = inject(EquippedCosmeticsService);
   protected readonly notifications = inject(NotificationService);
+  private readonly i18n = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly host = inject(ElementRef<HTMLElement>);
 
@@ -106,6 +132,51 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  notificationTitle(row: AppNotification): string {
+    const key = `notifications.title.${row.type}`;
+    const translated = this.i18n.t(key);
+    return translated === key ? row.title : translated;
+  }
+
+  notificationBody(row: AppNotification): string {
+    switch (row.type) {
+      case 'BOSS_DEFEATED': {
+        const m = /^(.*) has been slain\.$/.exec(row.body);
+        if (m) {
+          return this.i18n.t('notifications.bossSlain', { name: m[1] });
+        }
+        break;
+      }
+      case 'STREAK_MILESTONE': {
+        const m = /^You earned a (.*) for your streak\.$/.exec(row.body);
+        if (m) {
+          return this.i18n.t('notifications.streakLoot', { box: this.localizeBoxName(m[1]) });
+        }
+        break;
+      }
+      case 'LOOT_EARNED': {
+        const m = /^A (.*) awaits from (.*)\.$/.exec(row.body);
+        if (m) {
+          return this.i18n.t('notifications.lootAwaits', {
+            box: this.localizeBoxName(m[1]),
+            reason: this.localizeLootReason(m[2]),
+          });
+        }
+        break;
+      }
+      case 'ACHIEVEMENT_UNLOCKED': {
+        const key = ACHIEVEMENT_KEY_BY_EN_LABEL[row.body];
+        if (key) {
+          return this.i18n.catalogEntry('achievements', key, 'label', row.body);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+    return row.body;
+  }
+
   relativeTime(iso: string): string {
     const then = Date.parse(iso);
     if (Number.isNaN(then)) {
@@ -113,18 +184,18 @@ export class NavbarComponent implements OnInit {
     }
     const seconds = Math.round((Date.now() - then) / 1000);
     if (seconds < 60) {
-      return 'just now';
+      return this.i18n.t('navbar.justNow');
     }
     const minutes = Math.round(seconds / 60);
     if (minutes < 60) {
-      return `${minutes}m ago`;
+      return this.i18n.t('navbar.minutesAgo', { n: minutes });
     }
     const hours = Math.round(minutes / 60);
     if (hours < 48) {
-      return `${hours}h ago`;
+      return this.i18n.t('navbar.hoursAgo', { n: hours });
     }
     const days = Math.round(hours / 24);
-    return `${days}d ago`;
+    return this.i18n.t('navbar.daysAgo', { n: days });
   }
 
   iconFor(type: string): string {
@@ -139,5 +210,23 @@ export class NavbarComponent implements OnInit {
       default:
         return 'notifications';
     }
+  }
+
+  private localizeBoxName(englishName: string): string {
+    const id = BOX_NAME_BY_EN[englishName];
+    if (!id) {
+      return englishName;
+    }
+    const key = `loot.boxes.${id}.name`;
+    const translated = this.i18n.t(key);
+    return translated === key ? englishName : translated;
+  }
+
+  private localizeLootReason(englishReason: string): string {
+    const reasonKey = LOOT_REASON_BY_EN[englishReason];
+    if (!reasonKey) {
+      return englishReason;
+    }
+    return this.i18n.t(`notifications.reason.${reasonKey}`);
   }
 }

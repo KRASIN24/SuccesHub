@@ -1,5 +1,6 @@
 package com.succeshub.config;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -73,6 +74,7 @@ public class SecurityConfig {
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 )
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new BridgePrefsCookieFilter(), CsrfCookieFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -183,9 +185,24 @@ public class SecurityConfig {
                 }
 
                 String kcAction = request.getParameter("kc_action");
-                if (kcAction != null && !kcAction.isBlank()) {
+                String uiLocales = request.getParameter("ui_locales");
+                String shTheme = request.getParameter("sh_theme");
+                if ((kcAction != null && !kcAction.isBlank())
+                        || (uiLocales != null && !uiLocales.isBlank())
+                        || (shTheme != null && !shTheme.isBlank())) {
                     Map<String, Object> extra = new HashMap<>(authorizationRequest.getAdditionalParameters());
-                    extra.put("kc_action", kcAction);
+                    if (kcAction != null && !kcAction.isBlank()) {
+                        extra.put("kc_action", kcAction);
+                    }
+                    if (uiLocales != null && !uiLocales.isBlank()) {
+                        // OIDC ui_locales + Keycloak kc_locale (drives FreeMarker msg locale).
+                        String kc = uiLocales.trim().toLowerCase().startsWith("pl") ? "pl" : "en";
+                        extra.put("ui_locales", kc);
+                        extra.put("kc_locale", kc);
+                    }
+                    if (shTheme != null && !shTheme.isBlank()) {
+                        extra.put("sh_theme", shTheme);
+                    }
                     builder.additionalParameters(extra);
                 }
                 return builder.build();
@@ -195,7 +212,8 @@ public class SecurityConfig {
 
     /**
      * Sends an RP-initiated logout to Keycloak so the Keycloak SSO session is
-     * also terminated, then returns the browser to the SPA.
+     * also terminated, then returns the browser to the SPA OAuth entry with the
+     * user's theme/locale bridge params (from cookies written by the SPA).
      *
      * <p>Built manually (rather than via {@code OidcClientInitiatedLogoutSuccessHandler})
      * because the provider is configured with explicit endpoints instead of
@@ -207,11 +225,11 @@ public class SecurityConfig {
             // Always end the Keycloak SSO session. Skipping this (e.g. when the
             // principal is already cleared) leaves an active KC cookie so the SPA
             // authGuard immediately silent-logs the user back in — "logout does nothing".
-            String frontendUrl = authProperties.frontendUrlWithSlash();
+            String postLogout = loginEntryWithBridgePrefs(request);
             UriComponentsBuilder logout = UriComponentsBuilder
                     .fromUriString(authProperties.getKeycloakLogoutUri())
                     .queryParam("client_id", oauthClientId)
-                    .queryParam("post_logout_redirect_uri", frontendUrl);
+                    .queryParam("post_logout_redirect_uri", postLogout);
 
             if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser
                     && oidcUser.getIdToken() != null) {
@@ -220,6 +238,55 @@ public class SecurityConfig {
 
             response.sendRedirect(logout.build().toUriString());
         };
+    }
+
+    /**
+     * Builds {@code /oauth2/authorization/keycloak?ui_locales=&sh_theme=} from
+     * logout form fields (preferred) or SPA bridge cookies so logout lands on
+     * Keycloak login with the same prefs.
+     */
+    private String loginEntryWithBridgePrefs(HttpServletRequest request) {
+        String theme = "dark";
+        String uiLocales = "en";
+
+        String formTheme = request.getParameter("sh_theme");
+        if (formTheme != null) {
+            String v = formTheme.trim().toLowerCase();
+            if ("light".equals(v) || "dark".equals(v)) {
+                theme = v;
+            }
+        }
+        String formLocales = request.getParameter("ui_locales");
+        if (formLocales != null && !formLocales.isBlank()) {
+            uiLocales = formLocales.trim().toLowerCase().startsWith("pl") ? "pl" : "en";
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (formTheme == null
+                        && "successhub_theme".equals(cookie.getName())
+                        && cookie.getValue() != null) {
+                    String v = cookie.getValue().trim().toLowerCase();
+                    if ("light".equals(v) || "dark".equals(v)) {
+                        theme = v;
+                    }
+                }
+                if (formLocales == null
+                        && "successhub_locale".equals(cookie.getName())
+                        && cookie.getValue() != null) {
+                    String v = cookie.getValue().trim().toLowerCase();
+                    uiLocales = v.startsWith("pl") ? "pl" : "en";
+                }
+            }
+        }
+        return UriComponentsBuilder
+                .fromUriString(authProperties.frontendUrlWithSlash() + "oauth2/authorization/keycloak")
+                .queryParam("ui_locales", uiLocales)
+                .queryParam("kc_locale", uiLocales)
+                .queryParam("sh_theme", theme)
+                .build()
+                .toUriString();
     }
 
     /**

@@ -254,33 +254,60 @@
 
   username.addEventListener("input", function () {
     usernameTaken = false;
-    validateUsernameLocal();
+    var v = (username.value || "").trim();
+    if (!v) {
+      // Empty again — clear live errors; required is checked on blur/submit.
+      setError("username", "");
+    } else {
+      validateUsernameLocal();
+      scheduleUsernameCheck();
+    }
     syncNames();
-    scheduleUsernameCheck();
     saveDraft();
   });
   username.addEventListener("blur", function () {
+    validateUsernameLocal();
     scheduleUsernameCheck();
   });
 
   email.addEventListener("input", function () {
     emailTaken = false;
-    validateEmailLocal();
-    scheduleEmailCheck();
+    var v = (email.value || "").trim();
+    if (!v) {
+      setError("email", "");
+    } else {
+      validateEmailLocal();
+      scheduleEmailCheck();
+    }
     saveDraft();
   });
   email.addEventListener("blur", function () {
+    validateEmailLocal();
     scheduleEmailCheck();
   });
 
   password.addEventListener("input", function () {
-    validatePassword();
+    if (!(password.value || "")) {
+      setError("password", "");
+    } else {
+      validatePassword();
+    }
     if (confirm.value) validateConfirm();
     saveDraft();
   });
+  password.addEventListener("blur", function () {
+    validatePassword();
+  });
   confirm.addEventListener("input", function () {
-    validateConfirm();
+    if (!(confirm.value || "")) {
+      setError("password-confirm", "");
+    } else {
+      validateConfirm();
+    }
     saveDraft();
+  });
+  confirm.addEventListener("blur", function () {
+    validateConfirm();
   });
   terms.addEventListener("change", function () {
     validateTerms();

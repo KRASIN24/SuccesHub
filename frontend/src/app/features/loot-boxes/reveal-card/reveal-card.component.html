@@ -16,7 +16,7 @@
       <div class="loot-card__face loot-card__face--front">
         <span class="loot-card__rarity">{{ item().rarity }}</span>
         <span class="material-symbols-outlined loot-card__icon">{{ item().icon }}</span>
-        <p class="loot-card__label">{{ item().label }}</p>
+        <p class="loot-card__label">{{ item() | rewardLabel }}</p>
         <p class="loot-card__meta">{{ item().effect || categoryLabel() }}</p>
       </div>
     </div>

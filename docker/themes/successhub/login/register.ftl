@@ -44,7 +44,7 @@
                        id="username"
                        name="username"
                        autocomplete="username"
-                       placeholder="THE_ARCHITECT"
+                       placeholder="your_handle"
                        value="${(register.formData.username!'')}"
                        aria-invalid="<#if messagesPerField.existsError('username')>true<#else>false</#if>"
                        required
@@ -68,7 +68,7 @@
                        id="email"
                        name="email"
                        autocomplete="email"
-                       placeholder="curator@successhub.io"
+                       placeholder="you@example.com"
                        value="${(register.formData.email!'')}"
                        aria-invalid="<#if messagesPerField.existsError('email')>true<#else>false</#if>"
                        required

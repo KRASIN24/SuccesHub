@@ -15,6 +15,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthService } from './core/services/auth.service';
 import { LocaleService } from './core/services/locale.service';
+import { ThemeService } from './core/services/theme.service';
 
 /** Aura retinted to SuccessHub gold so PrimeNG widgets match the app palette. */
 const SuccesHubAura = definePreset(Aura, {
@@ -59,6 +60,12 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [ThemeService],
+      useFactory: (theme: ThemeService) => () => theme.init(),
+    },
     {
       provide: APP_INITIALIZER,
       multi: true,

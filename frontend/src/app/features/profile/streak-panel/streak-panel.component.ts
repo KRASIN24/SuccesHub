@@ -24,6 +24,9 @@ import {
   StreakDayStatus,
 } from '../../../core/models/gamification.model';
 import { DevToolsChipComponent } from '../../../shared/components/dev-tools/dev-tools-chip.component';
+import { RewardLabelPipe, RewardEffectPipe } from '../../../core/i18n/reward-label.pipe';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { TranslateService } from '../../../core/i18n/translate.service';
 
 /** Shape of the date object PrimeNG passes to the `date` template. `month` is 0-indexed. */
 interface DateCell {
@@ -42,7 +45,15 @@ interface DateCell {
 @Component({
   selector: 'app-streak-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePickerModule, DevToolsChipComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    DatePickerModule,
+    DevToolsChipComponent,
+    RewardLabelPipe,
+    RewardEffectPipe,
+    TranslatePipe,
+  ],
   templateUrl: './streak-panel.component.html',
   styleUrl: './streak-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,6 +61,7 @@ interface DateCell {
 export class StreakPanelComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
   private readonly devTools = inject(DevToolsService);
+  protected readonly i18n = inject(TranslateService);
 
   /** Utility inventory items (shields + XP boosts) usable from this panel. */
   readonly cards = input<InventoryItem[]>([]);

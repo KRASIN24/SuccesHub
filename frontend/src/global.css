@@ -4,6 +4,63 @@
 @source not "./**/*.spec.ts";
 
 @theme {
+  /* Light defaults — clean white shell; dark overrides live under .app-dark */
+  --color-app-bg: #ffffff;
+  --color-app-bg-2: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f7f7;
+  --color-surface-3: #f0f0f0;
+
+  --color-border: rgba(20, 16, 12, 0.1);
+  --color-border-strong: rgba(20, 16, 12, 0.18);
+
+  --color-gold: #c4921a;
+  --color-gold-bright: #d4a017;
+  --color-gold-dim: #8a6a14;
+
+  --color-text: #1a1816;
+  --color-text-muted: #5c574f;
+  --color-text-faint: #8a847a;
+
+  --color-success: #2f9e55;
+  --color-danger: #c94a35;
+  --color-accent-blue: #2563eb;
+
+  --color-primary: #d29f22;
+  --color-on-primary: #402d00;
+  --color-primary-container: #f5be42;
+  --color-on-primary-container: #4f3900;
+  --color-secondary: #872334;
+  --color-on-secondary: #fff0f1;
+  --color-secondary-container: #ffb2b7;
+  --color-tertiary: #c5a34d;
+  --color-tertiary-container: #e7c268;
+  --color-on-surface: #1a1816;
+  --color-on-surface-variant: #5c574f;
+  --color-outline: #7a7164;
+  --color-outline-variant: #c9c0b0;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f7f7f7;
+  --color-surface-container: #f0f0f0;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e0e0e0;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-glow-gold: 0 0 24px rgba(212, 160, 23, 0.22);
+
+  --radius-card: 14px;
+  --radius-btn: 10px;
+
+  --sidenav-width: 288px;
+  --toolbar-height: 80px;
+
+  --font-sans: "Inter", "Helvetica Neue", sans-serif;
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-headline: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", "Helvetica Neue", sans-serif;
+}
+
+.app-dark {
   --color-app-bg: #0a0a0c;
   --color-app-bg-2: #060608;
   --color-surface: #141417;
@@ -25,8 +82,6 @@
   --color-danger: #e5654b;
   --color-accent-blue: #3b82f6;
 
-  /* Material accent palette — used by the Vault / loot box page and future
-     Material-styled screens. Additive: the legacy tokens above are untouched. */
   --color-primary: #f5be42;
   --color-on-primary: #402d00;
   --color-primary-container: #d29f22;
@@ -48,17 +103,6 @@
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-glow-gold: 0 0 24px rgba(232, 179, 62, 0.28);
-
-  --radius-card: 14px;
-  --radius-btn: 10px;
-
-  --sidenav-width: 288px;
-  --toolbar-height: 80px;
-
-  --font-sans: "Inter", "Helvetica Neue", sans-serif;
-  --font-display: "Space Grotesk", "Inter", sans-serif;
-  --font-headline: "Space Grotesk", "Inter", sans-serif;
-  --font-body: "Inter", "Helvetica Neue", sans-serif;
 }
 
 .material-symbols-outlined {
@@ -110,18 +154,25 @@
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
   *::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
   }
   *::-webkit-scrollbar-track {
     background: transparent;
+  }
+
+  .app-dark * {
+    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  }
+  .app-dark *::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
   }
 }
 
@@ -149,10 +200,14 @@
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
-    color: var(--color-gold-bright);
-    background: rgba(232, 179, 62, 0.12);
-    border: 1px solid rgba(232, 179, 62, 0.3);
+    color: var(--color-gold);
+    background: color-mix(in srgb, var(--color-gold) 14%, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-gold) 40%, var(--color-border));
     white-space: nowrap;
+  }
+
+  .app-dark .xp-pill {
+    color: var(--color-gold-bright);
   }
 
   .gold-btn {

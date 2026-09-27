@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { ThemeService } from './theme.service';
+import { AppPreferencesService } from './app-preferences.service';
 
 export interface User {
   id: string;
@@ -24,6 +26,8 @@ export interface User {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly theme = inject(ThemeService);
+  private readonly prefs = inject(AppPreferencesService);
 
   private readonly _currentUser = signal<User | null>(null);
 
@@ -64,15 +68,12 @@ export class AuthService {
 
   /** Starts the OIDC login by redirecting the whole browser to the backend. */
   login(): void {
-    // #region agent log
-    fetch('http://127.0.0.1:7452/ingest/37b8ef57-bd0f-4015-8754-90251ebe3ff8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0d3552'},body:JSON.stringify({sessionId:'0d3552',hypothesisId:'A',location:'auth.service.ts:login',message:'spa-login-redirect',data:{href:window.location.href,hasSessionCookie:document.cookie.includes('JSESSIONID'),hasOauthCookie:document.cookie.includes('SUCCHUB_OAUTH2')},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     try {
       sessionStorage.removeItem('sh-reg-draft-v1');
     } catch {
       /* ignore */
     }
-    window.location.href = '/oauth2/authorization/keycloak';
+    window.location.href = this.authorizationUrl();
   }
 
   /**
@@ -80,10 +81,7 @@ export class AuthService {
    * set before the browser leaves for :8080.
    */
   register(): void {
-    // #region agent log
-    fetch('http://127.0.0.1:7452/ingest/37b8ef57-bd0f-4015-8754-90251ebe3ff8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0d3552'},body:JSON.stringify({sessionId:'0d3552',hypothesisId:'D',location:'auth.service.ts:register',message:'spa-register-redirect',data:{href:window.location.href},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-    window.location.href = '/oauth2/authorization/keycloak?register=1';
+    window.location.href = this.authorizationUrl({ register: true });
   }
 
   /**
@@ -92,52 +90,82 @@ export class AuthService {
    * from the XSRF-TOKEN cookie and submitted as the _csrf parameter.
    */
   logout(): void {
-    // #region agent log
-    fetch('http://127.0.0.1:7452/ingest/37b8ef57-bd0f-4015-8754-90251ebe3ff8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0d3552'},body:JSON.stringify({sessionId:'0d3552',hypothesisId:'L',location:'auth.service.ts:logout',message:'spa-logout-submit',data:{hasXsrf:!!this.readCookie('XSRF-TOKEN'),href:window.location.href},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+    this.theme.syncBridgeCookies();
 
     const submitLogout = () => {
+      const dark = this.theme.isDark();
+      const loc = this.prefs.preferences().locale.startsWith('pl') ? 'pl' : 'en';
+      const shTheme = dark ? 'dark' : 'light';
+
       const form = document.createElement('form');
       form.method = 'post';
       form.action = '/logout';
 
       const csrfToken = this.readCookie('XSRF-TOKEN');
       if (!csrfToken) {
-        // Without CSRF Spring returns 403 and the sidebar button looks dead.
+        const returnTo =
+          'http://localhost:4200/oauth2/authorization/keycloak'
+          + `?ui_locales=${encodeURIComponent(loc)}`
+          + `&kc_locale=${encodeURIComponent(loc)}`
+          + `&sh_theme=${shTheme}`;
         window.location.href =
           'http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout'
           + '?client_id=succeshub-backend'
           + '&post_logout_redirect_uri='
-          + encodeURIComponent('http://localhost:4200/');
+          + encodeURIComponent(returnTo);
         return;
       }
 
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = '_csrf';
-      input.value = csrfToken;
-      form.appendChild(input);
+      const csrf = document.createElement('input');
+      csrf.type = 'hidden';
+      csrf.name = '_csrf';
+      csrf.value = csrfToken;
+      form.appendChild(csrf);
+
+      // BFF logout handler prefers these over cookies when building post_logout_redirect_uri.
+      const themeInput = document.createElement('input');
+      themeInput.type = 'hidden';
+      themeInput.name = 'sh_theme';
+      themeInput.value = shTheme;
+      form.appendChild(themeInput);
+
+      const localeInput = document.createElement('input');
+      localeInput.type = 'hidden';
+      localeInput.name = 'ui_locales';
+      localeInput.value = loc;
+      form.appendChild(localeInput);
 
       this._currentUser.set(null);
       document.body.appendChild(form);
       form.submit();
     };
 
-    // Ensure the XSRF cookie exists (first paint can race the CsrfCookieFilter).
     if (!this.readCookie('XSRF-TOKEN')) {
       this.http.get(`${environment.apiUrl}/user`, { observe: 'response' }).pipe(
         catchError(() => of(null))
       ).subscribe(() => submitLogout());
       return;
     }
-
     submitLogout();
   }
 
+  private authorizationUrl(opts?: { register?: boolean }): string {
+    this.theme.syncBridgeCookies();
+    const dark = this.theme.isDark();
+    const loc = this.prefs.preferences().locale.startsWith('pl') ? 'pl' : 'en';
+    const params = new URLSearchParams({
+      ui_locales: loc,
+      kc_locale: loc,
+      sh_theme: dark ? 'dark' : 'light',
+    });
+    if (opts?.register) {
+      params.set('register', '1');
+    }
+    return `/oauth2/authorization/keycloak?${params.toString()}`;
+  }
+
   private readCookie(name: string): string | null {
-    const match = document.cookie.match(
-      new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)')
-    );
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
     return match ? decodeURIComponent(match[1]) : null;
   }
 }
