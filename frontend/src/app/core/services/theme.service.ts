@@ -23,12 +23,15 @@ export class ThemeService {
     return this.prefs.preferences().darkTheme;
   }
 
-  /** Cookies readable by same-origin Keycloak (Docker nginx) + query bridge fallback. */
+  /** Cookies readable by Keycloak (same host / localhost) + query bridge fallback. */
   syncBridgeCookies(): void {
     const dark = this.isDark();
     const locale = this.prefs.preferences().locale;
+    const kcLocale = locale.toLowerCase().startsWith('pl') ? 'pl' : 'en';
     document.cookie = `successhub_theme=${dark ? 'dark' : 'light'}; path=/; SameSite=Lax; max-age=31536000`;
     document.cookie = `successhub_locale=${encodeURIComponent(locale)}; path=/; SameSite=Lax; max-age=31536000`;
+    // Keycloak reads this for FreeMarker message bundles when ui_locales is dropped.
+    document.cookie = `KEYCLOAK_LOCALE=${kcLocale}; path=/; SameSite=Lax; max-age=31536000`;
   }
 
   applyFromPreference(): void {

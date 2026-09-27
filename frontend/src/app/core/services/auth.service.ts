@@ -93,25 +93,47 @@ export class AuthService {
     this.theme.syncBridgeCookies();
 
     const submitLogout = () => {
+      const dark = this.theme.isDark();
+      const loc = this.prefs.preferences().locale.startsWith('pl') ? 'pl' : 'en';
+      const shTheme = dark ? 'dark' : 'light';
+
       const form = document.createElement('form');
       form.method = 'post';
       form.action = '/logout';
 
       const csrfToken = this.readCookie('XSRF-TOKEN');
       if (!csrfToken) {
+        const returnTo =
+          'http://localhost:4200/oauth2/authorization/keycloak'
+          + `?ui_locales=${encodeURIComponent(loc)}`
+          + `&kc_locale=${encodeURIComponent(loc)}`
+          + `&sh_theme=${shTheme}`;
         window.location.href =
           'http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout'
           + '?client_id=succeshub-backend'
           + '&post_logout_redirect_uri='
-          + encodeURIComponent('http://localhost:4200/');
+          + encodeURIComponent(returnTo);
         return;
       }
 
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = '_csrf';
-      input.value = csrfToken;
-      form.appendChild(input);
+      const csrf = document.createElement('input');
+      csrf.type = 'hidden';
+      csrf.name = '_csrf';
+      csrf.value = csrfToken;
+      form.appendChild(csrf);
+
+      // BFF logout handler prefers these over cookies when building post_logout_redirect_uri.
+      const themeInput = document.createElement('input');
+      themeInput.type = 'hidden';
+      themeInput.name = 'sh_theme';
+      themeInput.value = shTheme;
+      form.appendChild(themeInput);
+
+      const localeInput = document.createElement('input');
+      localeInput.type = 'hidden';
+      localeInput.name = 'ui_locales';
+      localeInput.value = loc;
+      form.appendChild(localeInput);
 
       this._currentUser.set(null);
       document.body.appendChild(form);
@@ -133,6 +155,7 @@ export class AuthService {
     const loc = this.prefs.preferences().locale.startsWith('pl') ? 'pl' : 'en';
     const params = new URLSearchParams({
       ui_locales: loc,
+      kc_locale: loc,
       sh_theme: dark ? 'dark' : 'light',
     });
     if (opts?.register) {
