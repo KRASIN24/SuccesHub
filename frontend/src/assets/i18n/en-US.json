@@ -20,7 +20,28 @@
     "openNav": "Open navigation",
     "notifInbox": "Notification inbox",
     "unread": "Unread",
-    "account": "Account"
+    "account": "Account",
+    "justNow": "just now",
+    "minutesAgo": "{{n}}m ago",
+    "hoursAgo": "{{n}}h ago",
+    "daysAgo": "{{n}}d ago"
+  },
+  "notifications": {
+    "title": {
+      "LOOT_EARNED": "Loot earned",
+      "ACHIEVEMENT_UNLOCKED": "Achievement unlocked",
+      "STREAK_MILESTONE": "Streak milestone",
+      "BOSS_DEFEATED": "Boss defeated"
+    },
+    "bossSlain": "{{name}} has been slain.",
+    "streakLoot": "You earned a {{box}} for your streak.",
+    "lootAwaits": "A {{box}} awaits from {{reason}}.",
+    "reason": {
+      "achievement": "an achievement unlock",
+      "weekly": "your weekly ritual",
+      "grant": "a grant",
+      "progress": "your progress"
+    }
   },
   "home": {
     "currentLevel": "Current Level",
@@ -70,7 +91,9 @@
     "save": "Save",
     "cancel": "Cancel",
     "categoryName": "Category Name (e.g., Creative)",
-    "categoryTag": "Tag (e.g., Creative)"
+    "categoryTag": "Tag (e.g., Creative)",
+    "newCategory": "New Category",
+    "addCategory": "Add Category"
   },
   "goals": {
     "eyebrow": "Current Campaigns",
@@ -138,7 +161,9 @@
     "goToCache": "Go to Celestial Cache",
     "titles": "Titles",
     "frames": "Frames",
-    "unlocked": "{{count}} unlocked"
+    "unlocked": "{{count}} unlocked",
+    "unranked": "UNRANKED",
+    "equipped": "Equipped"
   },
   "settings": {
     "title": "Configuration",
@@ -254,5 +279,80 @@
     "signOut": "Sign out",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "rewards": {
+    "TITLE_VETERAN": "Veteran Title",
+    "TITLE_INITIATED": "The Initiated",
+    "TITLE_SOVEREIGN_MIND": "Sovereign Mind",
+    "TITLE_APEX_OPERATOR": "Apex Operator",
+    "TITLE_RELENTLESS": "The Relentless",
+    "FRAME_GOLD": "Gold Frame",
+    "FRAME_BRONZE_CIRCUIT": "Bug Antennae",
+    "FRAME_SILVER_SIGIL": "Bunny Ears",
+    "FRAME_GOLD_SOVEREIGN": "Royal Crown",
+    "STREAK_SHIELD": "Streak Shield",
+    "XP_BOOST": "XP Boost",
+    "DOUBLE_STRIKE": "Double Strike",
+    "SURGE_TOKEN": "Surge Token",
+    "BADGE_LEGENDARY": "Legendary Badge",
+    "effects": {
+      "STREAK_SHIELD": "Absorbs 1 missed day.",
+      "DOUBLE_STRIKE": "Next task completion gives 2x XP.",
+      "SURGE_TOKEN": "+50 flat XP on next task, ignores daily cap.",
+      "XP_BOOST": "Grants bonus XP."
+    }
+  },
+  "rarity": {
+    "COMMON": "Common",
+    "RARE": "Rare",
+    "LEGENDARY": "Legendary"
+  },
+  "streak": {
+    "title": "Streak",
+    "subtitle": "Repair missed days and bank shields to defend the chain.",
+    "loading": "Loading calendar…",
+    "retry": "Retry",
+    "done": "Done",
+    "missed": "Missed",
+    "shielded": "Shielded",
+    "today": "Today",
+    "shieldsReady": "· {{count}} shields ready",
+    "applyShield": "Apply shield",
+    "noShields": "No shields available — earn or use a Streak Shield card first.",
+    "selectMissed": "Select a red (missed) day to spend a shield and repair your streak.",
+    "shieldsBoosts": "Shields & boosts",
+    "cardsEmpty": "No usable cards yet. Open caches to earn shields and boosts.",
+    "bank": "Bank",
+    "use": "Use",
+    "effectFallbackShield": "Protects your streak from a missed day.",
+    "effectFallbackBoost": "Grants bonus XP.",
+    "protectDay": "Protect this day",
+    "noActivity": "No activity"
+  },
+  "achievements": {
+    "SPEEDSTER": {
+      "label": "Speedster",
+      "description": "Complete 10 tasks in a single day."
+    },
+    "PIONEER": {
+      "label": "Pioneer",
+      "description": "Complete your first goal."
+    },
+    "ARCHIVIST": {
+      "label": "Archivist",
+      "description": "Accumulate 10,000 total XP."
+    },
+    "CONSISTENT": {
+      "label": "Consistent",
+      "description": "Maintain a 7-day task streak."
+    },
+    "SOVEREIGN": {
+      "label": "Sovereign",
+      "description": "Reach level 50."
+    }
+  },
+  "achievementsPage": {
+    "title": "Achievements",
+    "loadFailed": "Could not load achievements."
   }
 }

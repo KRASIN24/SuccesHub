@@ -20,7 +20,28 @@
     "openNav": "Otwórz nawigację",
     "notifInbox": "Skrzynka powiadomień",
     "unread": "Nieprzeczytane",
-    "account": "Konto"
+    "account": "Konto",
+    "justNow": "przed chwilą",
+    "minutesAgo": "{{n}} min temu",
+    "hoursAgo": "{{n}} godz. temu",
+    "daysAgo": "{{n}} dn. temu"
+  },
+  "notifications": {
+    "title": {
+      "LOOT_EARNED": "Zdobyto loot",
+      "ACHIEVEMENT_UNLOCKED": "Odblokowano osiągnięcie",
+      "STREAK_MILESTONE": "Kamień milowy serii",
+      "BOSS_DEFEATED": "Pokonano bossa"
+    },
+    "bossSlain": "{{name}} został pokonany.",
+    "streakLoot": "Zdobyto {{box}} za serię.",
+    "lootAwaits": "{{box}} czeka — {{reason}}.",
+    "reason": {
+      "achievement": "za odblokowanie osiągnięcia",
+      "weekly": "za rytuał tygodniowy",
+      "grant": "z nadania",
+      "progress": "za Twój postęp"
+    }
   },
   "home": {
     "currentLevel": "Aktualny poziom",
@@ -70,7 +91,9 @@
     "save": "Zapisz",
     "cancel": "Anuluj",
     "categoryName": "Nazwa kategorii (np. Kreatywne)",
-    "categoryTag": "Tag (np. Kreatywne)"
+    "categoryTag": "Tag (np. Kreatywne)",
+    "newCategory": "Nowa kategoria",
+    "addCategory": "Dodaj kategorię"
   },
   "goals": {
     "eyebrow": "Bieżące kampanie",
@@ -138,7 +161,9 @@
     "goToCache": "Idź do Niebiańskiego skarbca",
     "titles": "Tytuły",
     "frames": "Ramki",
-    "unlocked": "{{count}} odblokowanych"
+    "unlocked": "{{count}} odblokowanych",
+    "unranked": "BEZ RANGI",
+    "equipped": "Wyposażono"
   },
   "settings": {
     "title": "Konfiguracja",
@@ -254,5 +279,80 @@
     "signOut": "Wyloguj",
     "save": "Zapisz",
     "cancel": "Anuluj"
+  },
+  "rewards": {
+    "TITLE_VETERAN": "Tytuł Weterana",
+    "TITLE_INITIATED": "Zainicjowany",
+    "TITLE_SOVEREIGN_MIND": "Suwerenny Umysł",
+    "TITLE_APEX_OPERATOR": "Operator Apex",
+    "TITLE_RELENTLESS": "Nieustępliwy",
+    "FRAME_GOLD": "Złota ramka",
+    "FRAME_BRONZE_CIRCUIT": "Czułki owada",
+    "FRAME_SILVER_SIGIL": "Uszy królika",
+    "FRAME_GOLD_SOVEREIGN": "Królewska korona",
+    "STREAK_SHIELD": "Tarcza serii",
+    "XP_BOOST": "Wzmocnienie XP",
+    "DOUBLE_STRIKE": "Podwójne uderzenie",
+    "SURGE_TOKEN": "Żeton surge",
+    "BADGE_LEGENDARY": "Legendarna odznaka",
+    "effects": {
+      "STREAK_SHIELD": "Absorbuje 1 pominięty dzień.",
+      "DOUBLE_STRIKE": "Następne ukończenie zadania daje 2× XP.",
+      "SURGE_TOKEN": "+50 XP do następnego zadania, poza limitem dziennym.",
+      "XP_BOOST": "Daje bonusowe XP."
+    }
+  },
+  "rarity": {
+    "COMMON": "Zwykły",
+    "RARE": "Rzadki",
+    "LEGENDARY": "Legendarny"
+  },
+  "streak": {
+    "title": "Seria",
+    "subtitle": "Napraw pominięte dni i bankuj tarcze, aby chronić łańcuch.",
+    "loading": "Ładowanie kalendarza…",
+    "retry": "Ponów",
+    "done": "Zrobione",
+    "missed": "Pominięte",
+    "shielded": "Tarcza",
+    "today": "Dziś",
+    "shieldsReady": "· {{count}} tarczy gotowych",
+    "applyShield": "Użyj tarczy",
+    "noShields": "Brak tarcz — zdobądź lub użyj karty Tarcza serii.",
+    "selectMissed": "Wybierz czerwony (pominięty) dzień, aby wydać tarczę i naprawić serię.",
+    "shieldsBoosts": "Tarcze i wzmocnienia",
+    "cardsEmpty": "Brak kart. Otwórz skarbce, aby zdobyć tarcze i wzmocnienia.",
+    "bank": "Zbankuj",
+    "use": "Użyj",
+    "effectFallbackShield": "Chroni serię przed pominiętym dniem.",
+    "effectFallbackBoost": "Daje bonusowe XP.",
+    "protectDay": "Chroń ten dzień",
+    "noActivity": "Brak aktywności"
+  },
+  "achievements": {
+    "SPEEDSTER": {
+      "label": "Strzelec",
+      "description": "Ukończ 10 zadań w jeden dzień."
+    },
+    "PIONEER": {
+      "label": "Pionier",
+      "description": "Ukończ swój pierwszy cel."
+    },
+    "ARCHIVIST": {
+      "label": "Archiwista",
+      "description": "Zgromadź 10 000 XP łącznie."
+    },
+    "CONSISTENT": {
+      "label": "Konsekwentny",
+      "description": "Utrzymaj 7-dniową serię zadań."
+    },
+    "SOVEREIGN": {
+      "label": "Suweren",
+      "description": "Osiągnij poziom 50."
+    }
+  },
+  "achievementsPage": {
+    "title": "Osiągnięcia",
+    "loadFailed": "Nie udało się wczytać osiągnięć."
   }
 }

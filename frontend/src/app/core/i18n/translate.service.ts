@@ -6,8 +6,12 @@ import { DEFAULT_LOCALE, isSupportedLocale } from './locales.config';
 type Dict = Record<string, unknown>;
 
 /**
- * Lightweight runtime i18n for shell + Settings strings.
+ * Lightweight runtime i18n for shell, Settings, and catalog labels.
  * Loads JSON packs from {@code /assets/i18n/{locale}.json}.
+ *
+ * <p>To add a language: register it in {@link SUPPORTED_LOCALES}, then add a pack
+ * with the same key tree (including {@code rewards.*} for titles/frames).
+ * Missing entries fall back to en-US, then to the API/default English string.
  */
 @Injectable({ providedIn: 'root' })
 export class TranslateService {
@@ -55,6 +59,31 @@ export class TranslateService {
       }
     }
     return raw;
+  }
+
+  /**
+   * Localized catalog label for a stable entity key (e.g. reward {@code TITLE_APEX_OPERATOR}).
+   * Looks up {@code namespace.entityKey} in the active pack, then en-US, then {@code fallback}.
+   */
+  catalogLabel(namespace: string, entityKey: string, fallback: string): string {
+    this.revision();
+    const key = `${namespace}.${entityKey}`;
+    return this.resolve(this.dict(), key) ?? this.resolve(this.fallback, key) ?? fallback;
+  }
+
+  /**
+   * Nested catalog field, e.g. {@code achievements.SPEEDSTER.label}.
+   * Used when an entity has multiple localizable strings (label + description).
+   */
+  catalogEntry(
+    namespace: string,
+    entityKey: string,
+    field: string,
+    fallback: string
+  ): string {
+    this.revision();
+    const key = `${namespace}.${entityKey}.${field}`;
+    return this.resolve(this.dict(), key) ?? this.resolve(this.fallback, key) ?? fallback;
   }
 
   private async loadPack(code: string): Promise<Dict> {
