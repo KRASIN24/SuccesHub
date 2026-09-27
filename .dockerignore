@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.vscode
+.cursor
+.superpowers
+.worktrees
+**/node_modules
+**/dist
+**/target
+**/.angular
+frontend
+docs
+*.md
+*.iml
+desktop.ini
+.DS_Store

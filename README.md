@@ -157,7 +157,7 @@ npm start
 
 ### IntelliJ (preferred day-to-day)
 
-Shared Run/Debug configs live in [`.run/`](.run/) (`Full Stack`, infra start/stop, Spring `dev`/`prod`, Angular). Full guide: [docs/local-dev.md](docs/local-dev.md).
+Shared Run/Debug configs live in [`.run/`](.run/) (`Full Stack` on host, **Start Full Stack (Docker)**, infra start/stop, Spring `dev`/`prod`, Angular). Full guide: [docs/local-dev.md](docs/local-dev.md).
 
 ### Useful commands
 
@@ -178,6 +178,17 @@ npm run test:ci
 Spring profiles: **`dev`** (default — Swagger on, loot dev grants on) · **`prod`** (quieter, no grants, Swagger off). Details in [docs/local-dev.md](docs/local-dev.md).
 
 Non-local hosts: override SPA / CORS / Keycloak / DB via `SUCCESSHUB_*` env vars — see [docs/deploy.md](docs/deploy.md).
+
+### Optional: everything in Docker
+
+Day-to-day stays “infra Docker + host JDK/Node” (above). To smoke-test packaged images instead:
+
+```powershell
+cd docker
+docker compose --profile app up -d --build
+```
+
+Then open http://localhost:4200 (nginx SPA + proxied API). Details: [docs/deploy.md](docs/deploy.md).
 
 ---
 

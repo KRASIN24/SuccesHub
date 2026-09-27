@@ -1,4 +1,7 @@
-version: "3.9"
+# Default: infra only (Postgres + Keycloak + Adminer) — day-to-day local dev.
+# Full stack (infra + Spring + nginx SPA):
+#   docker compose --profile app up -d --build
+# See docs/deploy.md.
 
 services:
 
@@ -34,6 +37,15 @@ services:
       KC_HTTP_PORT: 8080
       KC_METRICS_ENABLED: "true"
       KEYCLOAK_IMPORT: /opt/keycloak/data/import/succeshub-realm-realm.json
+      # Browser uses localhost:8080; backend container uses service name keycloak.
+      # Non-strict hostname + backchannel lets token endpoints work on either host
+      # while issuer URLs stay browser-friendly.
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: "8080"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+      KC_HTTP_ENABLED: "true"
       # Disable theme caching so login theme edits show up on refresh (dev only).
       KC_SPI_THEME_CACHE_THEMES: "false"
       KC_SPI_THEME_CACHE_TEMPLATES: "false"
@@ -57,6 +69,61 @@ services:
       - "8081:8080"
     depends_on:
       - postgres
+
+  backend:
+    profiles: ["app"]
+    build:
+      context: ..
+      dockerfile: Dockerfile.backend
+    container_name: succeshub-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SUCCESSHUB_DB_URL: jdbc:postgresql://postgres:5432/succeshub
+      SUCCESSHUB_DB_USER: postgres
+      SUCCESSHUB_DB_PASSWORD: postgres
+      # Browser-facing (SPA origin via nginx on :4200)
+      SUCCESSHUB_FRONTEND_URL: http://localhost:4200/
+      SUCCESSHUB_CORS_ORIGINS: http://localhost:4200,http://localhost:8080
+      SUCCESSHUB_OAUTH_REDIRECT_URI: http://localhost:4200/login/oauth2/code/keycloak
+      SUCCESSHUB_OAUTH_CLIENT_ID: succeshub-backend
+      SUCCESSHUB_OAUTH_CLIENT_SECRET: changeme
+      # Browser redirects → published Keycloak port
+      SUCCESSHUB_KEYCLOAK_AUTH_URI: http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/auth
+      SUCCESSHUB_KEYCLOAK_LOGOUT_URI: http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout
+      # Backend container → Keycloak on the Compose network
+      SUCCESSHUB_KEYCLOAK_TOKEN_URI: http://keycloak:8080/realms/succeshub-realm/protocol/openid-connect/token
+      SUCCESSHUB_KEYCLOAK_JWK_URI: http://keycloak:8080/realms/succeshub-realm/protocol/openid-connect/certs
+      SUCCESSHUB_KEYCLOAK_USERINFO_URI: http://keycloak:8080/realms/succeshub-realm/protocol/openid-connect/userinfo
+      SUCCESSHUB_KEYCLOAK_SERVER_URL: http://keycloak:8080
+      SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_ID: succeshub-admin
+      SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_SECRET: admin-changeme
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8082"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 120s
+
+  frontend:
+    profiles: ["app"]
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: succeshub-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres-data:
