@@ -22,13 +22,17 @@ class XpCalculatorTest {
 
     @Test
     void computeBaseXp_usesFormula() {
+        // Act & Assert
         assertEquals(60, calculator.computeBaseXp(3, 30, 2));
         assertEquals(120, calculator.computeBaseXp(3, 60, 2));
     }
 
     @Test
     void streakBonus_appliesAtSevenDays() {
+        // Arrange
         int base = 100;
+
+        // Act & Assert
         assertEquals(0, calculator.computeStreakBonus(base, 6));
         assertEquals(10, calculator.computeStreakBonus(base, 7));
         assertEquals(20, calculator.computeStreakBonus(base, 30));
@@ -36,12 +40,14 @@ class XpCalculatorTest {
 
     @Test
     void dailyCap_truncatesTotal() {
+        // Act & Assert
         assertEquals(50, calculator.applyDailyCap(200, 250));
         assertEquals(0, calculator.applyDailyCap(100, 300));
     }
 
     @Test
     void calculateForCompletion_includesFirstTaskBonus() {
+        // Arrange
         UserProfile profile = new UserProfile();
         profile.setCurrentStreak(7);
         profile.setDailyXpEarned(0);
@@ -53,7 +59,10 @@ class XpCalculatorTest {
         task.setPriority(2);
         task.setWeeklyChallenge(false);
 
+        // Act
         XpCalculator.XpResult result = calculator.calculateForCompletion(task, profile, false);
+
+        // Assert
         assertEquals(10, result.firstTaskBonus());
         assertTrue(result.totalXp() >= 70);
     }

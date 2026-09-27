@@ -57,6 +57,18 @@ Swagger UI (dev profile only): http://localhost:8082/swagger-ui/index.html
 
 Test user (Keycloak seed): `testuser` / `testpass`
 
+Self-registration is enabled on the realm export (`registrationAllowed`). Use **Create account** on the Keycloak login page. Account email / password / 2FA / deactivation are managed from in-app **Settings** (BFF → Keycloak); a service-account client `succeshub-admin` (secret `admin-changeme` locally) backs email updates, availability checks, and the 30-day purge.
+
+**Important:** `--import-realm` only applies on first realm create. If the realm already exists in Postgres, registration stays off until you enable it:
+
+```bash
+cd docker
+docker compose exec keycloak /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin --password admin
+docker compose exec keycloak /opt/keycloak/bin/kcadm.sh update realms/succeshub-realm -s registrationAllowed=true
+```
+
+Or wipe and re-import: `docker compose down -v` then `up -d` (destroys local DB data).
+
 ## Spring profiles
 
 Runtime flags (e.g. loot dev grants) are controlled **only on the Spring side** via profiles. The Angular app reads `GET /api/gamification/config` at runtime — no frontend profile switch.

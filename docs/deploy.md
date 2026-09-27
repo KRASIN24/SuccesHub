@@ -10,7 +10,7 @@ Backend profile: `--spring.profiles.active=prod` (or `SPRING_PROFILES_ACTIVE=pro
 | Variable | Default (local) | Purpose |
 |----------|-----------------|--------|
 | `SUCCESSHUB_FRONTEND_URL` | `http://localhost:4200/` | Post-login + post-logout SPA redirect |
-| `SUCCESSHUB_CORS_ORIGINS` | `http://localhost:4200` | Allowed CORS origins (comma-separated for multiple) |
+| `SUCCESSHUB_CORS_ORIGINS` | `http://localhost:4200,http://localhost:8080` | Allowed CORS origins (comma-separated; include Keycloak for theme → BFF) |
 | `SUCCESSHUB_KEYCLOAK_LOGOUT_URI` | `http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout` | RP-initiated logout endpoint |
 | `SUCCESSHUB_OAUTH_REDIRECT_URI` | `http://localhost:4200/login/oauth2/code/keycloak` | OAuth2 authorization-code redirect (must match Keycloak client) |
 | `SUCCESSHUB_OAUTH_CLIENT_ID` | `succeshub-backend` | Keycloak client id |

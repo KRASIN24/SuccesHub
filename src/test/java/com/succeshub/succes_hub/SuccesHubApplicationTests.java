@@ -12,6 +12,7 @@ import com.succeshub.appdomain.repository.UserInventoryRepository;
 import com.succeshub.appdomain.repository.UserLootBoxRepository;
 import com.succeshub.appdomain.repository.UserProfileRepository;
 import com.succeshub.appdomain.repository.XpEventRepository;
+import com.succeshub.appdomain.repository.NotificationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,6 +64,8 @@ class SuccesHubApplicationTests {
 	private LootBoxContentRepository lootBoxContentRepository;
 	@MockitoBean
 	private StreakDayOverrideRepository streakDayOverrideRepository;
+	@MockitoBean
+	private NotificationRepository notificationRepository;
 
 	@Test
 	void contextLoads() {
@@ -69,15 +73,53 @@ class SuccesHubApplicationTests {
 
 	@Test
 	void swaggerUiIsPublic() throws Exception {
+		// Act & Assert
 		mockMvc.perform(get("/swagger-ui/index.html"))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	void openApiDocsArePublicAndCorrect() throws Exception {
+		// Act & Assert
 		mockMvc.perform(get("/v3/api-docs"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.openapi").exists())
 				.andExpect(jsonPath("$.info.title").value("SuccessHub API"));
+	}
+
+	@Test
+	void apiProfileRequiresAuthentication() throws Exception {
+		// Act & Assert
+		mockMvc.perform(get("/api/profile"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void apiTasksRequiresAuthentication() throws Exception {
+		// Act & Assert
+		mockMvc.perform(get("/api/tasks"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void apiGamificationDailyRequiresAuthentication() throws Exception {
+		// Act & Assert
+		mockMvc.perform(get("/api/gamification/daily"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void apiNotificationsRequiresAuthentication() throws Exception {
+		// Act & Assert
+		mockMvc.perform(get("/api/notifications"))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void csrfCookieIsIssuedOnApiGet() throws Exception {
+		// Act & Assert
+		mockMvc.perform(get("/api/profile"))
+				.andExpect(status().isUnauthorized())
+				.andExpect(cookie().exists("XSRF-TOKEN"));
 	}
 }

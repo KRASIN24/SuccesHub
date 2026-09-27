@@ -6,10 +6,13 @@ import com.succeshub.appdomain.model.UserAchievement;
 import com.succeshub.appdomain.model.UserProfile;
 import com.succeshub.appdomain.repository.AchievementDefinitionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
+import com.succeshub.appdomain.event.GameNotificationEvent;
+import com.succeshub.appdomain.model.NotificationType;
 import com.succeshub.appdomain.repository.UserAchievementRepository;
 import com.succeshub.appdomain.service.AchievementEvaluator;
 import com.succeshub.config.GamificationProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,7 @@ public class AchievementEvaluatorImpl implements AchievementEvaluator {
     private final UserAchievementRepository userAchievementRepository;
     private final GoalRepository goalRepository;
     private final GamificationProperties properties;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -51,7 +55,15 @@ public class AchievementEvaluatorImpl implements AchievementEvaluator {
             ua.setAchievement(def);
             ua.setUnlockedAt(Instant.now());
             userAchievementRepository.save(ua);
-            newlyUnlocked.add(toDto(def, false, ua.getUnlockedAt()));
+            AchievementDto dto = toDto(def, false, ua.getUnlockedAt());
+            newlyUnlocked.add(dto);
+            eventPublisher.publishEvent(new GameNotificationEvent(
+                    userId,
+                    NotificationType.ACHIEVEMENT_UNLOCKED,
+                    "Achievement unlocked",
+                    dto.label(),
+                    "/achievements",
+                    dto.id()));
         }
         return newlyUnlocked;
     }

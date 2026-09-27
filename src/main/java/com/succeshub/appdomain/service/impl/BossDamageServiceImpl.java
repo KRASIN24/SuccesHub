@@ -1,13 +1,16 @@
 package com.succeshub.appdomain.service.impl;
 
 import com.succeshub.appdomain.dto.gamification.GamificationDto.BossDamageDto;
+import com.succeshub.appdomain.event.GameNotificationEvent;
 import com.succeshub.appdomain.model.Goal;
+import com.succeshub.appdomain.model.NotificationType;
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.repository.GoalRepository;
 import com.succeshub.appdomain.service.BossDamageService;
 import com.succeshub.config.GamificationProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,7 @@ public class BossDamageServiceImpl implements BossDamageService {
 
     private final GoalRepository goalRepository;
     private final GamificationProperties properties;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -41,6 +45,16 @@ public class BossDamageServiceImpl implements BossDamageService {
             goal.setSlainLabel("Slain");
         }
         goalRepository.save(goal);
+
+        if (completed) {
+            eventPublisher.publishEvent(new GameNotificationEvent(
+                    userId,
+                    NotificationType.BOSS_DEFEATED,
+                    "Boss defeated",
+                    goal.getName() + " has been slain.",
+                    "/goals",
+                    goal.getId()));
+        }
 
         return new BossDamageDto(
                 goal.getId(),

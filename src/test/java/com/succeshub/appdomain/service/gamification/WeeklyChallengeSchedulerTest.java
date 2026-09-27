@@ -44,6 +44,7 @@ class WeeklyChallengeSchedulerTest {
 
     @Test
     void assignForUser_flagsEligibleTasks() {
+        // Arrange
         LocalDate monday = timeUtil.mondayOfWeek(timeUtil.today());
         Task task = new Task();
         task.setDifficulty(5);
@@ -51,8 +52,10 @@ class WeeklyChallengeSchedulerTest {
         when(taskRepository.findByUserIdAndStatusAndDifficultyGreaterThanEqualAndWeeklyChallengeFalseOrderByCreatedAtDesc(
                 eq("user"), eq(Task.Status.TODO), eq(4))).thenReturn(List.of(task, task, task));
 
+        // Act
         scheduler.assignForUser("user", monday);
 
+        // Assert
         verify(taskRepository, atLeastOnce()).save(any(Task.class));
     }
 }

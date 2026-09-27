@@ -18,4 +18,11 @@ public interface TaskCategoryRepository extends JpaRepository<TaskCategory, UUID
      * @return categories ordered by {@code sortOrder} ascending
      */
     List<TaskCategory> findByUserIdOrderBySortOrderAsc(String userId);
+
+    /**
+     * Deletes task categories for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

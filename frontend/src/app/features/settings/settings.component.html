@@ -156,22 +156,28 @@
 
           <div class="side-card side-card--checks">
             <app-glitch-checkbox
-              label="Daily Reminder"
-              glitchText="DAILY_REMINDER"
-              [checked]="preferences().dailyGoalReminder"
-              (checkedChange)="setPreference('dailyGoalReminder', $event)"
+              label="Loot earned"
+              glitchText="LOOT_EARNED"
+              [checked]="preferences().notifyLootEarned"
+              (checkedChange)="setPreference('notifyLootEarned', $event)"
             />
             <app-glitch-checkbox
-              label="Streak Alert"
+              label="Achievements"
+              glitchText="ACHIEVEMENT"
+              [checked]="preferences().notifyAchievementUnlocked"
+              (checkedChange)="setPreference('notifyAchievementUnlocked', $event)"
+            />
+            <app-glitch-checkbox
+              label="Streak milestones"
               glitchText="STREAK_ALERT"
-              [checked]="preferences().showStreakReminder"
-              (checkedChange)="setPreference('showStreakReminder', $event)"
+              [checked]="preferences().notifyStreakMilestone"
+              (checkedChange)="setPreference('notifyStreakMilestone', $event)"
             />
             <app-glitch-checkbox
-              label="Weekly Summary"
-              glitchText="WEEKLY_SUMMARY"
-              [checked]="preferences().weeklySummary"
-              (checkedChange)="setPreference('weeklySummary', $event)"
+              label="Boss defeated"
+              glitchText="BOSS_SLAIN"
+              [checked]="preferences().notifyBossDefeated"
+              (checkedChange)="setPreference('notifyBossDefeated', $event)"
             />
           </div>
         </div>
@@ -187,15 +193,20 @@
               <div>
                 <p class="pref-row__label">Two-factor authentication</p>
                 <p class="pref-row__desc">
-                  Add an authenticator app for an extra sign-in step.
+                  @if (mfaEnabled()) {
+                    Authenticator app is configured for this account.
+                  } @else {
+                    Add an authenticator app for an extra sign-in step.
+                  }
                 </p>
               </div>
               <button
                 type="button"
                 class="field__btn"
+                [disabled]="accountBusy()"
                 (click)="setupTwoFactor()"
               >
-                Set up two-factor authentication
+                {{ mfaEnabled() ? 'Manage two-factor authentication' : 'Set up two-factor authentication' }}
               </button>
             </div>
           </div>
@@ -206,17 +217,125 @@
     <section class="danger-zone" aria-labelledby="danger-zone-title">
       <div class="danger-card">
         <div class="danger-card__copy">
-          <h3 id="danger-zone-title" class="danger-card__title">Delete account</h3>
+          <h3 id="danger-zone-title" class="danger-card__title">Deactivate account</h3>
           <p class="danger-card__body">
-            Permanently remove your account and all associated progress. This cannot be undone.
+            Starts a 30-day grace period. Progress is kept until then; sign in again to cancel.
+            After 30 days the account and data are permanently deleted.
           </p>
         </div>
         <div class="danger-card__actions">
           <button type="button" class="btn-danger-outline" (click)="deleteAccount()">
-            Delete account
+            Deactivate account
           </button>
         </div>
       </div>
     </section>
+  }
+
+  @if (dialog(); as dialogKind) {
+    <div class="account-dialog-backdrop" (click)="closeDialog()" role="presentation"></div>
+    <div
+      class="account-dialog"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'account-dialog-title'"
+    >
+      @if (dialogKind === 'email') {
+        <h3 id="account-dialog-title" class="account-dialog__title">Update email</h3>
+        <p class="account-dialog__hint">Changes your Keycloak login email.</p>
+        <label class="field__label" for="account-email">Email</label>
+        <input
+          id="account-email"
+          class="field__input"
+          type="email"
+          [(ngModel)]="draftEmail"
+          autocomplete="email"
+        />
+        @if (accountError()) {
+          <p class="field__error">{{ accountError() }}</p>
+        }
+        <div class="account-dialog__actions">
+          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">Cancel</button>
+          <app-glitch-button
+            label="Save email"
+            [disabled]="accountBusy()"
+            (pressed)="submitEmail()"
+          />
+        </div>
+      }
+
+      @if (dialogKind === 'password') {
+        <h3 id="account-dialog-title" class="account-dialog__title">Change password</h3>
+        <label class="field__label" for="account-current-password">Current password</label>
+        <input
+          id="account-current-password"
+          class="field__input"
+          type="password"
+          [(ngModel)]="currentPassword"
+          autocomplete="current-password"
+        />
+        <label class="field__label" for="account-new-password">New password</label>
+        <input
+          id="account-new-password"
+          class="field__input"
+          type="password"
+          [(ngModel)]="newPassword"
+          autocomplete="new-password"
+        />
+        <label class="field__label" for="account-confirm-password">Confirm new password</label>
+        <input
+          id="account-confirm-password"
+          class="field__input"
+          type="password"
+          [(ngModel)]="confirmPassword"
+          autocomplete="new-password"
+        />
+        @if (accountError()) {
+          <p class="field__error">{{ accountError() }}</p>
+        }
+        <div class="account-dialog__actions">
+          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">Cancel</button>
+          <app-glitch-button
+            label="Save password"
+            [disabled]="accountBusy()"
+            (pressed)="submitPassword()"
+          />
+        </div>
+      }
+
+      @if (dialogKind === 'delete') {
+        <h3 id="account-dialog-title" class="account-dialog__title">Deactivate account</h3>
+        <p class="account-dialog__hint">
+          Your account will be <strong>deactivated</strong> for <strong>30 days</strong>.
+          Progress is kept; after that it is permanently deleted.
+          Sign in again within 30 days and choose Reactivate to cancel.
+          Type <strong>DELETE</strong> to confirm.
+        </p>
+        <label class="field__label" for="account-delete-confirm">Type DELETE</label>
+        <input
+          id="account-delete-confirm"
+          class="field__input field__input--confirm"
+          type="text"
+          [(ngModel)]="deleteConfirmation"
+          autocomplete="off"
+          placeholder="DELETE"
+          maxlength="16"
+        />
+        @if (accountError()) {
+          <p class="field__error">{{ accountError() }}</p>
+        }
+        <div class="account-dialog__actions">
+          <button type="button" class="field__btn" (click)="closeDialog()" [disabled]="accountBusy()">Cancel</button>
+          <button
+            type="button"
+            class="btn-danger-outline"
+            [disabled]="accountBusy()"
+            (click)="submitDelete()"
+          >
+            Deactivate account
+          </button>
+        </div>
+      }
+    </div>
   }
 </div>

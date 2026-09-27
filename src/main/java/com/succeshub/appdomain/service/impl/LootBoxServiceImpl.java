@@ -15,12 +15,15 @@ import com.succeshub.appdomain.repository.RewardDefinitionRepository;
 import com.succeshub.appdomain.repository.StreakDayOverrideRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.repository.UserInventoryRepository;
+import com.succeshub.appdomain.event.GameNotificationEvent;
+import com.succeshub.appdomain.model.NotificationType;
 import com.succeshub.appdomain.repository.UserLootBoxRepository;
 import com.succeshub.appdomain.service.LootBoxService;
 import com.succeshub.appdomain.service.gamification.GamificationTimeUtil;
 import com.succeshub.config.GamificationProperties;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +53,7 @@ public class LootBoxServiceImpl implements LootBoxService {
     private final StreakDayOverrideRepository overrideRepository;
     private final GamificationProperties properties;
     private final GamificationTimeUtil timeUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -208,7 +212,35 @@ public class LootBoxServiceImpl implements LootBoxService {
         box.setSource(source);
         box.setBoxType(boxType);
         box.setStatus(UserLootBox.Status.PENDING);
-        return lootBoxRepository.save(box);
+        UserLootBox saved = lootBoxRepository.save(box);
+        publishLootNotification(userId, source, boxType, saved.getId());
+        return saved;
+    }
+
+    private void publishLootNotification(String userId, UserLootBox.Source source, LootBoxType boxType, UUID boxId) {
+        if (source == UserLootBox.Source.STREAK_MILESTONE) {
+            eventPublisher.publishEvent(new GameNotificationEvent(
+                    userId,
+                    NotificationType.STREAK_MILESTONE,
+                    "Streak milestone",
+                    "You earned a " + boxType.getDisplayName() + " for your streak.",
+                    "/loot-boxes",
+                    boxId));
+            return;
+        }
+        String reason = switch (source) {
+            case ACHIEVEMENT -> "an achievement unlock";
+            case WEEKLY_RESET -> "your weekly ritual";
+            case MANUAL -> "a grant";
+            default -> "your progress";
+        };
+        eventPublisher.publishEvent(new GameNotificationEvent(
+                userId,
+                NotificationType.LOOT_EARNED,
+                "Loot earned",
+                "A " + boxType.getDisplayName() + " awaits from " + reason + ".",
+                "/loot-boxes",
+                boxId));
     }
 
     private LootBoxType defaultBoxType(UserLootBox.Source source) {

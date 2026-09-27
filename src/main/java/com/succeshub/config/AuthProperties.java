@@ -24,9 +24,11 @@ public class AuthProperties {
 
     /**
      * Browser origins allowed by CORS (no trailing slash). Comma-separated in env
-     * via {@code SUCCESSHUB_CORS_ORIGINS}.
+     * via {@code SUCCESSHUB_CORS_ORIGINS}. Includes Keycloak origin for theme → BFF calls.
      */
-    private List<String> corsAllowedOrigins = new ArrayList<>(List.of("http://localhost:4200"));
+    private List<String> corsAllowedOrigins = new ArrayList<>(List.of(
+            "http://localhost:4200",
+            "http://localhost:8080"));
 
     /**
      * Keycloak RP-initiated logout endpoint for the SuccessHub realm.
@@ -50,5 +52,18 @@ public class AuthProperties {
     public String frontendOrigin() {
         String url = frontendUrlWithSlash();
         return url.substring(0, url.length() - 1);
+    }
+
+    /**
+     * Keycloak self-registration endpoint derived from {@link #keycloakLogoutUri}.
+     *
+     * @return registrations URL for OAuth authorization when {@code ?register=1}
+     */
+    public String keycloakRegistrationsUri() {
+        String logout = keycloakLogoutUri;
+        if (logout != null && logout.endsWith("/logout")) {
+            return logout.substring(0, logout.length() - "/logout".length()) + "/registrations";
+        }
+        return "http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/registrations";
     }
 }

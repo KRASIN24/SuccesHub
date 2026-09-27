@@ -44,4 +44,11 @@ public interface XpEventRepository extends JpaRepository<XpEvent, UUID> {
      * @return {@code true} when an XP event exists for the task
      */
     boolean existsByUserIdAndTaskId(String userId, UUID taskId);
+
+    /**
+     * Deletes all XP events for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

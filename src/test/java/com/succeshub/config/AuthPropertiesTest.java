@@ -26,9 +26,14 @@ class AuthPropertiesTest {
     void defaultsMatchLocalDev() {
         AuthProperties props = new AuthProperties();
         assertEquals("http://localhost:4200/", props.frontendUrlWithSlash());
-        assertEquals(List.of("http://localhost:4200"), props.getCorsAllowedOrigins());
+        assertEquals(
+                List.of("http://localhost:4200", "http://localhost:8080"),
+                props.getCorsAllowedOrigins());
         assertEquals(
                 "http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout",
                 props.getKeycloakLogoutUri());
+        assertEquals(
+                "http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/registrations",
+                props.keycloakRegistrationsUri());
     }
 }

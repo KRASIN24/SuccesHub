@@ -28,4 +28,11 @@ public interface UserAchievementRepository extends JpaRepository<UserAchievement
      * @return the unlock row when present, otherwise empty
      */
     Optional<UserAchievement> findByUserIdAndAchievementId(String userId, UUID achievementId);
+
+    /**
+     * Deletes achievement unlocks for a user (account deletion cascade).
+     *
+     * @param userId Keycloak subject ID
+     */
+    void deleteByUserId(String userId);
 }

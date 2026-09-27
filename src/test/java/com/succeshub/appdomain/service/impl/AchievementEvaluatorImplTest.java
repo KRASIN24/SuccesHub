@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +31,8 @@ class AchievementEvaluatorImplTest {
     private UserAchievementRepository userAchievementRepository;
     @Mock
     private GoalRepository goalRepository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private GamificationProperties properties;
 
@@ -40,11 +43,13 @@ class AchievementEvaluatorImplTest {
         properties = new GamificationProperties();
         properties.setSpeedsterTaskThreshold(10);
         properties.setMinTasksForQualifyingDay(1);
-        evaluator = new AchievementEvaluatorImpl(definitionRepository, userAchievementRepository, goalRepository, properties);
+        evaluator = new AchievementEvaluatorImpl(
+                definitionRepository, userAchievementRepository, goalRepository, properties, eventPublisher);
     }
 
     @Test
     void speedster_requiresThreshold_notMinTasksForQualifyingDay() {
+        // Arrange
         AchievementDefinition speedster = def("SPEEDSTER");
         when(definitionRepository.findAll()).thenReturn(List.of(speedster));
         when(userAchievementRepository.findByUserId("user")).thenReturn(List.of());
@@ -53,9 +58,11 @@ class AchievementEvaluatorImplTest {
         UserProfile profile = new UserProfile();
         profile.setKeycloakId("user");
 
+        // Act & Assert — below threshold
         assertEquals(0, evaluator.evaluateAndUnlock("user", profile, 9).size());
         verify(userAchievementRepository, never()).save(any());
 
+        // Act & Assert — at threshold
         assertEquals(1, evaluator.evaluateAndUnlock("user", profile, 10).size());
     }
 

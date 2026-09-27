@@ -77,32 +77,41 @@ class TaskServiceImplCompleteTest {
 
     @Test
     void complete_doesNotRewardWhenXpAlreadyAwardedFlagSet() {
+        // Arrange
         task.setXpAwarded(true);
 
+        // Act
         TaskCompletionDto result = taskService.complete("user-1", taskId);
 
+        // Assert
         verify(gamificationEngine, never()).processTaskCompletion(any(), any());
         assertNull(result.reward());
     }
 
     @Test
     void complete_doesNotRewardWhenXpEventAlreadyExists() {
+        // Arrange
         when(xpEventRepository.existsByUserIdAndTaskId("user-1", taskId)).thenReturn(true);
 
+        // Act
         TaskCompletionDto result = taskService.complete("user-1", taskId);
 
+        // Assert
         verify(gamificationEngine, never()).processTaskCompletion(any(), any());
         assertNull(result.reward());
     }
 
     @Test
     void complete_rewardsFirstTimeOnly() {
+        // Arrange
         when(xpEventRepository.existsByUserIdAndTaskId("user-1", taskId)).thenReturn(false);
         when(gamificationEngine.processTaskCompletion(eq("user-1"), eq(task)))
                 .thenReturn(org.mockito.Mockito.mock(RewardEventDto.class));
 
+        // Act
         taskService.complete("user-1", taskId);
 
+        // Assert
         verify(gamificationEngine).processTaskCompletion("user-1", task);
     }
 }
