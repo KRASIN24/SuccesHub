@@ -8,6 +8,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 
 :root {
+  /* Light defaults — .app-dark restores the Sovereign Portal night look */
+  --sh-bg: #f4f2f0;
+  --sh-bg-2: #ebe7e2;
+  --sh-card: #ffffff;
+  --sh-surface-high: #efece8;
+  --sh-surface-highest: #e6e1db;
+  --sh-gold: #d29f22;
+  --sh-gold-dim: #c4921a;
+  --sh-on: #1a1816;
+  --sh-on-variant: #5c574f;
+  --sh-outline: #7a7164;
+  --sh-outline-variant: #c9c0b0;
+  --sh-on-primary: #402d00;
+  --sh-error: #c94a35;
+  --sh-font: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --sh-font-display: "Space Grotesk", "Inter", sans-serif;
+}
+
+html.app-dark,
+.app-dark {
   --sh-bg: #141317;
   --sh-bg-2: #0f0d11;
   --sh-card: #211f23;
@@ -21,8 +41,6 @@
   --sh-outline-variant: #4f4635;
   --sh-on-primary: #402d00;
   --sh-error: #ffb4ab;
-  --sh-font: "Inter", "Helvetica Neue", Arial, sans-serif;
-  --sh-font-display: "Space Grotesk", "Inter", sans-serif;
 }
 
 /* inline SVG icons */

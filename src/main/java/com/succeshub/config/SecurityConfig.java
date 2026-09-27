@@ -183,9 +183,21 @@ public class SecurityConfig {
                 }
 
                 String kcAction = request.getParameter("kc_action");
-                if (kcAction != null && !kcAction.isBlank()) {
+                String uiLocales = request.getParameter("ui_locales");
+                String shTheme = request.getParameter("sh_theme");
+                if ((kcAction != null && !kcAction.isBlank())
+                        || (uiLocales != null && !uiLocales.isBlank())
+                        || (shTheme != null && !shTheme.isBlank())) {
                     Map<String, Object> extra = new HashMap<>(authorizationRequest.getAdditionalParameters());
-                    extra.put("kc_action", kcAction);
+                    if (kcAction != null && !kcAction.isBlank()) {
+                        extra.put("kc_action", kcAction);
+                    }
+                    if (uiLocales != null && !uiLocales.isBlank()) {
+                        extra.put("ui_locales", uiLocales);
+                    }
+                    if (shTheme != null && !shTheme.isBlank()) {
+                        extra.put("sh_theme", shTheme);
+                    }
                     builder.additionalParameters(extra);
                 }
                 return builder.build();
