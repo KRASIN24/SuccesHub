@@ -172,16 +172,16 @@
     --p-content-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
     --p-content-color: var(--color-text, #ededee);
     --p-content-hover-color: var(--color-gold-bright, #f6cf63);
-    --p-surface-0: #0a0a0c;
-    --p-surface-50: #121214;
-    --p-surface-100: #1a1a1e;
-    --p-surface-200: #202026;
-    --p-surface-700: #2b292d;
-    --p-surface-800: #1a1a1e;
-    --p-surface-900: #141417;
+    --p-surface-0: var(--color-app-bg);
+    --p-surface-50: var(--color-surface);
+    --p-surface-100: var(--color-surface-2);
+    --p-surface-200: var(--color-surface-3);
+    --p-surface-700: var(--color-surface-container-high);
+    --p-surface-800: var(--color-surface-2);
+    --p-surface-900: var(--color-surface);
     --p-text-color: var(--color-text, #ededee);
     --p-primary-color: var(--color-gold, #e8b33e);
-    --p-primary-contrast-color: #0a0a0c;
+    --p-primary-contrast-color: var(--color-app-bg);
 
     width: 100% !important;
     border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07)) !important;
