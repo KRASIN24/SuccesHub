@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Stop Infrastructure" type="ShConfigurationType" folderName="Docker infra">
-    <option name="SCRIPT_TEXT" value="docker compose -f docker/docker-compose.yml --profile app down" />
+  <configuration default="false" name="Stop Full Stack Apps (keep infra)" type="ShConfigurationType" folderName="Docker full stack">
+    <option name="SCRIPT_TEXT" value="docker compose -f docker/docker-compose.yml --profile app stop backend frontend" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />

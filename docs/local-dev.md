@@ -15,24 +15,63 @@ Bundled IntelliJ plugins used: **Shell Script**, **Java**, **JavaScript/TypeScri
 
 ## Run configurations
 
+IntelliJ folders are **per config type** (Spring Boot / npm / Compound / Shell Script). Names below are chosen so they read as one scheme in the run dropdown.
+
+| Folder | Configs |
+|--------|---------|
+| **Local back** | Spring Boot (`dev` / `prod`) |
+| **Local front** | Angular Dev Server |
+| **Local full stack** | Full Stack Run (host Spring + Angular) |
+| **Docker infra** | Start / Stop Infrastructure, Reset Dev DB |
+| **Docker full stack** | Start / Stop Full Stack (Docker), Stop Apps (keep infra) |
+
+### Local back
+
 | Config | What it does |
 |--------|----------------|
-| **Start Infrastructure** | `docker compose up -d --wait` — Postgres (healthy), Keycloak, Adminer |
-| **Stop Infrastructure** | `docker compose down` |
-| **Reset Dev DB (wipes volumes)** | `docker compose down -v` then `up -d --wait` — destroys the containerized Postgres volume |
-| **Spring Boot (SuccesHub)** | Starts backend on http://localhost:8082 with profile **`dev`** (runs **Start Infrastructure** first) |
-| **Spring Boot (SuccesHub) - Prod** | Same as above with profile **`prod`** (no loot dev grants, quieter logs, Swagger off) |
+| **Spring Boot (SuccesHub)** | Backend on http://localhost:8082 with profile **`dev`** (runs **Start Infrastructure** first) |
+| **Spring Boot (SuccesHub) - Prod** | Same with profile **`prod`** |
+
+### Local front
+
+| Config | What it does |
+|--------|----------------|
 | **Angular Dev Server** | `npm start` in `frontend/` → http://localhost:4200 |
-| **Full Stack** | Spring Boot + Angular in parallel (infra starts via Spring Boot’s before-launch hook) |
+
+### Local full stack
+
+| Config | What it does |
+|--------|----------------|
+| **Full Stack Run** | Spring Boot + Angular on the **host** in parallel |
+
+### Docker infra
+
+| Config | What it does |
+|--------|----------------|
+| **Start Infrastructure** | `docker compose up -d --wait` — Postgres, Keycloak, Adminer (**infra only**) |
+| **Stop Infrastructure** | `docker compose --profile app down` — tears down infra **and** any Docker app containers |
+| **Reset Dev DB (wipes volumes)** | `docker compose down -v` then `up -d --wait` — wipes the Postgres volume |
+
+### Docker full stack
+
+| Config | What it does |
+|--------|----------------|
+| **Start Full Stack (Docker)** | Compose profile `app`: build + start infra + Spring + nginx SPA (first run is slow) |
+| **Stop Full Stack (Docker)** | `docker compose --profile app down` — same teardown as Stop Infrastructure |
+| **Stop Full Stack Apps (keep infra)** | Stops only `backend` + `frontend`; Postgres/Keycloak stay up |
+
+Do **not** run **Full Stack Run** (host) and **Start Full Stack (Docker)** at the same time — both want `:4200` and `:8082`.
 
 ### Day-to-day
 
 | Scenario | Run config |
 |----------|------------|
-| Fresh morning / new clone | **Full Stack** |
+| Fresh morning / new clone (coding) | **Full Stack Run** |
 | Backend only | **Spring Boot (SuccesHub)** |
 | Frontend only (backend already up) | **Angular Dev Server** |
-| End of day | **Stop Infrastructure** |
+| Packaged demo / smoke Docker images | **Start Full Stack (Docker)** → http://localhost:4200 |
+| Stop Docker apps, keep DB/Keycloak | **Stop Full Stack Apps (keep infra)** |
+| End of day | **Stop Infrastructure** (or **Stop Full Stack (Docker)**) |
 
 ### Clear the database and re-apply migrations
 
