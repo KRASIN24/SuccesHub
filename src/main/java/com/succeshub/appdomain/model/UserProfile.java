@@ -30,6 +30,14 @@ public class UserProfile {
     @Column(name = "display_name_customized", nullable = false)
     private boolean displayNameCustomized = false;
 
+    /** Prefer dark orbital theme in the SPA and Keycloak login bridge. */
+    @Column(name = "dark_theme", nullable = false)
+    private boolean darkTheme = true;
+
+    /** BCP 47 UI locale, e.g. en-US or pl-PL. */
+    @Column(name = "locale", nullable = false, length = 16)
+    private String locale = "en-US";
+
     @Column(name = "level", nullable = false)
     private int level = 1;
 

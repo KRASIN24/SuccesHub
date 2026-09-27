@@ -92,7 +92,9 @@ public class UserProfileServiceImpl implements UserProfileService {
                 p.getCurrentXp(),
                 p.getNextLevelXp(),
                 p.getCurrentStreak(),
-                p.getGlobalRank()
+                p.getGlobalRank(),
+                p.isDarkTheme(),
+                p.getLocale()
         );
     }
 }

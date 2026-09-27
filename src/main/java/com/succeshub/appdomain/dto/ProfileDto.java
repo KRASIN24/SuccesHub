@@ -1,5 +1,8 @@
 package com.succeshub.appdomain.dto;
 
+/**
+ * Dashboard profile snapshot including UI theme and locale preferences.
+ */
 public record ProfileDto(
         String keycloakId,
         String displayName,
@@ -7,5 +10,7 @@ public record ProfileDto(
         int currentXp,
         int nextLevelXp,
         int currentStreak,
-        int globalRank
+        int globalRank,
+        boolean darkTheme,
+        String locale
 ) {}
