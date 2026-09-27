@@ -9,6 +9,7 @@ import {
   AppPreferencesService,
 } from '../../core/services/app-preferences.service';
 import { LocaleService } from '../../core/services/locale.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { GlitchCheckboxComponent } from '../../shared/components/glitch-checkbox/glitch-checkbox.component';
@@ -38,6 +39,7 @@ export class SettingsComponent implements OnInit {
   protected readonly profileService = inject(ProfileService);
   private readonly prefsService = inject(AppPreferencesService);
   protected readonly localeService = inject(LocaleService);
+  private readonly themeService = inject(ThemeService);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -99,7 +101,7 @@ export class SettingsComponent implements OnInit {
   }
 
   setDarkTheme(dark: boolean): void {
-    this.prefsService.setDarkTheme(dark);
+    this.themeService.setDark(dark);
     this.flashSuccess('Preferences saved.');
   }
 
