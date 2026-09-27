@@ -15,6 +15,8 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
 import { GlitchCheckboxComponent } from '../../shared/components/glitch-checkbox/glitch-checkbox.component';
 import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 type AccountDialog = 'email' | 'password' | 'delete' | null;
 
@@ -29,6 +31,7 @@ type AccountDialog = 'email' | 'password' | 'delete' | null;
     GlitchCheckboxComponent,
     GlitchButtonComponent,
     ThemeToggleComponent,
+    TranslatePipe,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
@@ -40,6 +43,7 @@ export class SettingsComponent implements OnInit {
   private readonly prefsService = inject(AppPreferencesService);
   protected readonly localeService = inject(LocaleService);
   private readonly themeService = inject(ThemeService);
+  private readonly i18n = inject(TranslateService);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -102,12 +106,25 @@ export class SettingsComponent implements OnInit {
 
   setDarkTheme(dark: boolean): void {
     this.themeService.setDark(dark);
-    this.flashSuccess('Preferences saved.');
+    this.profileService.updatePreferences({ darkTheme: dark }).subscribe({
+      next: () => this.flashSuccess(this.i18n.t('settings.prefsSaved')),
+      error: () => {
+        this.saveError.set('Could not save theme preference.');
+        this.profileService.refreshProfile().subscribe();
+      },
+    });
   }
 
   onLocaleChange(code: string): void {
     this.localeService.setLocale(code);
-    this.flashSuccess('Language preference saved.');
+    this.themeService.syncBridgeCookies();
+    this.profileService.updatePreferences({ locale: code }).subscribe({
+      next: () => this.flashSuccess(this.i18n.t('settings.languageSaved')),
+      error: () => {
+        this.saveError.set('Could not save language preference.');
+        this.profileService.refreshProfile().subscribe();
+      },
+    });
   }
 
   saveIdentity(): void {

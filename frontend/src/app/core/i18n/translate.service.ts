@@ -16,6 +16,9 @@ export class TranslateService {
   private fallback: Dict = {};
   private current = DEFAULT_LOCALE;
 
+  /** Version bump so impure translate pipe views refresh on pack switch. */
+  readonly revision = signal(0);
+
   async init(locale: string = DEFAULT_LOCALE): Promise<void> {
     this.fallback = await this.loadPack(DEFAULT_LOCALE);
     await this.use(locale);
@@ -26,19 +29,24 @@ export class TranslateService {
     if (code === DEFAULT_LOCALE) {
       this.dict.set(this.fallback);
       this.current = code;
+      this.revision.update((n) => n + 1);
       return;
     }
     try {
       const pack = await this.loadPack(code);
       this.dict.set(pack);
       this.current = code;
+      this.revision.update((n) => n + 1);
     } catch {
       this.dict.set(this.fallback);
       this.current = DEFAULT_LOCALE;
+      this.revision.update((n) => n + 1);
     }
   }
 
   t(key: string): string {
+    // Touch revision so template bindings depending on this service refresh.
+    this.revision();
     const fromActive = this.resolve(this.dict(), key);
     if (fromActive != null) {
       return fromActive;

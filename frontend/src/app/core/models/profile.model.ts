@@ -6,4 +6,6 @@ export interface UserProfile {
   nextLevelXp: number;
   currentStreak: number;
   globalRank: number;
+  darkTheme: boolean;
+  locale: string;
 }

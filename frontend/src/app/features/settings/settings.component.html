@@ -101,16 +101,16 @@
       <aside class="settings-side">
 
         <div class="side-block">
-          <div class="section-heading">
-            <h2 class="section-heading__title">Appearance</h2>
+            <div class="section-heading">
+            <h2 class="section-heading__title">{{ 'settings.appearance' | translate }}</h2>
             <span class="section-heading__rule" aria-hidden="true"></span>
           </div>
 
           <div class="side-card">
             <div class="pref-row pref-row--theme">
               <div>
-                <p class="pref-row__label">Visual Theme</p>
-                <p class="pref-row__desc">Dark or light appearance</p>
+                <p class="pref-row__label">{{ 'settings.visualTheme' | translate }}</p>
+                <p class="pref-row__desc">{{ 'settings.visualThemeDesc' | translate }}</p>
               </div>
               <app-theme-toggle
                 [dark]="preferences().darkTheme"
@@ -121,7 +121,7 @@
             <div class="pref-block">
               <p class="pref-block__desc">Audio for loot and reveals</p>
               <app-glitch-checkbox
-                label="Sound Effects"
+                [label]="'settings.soundEffects' | translate"
                 glitchText="SOUND_EFFECTS"
                 [checked]="preferences().soundEffects"
                 (checkedChange)="setPreference('soundEffects', $event)"
@@ -130,15 +130,15 @@
 
             <div class="pref-row">
               <div>
-                <label class="pref-row__label" for="settings-language">Language</label>
-                <p class="pref-row__desc">Interface language</p>
+                <label class="pref-row__label" for="settings-language">{{ 'settings.language' | translate }}</label>
+                <p class="pref-row__desc">{{ 'settings.languageDesc' | translate }}</p>
               </div>
               <select
                 id="settings-language"
                 class="lang-select"
                 [ngModel]="localeService.locale()"
                 (ngModelChange)="onLocaleChange($event)"
-                aria-label="Interface language"
+                [attr.aria-label]="'settings.languageDesc' | translate"
               >
                 @for (loc of localeService.supportedLocales; track loc.code) {
                   <option [value]="loc.code">{{ loc.label }}</option>
