@@ -1,6 +1,7 @@
 package com.succeshub.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -38,23 +39,33 @@ import java.util.Set;
 /**
  * Backend-For-Frontend (BFF) security setup.
  *
- * The browser only ever holds an opaque {@code JSESSIONID} session cookie; the
+ * <p>The browser only ever holds an opaque {@code JSESSIONID} session cookie; the
  * OAuth2/OIDC tokens are obtained and kept server-side via {@code oauth2Login}.
  * CSRF is protected with a double-submit cookie that the Angular client reads
  * (XSRF-TOKEN) and echoes back (X-XSRF-TOKEN).
+ *
+ * <p>SPA origin, CORS, and Keycloak logout URL come from {@link AuthProperties}
+ * so non-local deployments override them without code changes.
  */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String FRONTEND_URL = "http://localhost:4200/";
-    private static final String KEYCLOAK_LOGOUT_URI =
-            "http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout";
+    private final AuthProperties authProperties;
+    private final String oauthClientId;
+
+    public SecurityConfig(
+            AuthProperties authProperties,
+            @Value("${spring.security.oauth2.client.registration.keycloak.client-id}") String oauthClientId) {
+        this.authProperties = authProperties;
+        this.oauthClientId = oauthClientId;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             ClientRegistrationRepository clientRegistrationRepository) throws Exception {
+        String frontendUrl = authProperties.frontendUrlWithSlash();
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
@@ -88,7 +99,7 @@ public class SecurityConfig {
                         )
                         // Always return to the SPA (absolute URL) so the redirect
                         // doesn't get expanded to the backend host behind the proxy.
-                        .defaultSuccessUrl(FRONTEND_URL, true)
+                        .defaultSuccessUrl(frontendUrl, true)
                         .failureHandler(oauth2FailureHandler())
                 )
                 .logout(logout -> logout
@@ -126,7 +137,7 @@ public class SecurityConfig {
         return (request, response, exception) -> {
             // Do NOT bounce back into /oauth2/authorization — that loops into Keycloak's
             // "already logged in" page when an SSO session still exists.
-            response.sendRedirect(FRONTEND_URL + "?auth_error=1");
+            response.sendRedirect(authProperties.frontendUrlWithSlash() + "?auth_error=1");
         };
     }
 
@@ -168,8 +179,7 @@ public class SecurityConfig {
                 // without first going through logout → ?register=1 → this path.
                 String register = request.getParameter("register");
                 if ("1".equals(register) || "true".equalsIgnoreCase(register)) {
-                    builder.authorizationUri(
-                            "http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/registrations");
+                    builder.authorizationUri(authProperties.keycloakRegistrationsUri());
                 }
 
                 String kcAction = request.getParameter("kc_action");
@@ -187,7 +197,7 @@ public class SecurityConfig {
      * Sends an RP-initiated logout to Keycloak so the Keycloak SSO session is
      * also terminated, then returns the browser to the SPA.
      *
-     * Built manually (rather than via {@code OidcClientInitiatedLogoutSuccessHandler})
+     * <p>Built manually (rather than via {@code OidcClientInitiatedLogoutSuccessHandler})
      * because the provider is configured with explicit endpoints instead of
      * {@code issuer-uri}, so the discovered {@code end_session_endpoint} is not
      * available in the client registration metadata.
@@ -197,10 +207,11 @@ public class SecurityConfig {
             // Always end the Keycloak SSO session. Skipping this (e.g. when the
             // principal is already cleared) leaves an active KC cookie so the SPA
             // authGuard immediately silent-logs the user back in — "logout does nothing".
+            String frontendUrl = authProperties.frontendUrlWithSlash();
             UriComponentsBuilder logout = UriComponentsBuilder
-                    .fromUriString(KEYCLOAK_LOGOUT_URI)
-                    .queryParam("client_id", "succeshub-backend")
-                    .queryParam("post_logout_redirect_uri", FRONTEND_URL);
+                    .fromUriString(authProperties.getKeycloakLogoutUri())
+                    .queryParam("client_id", oauthClientId)
+                    .queryParam("post_logout_redirect_uri", frontendUrl);
 
             if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser
                     && oidcUser.getIdToken() != null) {
@@ -239,7 +250,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:8080"));
+        List<String> origins = authProperties.getCorsAllowedOrigins();
+        config.setAllowedOrigins(origins == null || origins.isEmpty()
+                ? List.of("http://localhost:4200", "http://localhost:8080")
+                : List.copyOf(origins));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

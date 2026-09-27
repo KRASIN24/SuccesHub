@@ -7,10 +7,9 @@ spring:
   jpa:
     show-sql: true
 
-logging:
-  level:
-    org.springframework.security: TRACE
-    org.springframework.security.web.FilterChainProxy: DEBUG
+# Keep Spring Security quiet in local HTTP — TRACE floods the console with every probe
+# (e.g. Razer Synapse GET /wyvrn/Synapse) and "Not injecting HSTS … [Is Secure]" lines.
+# Temporarily set org.springframework.security: DEBUG when debugging auth.
 
 springdoc:
   swagger-ui:
