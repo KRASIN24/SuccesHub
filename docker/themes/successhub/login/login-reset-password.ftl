@@ -1,9 +1,9 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=false displayMessage=!messagesPerField.existsError('username'); section>
     <#if section = "header">
-        <span class="sh-eyebrow">Account Recovery</span>
-        <span class="sh-title-line">Reset your</span>
-        <span class="sh-title-accent">access key</span>
+        <span class="sh-eyebrow">${msg("shResetEyebrow")}</span>
+        <span class="sh-title-line">${msg("shResetTitleLine")}</span>
+        <span class="sh-title-accent">${msg("shResetTitleAccent")}</span>
     <#elseif section = "form">
     <div id="kc-form">
       <div id="kc-form-wrapper">
@@ -32,7 +32,7 @@
 
                 <input type="text" id="username" name="username" class="${properties.kcInputClass!} sh-input"
                        autofocus value="${(auth.attemptedUsername!'')}"
-                       placeholder="Email or Username"
+                       placeholder="${msg("shLoginUsernamePlaceholder")}"
                        aria-invalid="<#if messagesPerField.existsError('username')>true</#if>"/>
 
                 <#if messagesPerField.existsError('username')>
@@ -45,7 +45,7 @@
 
             <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
                 <button class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} sh-submit" type="submit">
-                    <span>Send instructions</span>
+                    <span>${msg("shResetSend")}</span>
                     <svg class="sh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
                 </button>
             </div>
