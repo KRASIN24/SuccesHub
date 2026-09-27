@@ -4,12 +4,12 @@
 @source not "./**/*.spec.ts";
 
 @theme {
-  /* Light defaults — usable shell; dark overrides live under .app-dark */
-  --color-app-bg: #f4f2f0;
-  --color-app-bg-2: #ebe7e2;
+  /* Light defaults — clean white shell; dark overrides live under .app-dark */
+  --color-app-bg: #ffffff;
+  --color-app-bg-2: #f5f5f5;
   --color-surface: #ffffff;
-  --color-surface-2: #f7f5f2;
-  --color-surface-3: #efece8;
+  --color-surface-2: #f7f7f7;
+  --color-surface-3: #f0f0f0;
 
   --color-border: rgba(20, 16, 12, 0.1);
   --color-border-strong: rgba(20, 16, 12, 0.18);
@@ -40,10 +40,10 @@
   --color-outline: #7a7164;
   --color-outline-variant: #c9c0b0;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f7f5f2;
-  --color-surface-container: #efece8;
-  --color-surface-container-high: #e6e1db;
-  --color-surface-container-highest: #ddd7cf;
+  --color-surface-container-low: #f7f7f7;
+  --color-surface-container: #f0f0f0;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e0e0e0;
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.08);
   --shadow-glow-gold: 0 0 24px rgba(212, 160, 23, 0.22);
@@ -200,10 +200,14 @@
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
-    color: var(--color-gold-bright);
-    background: rgba(232, 179, 62, 0.12);
-    border: 1px solid rgba(232, 179, 62, 0.3);
+    color: var(--color-gold);
+    background: color-mix(in srgb, var(--color-gold) 14%, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-gold) 40%, var(--color-border));
     white-space: nowrap;
+  }
+
+  .app-dark .xp-pill {
+    color: var(--color-gold-bright);
   }
 
   .gold-btn {

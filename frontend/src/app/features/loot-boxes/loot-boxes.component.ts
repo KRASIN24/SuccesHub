@@ -15,6 +15,7 @@ import { RevealCardComponent } from './reveal-card/reveal-card.component';
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
+import { RewardLabelPipe } from '../../core/i18n/reward-label.pipe';
 
 type Phase = 'idle' | 'charging' | 'revealing';
 type GlowTier = 'default' | 'silver' | 'gold';
@@ -117,6 +118,7 @@ const TIER_I18N = [
     RevealCardComponent,
     DevToolsChipComponent,
     TranslatePipe,
+    RewardLabelPipe,
   ],
   templateUrl: './loot-boxes.component.html',
   styleUrl: './loot-boxes.component.scss',
@@ -127,9 +129,9 @@ export class LootBoxesComponent implements OnInit {
   private readonly lootPending = inject(LootPendingService);
   protected readonly i18n = inject(TranslateService);
 
-  readonly navPrevIcon = 'https://www.figma.com/api/mcp/asset/c32ac360-fb11-43c3-8a87-8987a3ddb081';
-  readonly navNextIcon = 'https://www.figma.com/api/mcp/asset/58580b05-b667-4c70-86a2-93d7ba92670c';
-  readonly accentIcon = 'https://www.figma.com/api/mcp/asset/af0f7201-80fd-4bcb-9736-a5b8ad19a27d';
+  readonly navPrevIcon = 'chevron_left';
+  readonly navNextIcon = 'chevron_right';
+  readonly accentIcon = 'auto_awesome';
 
   readonly footerLinks: FooterLink[] = [
     { labelKey: 'loot.manifestHistory' },

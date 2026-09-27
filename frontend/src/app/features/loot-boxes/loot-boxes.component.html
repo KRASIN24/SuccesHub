@@ -21,7 +21,7 @@
             [disabled]="phase() !== 'idle' || boxTypes().length < 2"
             aria-label="Previous chest"
           >
-            <img [src]="navPrevIcon" alt="" />
+            <span class="material-symbols-outlined hero__nav-icon" aria-hidden="true">{{ navPrevIcon }}</span>
             <span class="hero__nav-tooltip">{{ 'loot.prevChest' | translate }}</span>
           </button>
 
@@ -39,7 +39,7 @@
 
           <div class="hero__accent">
             <div class="hero__accent-inner">
-              <img [src]="accentIcon" alt="" />
+              <span class="material-symbols-outlined hero__accent-icon" aria-hidden="true">{{ accentIcon }}</span>
             </div>
           </div>
 
@@ -50,7 +50,7 @@
             [disabled]="phase() !== 'idle' || boxTypes().length < 2"
             aria-label="Next chest"
           >
-            <img [src]="navNextIcon" alt="" />
+            <span class="material-symbols-outlined hero__nav-icon" aria-hidden="true">{{ navNextIcon }}</span>
             <span class="hero__nav-tooltip">{{ 'loot.nextChest' | translate }}</span>
           </button>
         </div>
@@ -95,7 +95,7 @@
               <div class="history__drop" [ngClass]="rarityClass(entry.item.rarity)">
                 <span class="material-symbols-outlined history__drop-icon">{{ entry.item.icon }}</span>
                 <div class="history__drop-text">
-                  <p class="history__drop-label">{{ entry.item.label }}</p>
+                  <p class="history__drop-label">{{ entry.item | rewardLabel }}</p>
                   <p class="history__drop-meta">
                     {{ entry.item.rarity }} · {{ entry.boxName }} · {{ formatPulledAt(entry.pulledAt) }}
                   </p>

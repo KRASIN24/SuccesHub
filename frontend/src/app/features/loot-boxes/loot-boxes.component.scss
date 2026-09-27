@@ -100,46 +100,58 @@ a {
 
 .hero__aura {
   position: absolute;
-  inset: -64px;
+  inset: -48px;
   border-radius: 9999px;
-  background: rgba(245, 190, 66, 0.2);
-  filter: blur(50px);
+  background: rgba(20, 16, 12, 0.06);
+  filter: blur(36px);
   z-index: -1;
   animation: hero-aura-pulse var(--loot-sync-duration) ease-in-out infinite;
 }
 
 .hero__overlay-blur {
   position: absolute;
-  inset: -32px;
+  inset: -24px;
   border-radius: 9999px;
-  background: rgba(255, 178, 183, 0.1);
-  filter: blur(30px);
+  background: rgba(196, 146, 26, 0.05);
+  filter: blur(28px);
   z-index: -1;
   animation: hero-overlay-pulse var(--loot-sync-duration) ease-in-out infinite;
   animation-delay: 0.25s;
 }
 
+:host-context(.app-dark) .hero__aura {
+  inset: -64px;
+  background: rgba(245, 190, 66, 0.2);
+  filter: blur(50px);
+}
+
+:host-context(.app-dark) .hero__overlay-blur {
+  inset: -32px;
+  background: rgba(255, 178, 183, 0.1);
+  filter: blur(30px);
+}
+
 @keyframes hero-aura-pulse {
   0%,
   100% {
-    opacity: 0.65;
-    transform: scale(0.96);
+    opacity: 0.55;
+    transform: scale(0.98);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.05);
+    opacity: 0.85;
+    transform: scale(1.03);
   }
 }
 
 @keyframes hero-overlay-pulse {
   0%,
   100% {
-    opacity: 0.5;
-    transform: scale(0.98);
+    opacity: 0.4;
+    transform: scale(0.99);
   }
   50% {
-    opacity: 0.85;
-    transform: scale(1.03);
+    opacity: 0.7;
+    transform: scale(1.02);
   }
 }
 
@@ -154,6 +166,10 @@ a {
   justify-content: center;
   background: linear-gradient(180deg, var(--gold) 0%, #5d0018 100%);
   clip-path: var(--hero-hex-clip);
+  filter: drop-shadow(0 8px 20px rgba(196, 146, 26, 0.22));
+}
+
+:host-context(.app-dark) .hero__hexagon {
   filter: drop-shadow(0 0 25px rgba(210, 159, 34, 0.3));
 }
 
@@ -162,13 +178,21 @@ a {
   flex: 1;
   height: 100%;
   width: 100%;
-  border: 1px solid rgba(245, 190, 66, 0.2);
-  background: var(--color-surface-container-highest);
+  border: 1px solid rgba(196, 146, 26, 0.22);
+  /* Shared light plate — same as avatar hex. */
+  background: linear-gradient(180deg, #ffffff 0%, #f6f4f1 100%);
+  box-shadow: inset 0 0 0 1px rgba(196, 146, 26, 0.1);
   clip-path: var(--hero-hex-clip);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
+}
+
+:host-context(.app-dark) .hero__hexagon-inner {
+  background: #141417;
+  box-shadow: none;
+  border-color: rgba(245, 190, 66, 0.2);
 }
 
 .hero__gradient {
@@ -236,7 +260,11 @@ a {
 }
 
 .hero__chest--vault {
-  filter: drop-shadow(0 0 28px rgba(255, 178, 183, 0.45));
+  filter: drop-shadow(0 8px 16px rgba(196, 74, 74, 0.18));
+}
+
+:host-context(.app-dark) .hero__chest--vault {
+  filter: drop-shadow(0 0 24px rgba(232, 100, 100, 0.4));
 }
 
 .hero__chest img {
@@ -289,8 +317,8 @@ a {
   flex: 1;
   width: 100%;
   height: 100%;
-  background: var(--color-surface-container-highest);
-  border: 1px solid rgba(245, 190, 66, 0.2);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f4f1 100%);
+  border: 1px solid rgba(196, 146, 26, 0.22);
   clip-path: var(--hero-hex-clip);
   display: flex;
   align-items: center;
@@ -313,14 +341,17 @@ a {
   }
 }
 
-.hero__accent-inner img {
+.hero__accent-inner .hero__accent-icon {
   position: relative;
   z-index: 1;
-  width: 46%;
-  height: 46%;
-  max-width: none;
-  object-fit: contain;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--gold-bright);
   filter: drop-shadow(0 0 6px rgba(245, 190, 66, 0.45));
+}
+
+:host-context(.app-dark) .hero__accent-inner {
+  background: #141417;
 }
 
 .hero__nav {
@@ -329,17 +360,31 @@ a {
   width: 64px;
   height: 64px;
   border-radius: 9999px;
-  border: 1px solid rgba(245, 190, 66, 0.2);
-  background: rgba(33, 31, 35, 0.4);
-  backdrop-filter: blur(6px);
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--color-border-strong, rgba(20, 16, 12, 0.18)));
+  background: var(--color-surface, #ffffff);
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--color-text, #1a1816);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
-.hero__nav img {
-  width: 17%;
-  height: 28%;
+.hero__nav-icon {
+  font-size: 28px;
+  line-height: 1;
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
 .hero__nav--prev {

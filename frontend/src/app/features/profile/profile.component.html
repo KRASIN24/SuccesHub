@@ -118,11 +118,11 @@
                       {{ stack.reward.icon }}
                     </span>
                     <span class="inventory-chip__text">
-                      <span class="inventory-chip__label">{{ stack.reward.label }}</span>
-                      <span class="inventory-chip__rarity">{{ stack.reward.rarity }}</span>
+                      <span class="inventory-chip__label">{{ stack.reward | rewardLabel }}</span>
+                      <span class="inventory-chip__rarity">{{ stack.reward.rarity | rarityLabel }}</span>
                     </span>
                     @if (stack.equipped) {
-                      <span class="inventory-chip__status">Equipped</span>
+                      <span class="inventory-chip__status">{{ 'profile.equipped' | translate }}</span>
                     }
                   </button>
                 }
@@ -153,9 +153,9 @@
                         <div class="frame-preview__inner" aria-hidden="true"></div>
                       </div>
                     </div>
-                    <span class="inventory-frame__label">{{ stack.reward.label }}</span>
-                    <span class="inventory-frame__rarity">{{ stack.reward.rarity }}</span>
-                    <span class="inventory-frame__status">{{ stack.equipped ? 'Equipped' : '' }}</span>
+                    <span class="inventory-frame__label">{{ stack.reward | rewardLabel }}</span>
+                    <span class="inventory-frame__rarity">{{ stack.reward.rarity | rarityLabel }}</span>
+                    <span class="inventory-frame__status">{{ stack.equipped ? ('profile.equipped' | translate) : '' }}</span>
                   </button>
                 }
               </div>

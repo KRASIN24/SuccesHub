@@ -1,19 +1,30 @@
 :host {
   display: block;
-  --sp-bg: var(--color-surface-container, #211f23);
-  --sp-panel: var(--color-surface-container-high, #2b292d);
-  --sp-border: var(--color-border, rgba(255, 255, 255, 0.07));
-  --sp-gold: var(--color-gold-bright, #f6cf63);
-  --sp-gold-deep: var(--color-gold, #e8b33e);
-  --sp-green: var(--color-success, #5bd17c);
-  --sp-red: var(--color-danger, #e5654b);
-  --sp-blue: var(--color-accent-blue, #3b82f6);
-  --sp-text: var(--color-on-surface, #e7e1e6);
-  --sp-muted: var(--color-on-surface-variant, #d3c5af);
-  --sp-dim: var(--color-text-faint, #62626a);
-  --sp-on-mark: var(--color-app-bg, #0a0a0c);
+  --sp-bg: #ffffff;
+  --sp-panel: #ffffff;
+  --sp-inset: #ffffff;
+  --sp-border: var(--color-border-strong, rgba(20, 16, 12, 0.14));
+  --sp-gold: var(--color-gold, #c4921a);
+  --sp-gold-deep: var(--color-gold, #c4921a);
+  --sp-green: var(--color-success, #2f9e55);
+  --sp-red: var(--color-danger, #c94a35);
+  --sp-blue: var(--color-accent-blue, #2563eb);
+  --sp-text: var(--color-text, #1a1816);
+  --sp-muted: var(--color-text-muted, #5c574f);
+  --sp-dim: var(--color-text-faint, #8a847a);
+  --sp-on-mark: #ffffff;
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--sp-text);
+}
+
+:host-context(.app-dark) {
+  --sp-bg: var(--color-surface, #141417);
+  --sp-panel: var(--color-surface-2, #1a1a1e);
+  --sp-inset: var(--color-surface-2, #1a1a1e);
+  --sp-border: var(--color-border-strong, rgba(255, 255, 255, 0.13));
+  --sp-gold: var(--color-gold-bright, #f6cf63);
+  --sp-gold-deep: var(--color-gold, #e8b33e);
+  --sp-on-mark: var(--color-app-bg, #0a0a0c);
 }
 
 .streak-panel {
@@ -44,15 +55,14 @@
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--color-on-surface, #e7e1e6);
+  color: var(--color-text, #1a1816);
 }
 
 .streak-panel__sub {
   margin: 0;
   max-width: 520px;
   font-size: 13px;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.7;
+  color: var(--color-text-muted, #5c574f);
 }
 
 .streak-panel__feedback {
@@ -78,6 +88,7 @@
   border-radius: 24px;
   border: 1px solid var(--sp-border);
   background: var(--sp-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .streak-manip {
@@ -138,56 +149,48 @@
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-on-surface-variant, #d3c5af);
-  opacity: 0.5;
+  color: var(--color-text-muted, #5c574f);
+  font-weight: 700;
 }
 
-/* ── PrimeNG DatePicker chrome → forced dark app palette ─────────── */
+/* ── PrimeNG DatePicker chrome ───────────────────────────────────── */
 :host ::ng-deep {
   .streak-calendar,
   .streak-calendar.p-datepicker,
   .p-datepicker.streak-calendar,
   .p-datepicker {
-    /* Design tokens — kill white content.background */
-    --p-datepicker-panel-background: var(--color-surface-2, #1a1a1e);
-    --p-datepicker-panel-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
-    --p-datepicker-panel-color: var(--color-text, #ededee);
-    --p-datepicker-header-background: var(--color-surface-2, #1a1a1e);
-    --p-datepicker-header-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
-    --p-datepicker-header-color: var(--color-text, #ededee);
-    --p-datepicker-date-color: var(--color-text, #ededee);
-    --p-datepicker-date-hover-background: rgba(232, 179, 62, 0.14);
-    --p-datepicker-date-hover-color: var(--color-gold-bright, #f6cf63);
-    --p-datepicker-date-selected-background: rgba(232, 179, 62, 0.28);
-    --p-datepicker-date-selected-color: var(--color-gold-bright, #f6cf63);
-    --p-datepicker-today-background: rgba(232, 179, 62, 0.12);
-    --p-datepicker-today-color: var(--color-gold-bright, #f6cf63);
-    --p-datepicker-select-month-color: var(--color-gold-bright, #f6cf63);
-    --p-datepicker-select-year-color: var(--color-gold-bright, #f6cf63);
-    --p-datepicker-select-month-hover-background: rgba(232, 179, 62, 0.12);
-    --p-datepicker-select-year-hover-background: rgba(232, 179, 62, 0.12);
-    --p-datepicker-week-day-color: var(--color-text-faint, #62626a);
-    --p-content-background: var(--color-surface-2, #1a1a1e);
-    --p-content-hover-background: rgba(232, 179, 62, 0.14);
-    --p-content-border-color: var(--color-border, rgba(255, 255, 255, 0.07));
-    --p-content-color: var(--color-text, #ededee);
-    --p-content-hover-color: var(--color-gold-bright, #f6cf63);
-    --p-surface-0: var(--color-app-bg);
-    --p-surface-50: var(--color-surface);
-    --p-surface-100: var(--color-surface-2);
-    --p-surface-200: var(--color-surface-3);
-    --p-surface-700: var(--color-surface-container-high);
-    --p-surface-800: var(--color-surface-2);
-    --p-surface-900: var(--color-surface);
-    --p-text-color: var(--color-text, #ededee);
-    --p-primary-color: var(--color-gold, #e8b33e);
-    --p-primary-contrast-color: var(--color-app-bg);
+    --p-datepicker-panel-background: var(--sp-inset);
+    --p-datepicker-panel-border-color: var(--sp-border);
+    --p-datepicker-panel-color: var(--sp-text);
+    --p-datepicker-header-background: var(--sp-inset);
+    --p-datepicker-header-border-color: var(--sp-border);
+    --p-datepicker-header-color: var(--sp-text);
+    --p-datepicker-date-color: var(--sp-text);
+    --p-datepicker-date-hover-background: rgba(196, 146, 26, 0.12);
+    --p-datepicker-date-hover-color: var(--sp-gold-deep);
+    --p-datepicker-date-selected-background: rgba(196, 146, 26, 0.2);
+    --p-datepicker-date-selected-color: var(--sp-gold-deep);
+    --p-datepicker-today-background: rgba(196, 146, 26, 0.1);
+    --p-datepicker-today-color: var(--sp-gold-deep);
+    --p-datepicker-select-month-color: var(--sp-gold-deep);
+    --p-datepicker-select-year-color: var(--sp-gold-deep);
+    --p-datepicker-select-month-hover-background: rgba(196, 146, 26, 0.1);
+    --p-datepicker-select-year-hover-background: rgba(196, 146, 26, 0.1);
+    --p-datepicker-week-day-color: var(--sp-dim);
+    --p-content-background: var(--sp-inset);
+    --p-content-hover-background: rgba(196, 146, 26, 0.12);
+    --p-content-border-color: var(--sp-border);
+    --p-content-color: var(--sp-text);
+    --p-content-hover-color: var(--sp-gold-deep);
+    --p-text-color: var(--sp-text);
+    --p-primary-color: var(--sp-gold-deep);
+    --p-primary-contrast-color: #ffffff;
 
     width: 100% !important;
-    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07)) !important;
+    border: 1px solid var(--sp-border) !important;
     border-radius: 14px !important;
-    background: var(--color-surface-2, #1a1a1e) !important;
-    color: var(--color-text, #ededee) !important;
+    background: var(--sp-inset) !important;
+    color: var(--color-text, var(--color-text)) !important;
     padding: 12px !important;
     box-shadow: none !important;
     font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
@@ -209,7 +212,7 @@
     border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.07)) !important;
     padding: 0 0 12px !important;
     margin-bottom: 8px !important;
-    color: var(--color-text, #ededee) !important;
+    color: var(--color-text, var(--color-text)) !important;
   }
 
   .p-datepicker-title,
@@ -219,7 +222,7 @@
   .p-datepicker-year,
   button.p-datepicker-select-month,
   button.p-datepicker-select-year {
-    color: var(--color-gold-bright, #f6cf63) !important;
+    color: var(--color-gold-bright, var(--color-gold-bright)) !important;
     font-weight: 700 !important;
     background: transparent !important;
   }
@@ -230,19 +233,19 @@
   .p-datepicker-next,
   button.p-datepicker-prev-button,
   button.p-datepicker-next-button {
-    color: var(--color-text-muted, #9a9aa2) !important;
+    color: var(--color-text-muted, var(--color-text-muted)) !important;
     background: transparent !important;
 
     &:hover {
       background: rgba(232, 179, 62, 0.12) !important;
-      color: var(--color-gold-bright, #f6cf63) !important;
+      color: var(--color-gold-bright, var(--color-gold-bright)) !important;
     }
   }
 
   .p-datepicker th,
   .p-datepicker-weekday,
   .p-datepicker-weekheader {
-    color: var(--color-text-faint, #62626a) !important;
+    color: var(--color-text-faint, var(--color-text-faint)) !important;
     background: transparent !important;
     font-weight: 600 !important;
     letter-spacing: 0.08em;
@@ -272,7 +275,7 @@
   .p-datepicker td > span,
   .p-datepicker-day,
   span.p-datepicker-day {
-    color: var(--color-text, #ededee) !important;
+    color: var(--color-text, var(--color-text)) !important;
     background: transparent !important;
     width: 2.35rem !important;
     height: 2.35rem !important;
@@ -280,7 +283,7 @@
 
     &:hover:not(.p-disabled) {
       background: rgba(232, 179, 62, 0.14) !important;
-      color: var(--color-gold-bright, #f6cf63) !important;
+      color: var(--color-gold-bright, var(--color-gold-bright)) !important;
     }
   }
 
@@ -288,13 +291,13 @@
   .p-highlight,
   td span.p-highlight {
     background: rgba(232, 179, 62, 0.25) !important;
-    color: var(--color-gold-bright, #f6cf63) !important;
+    color: var(--color-gold-bright, var(--color-gold-bright)) !important;
   }
 
   .p-datepicker-today > span:not(.p-highlight),
   .p-datepicker-day.p-datepicker-today:not(.p-datepicker-day-selected) {
     background: rgba(232, 179, 62, 0.1) !important;
-    color: var(--color-gold-bright, #f6cf63) !important;
+    color: var(--color-gold-bright, var(--color-gold-bright)) !important;
     box-shadow: inset 0 0 0 1px rgba(232, 179, 62, 0.35);
   }
 
@@ -418,7 +421,7 @@
   padding: 14px;
   border-radius: 14px;
   border: 1px solid var(--sp-border);
-  background: var(--color-surface-2, #1a1a1e);
+  background: var(--sp-panel);
 }
 
 .streak-card + .streak-card {
@@ -427,7 +430,7 @@
 
 .streak-card__icon {
   font-size: 26px;
-  color: var(--sp-gold);
+  color: var(--sp-gold-deep);
 }
 
 .streak-card--boost .streak-card__icon {
@@ -444,18 +447,18 @@
   font-family: 'Space Grotesk', sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: var(--sp-text);
+  color: var(--color-text, #1a1816);
 }
 
 .streak-card__qty {
-  color: var(--sp-muted);
+  color: var(--color-text-muted, #5c574f);
   font-weight: 500;
 }
 
 .streak-card__effect {
   margin: 3px 0 0;
   font-size: 11px;
-  color: var(--sp-muted);
+  color: var(--color-text-muted, #5c574f);
 }
 
 /* ── Manipulation controls ─────────────────────────────────────────── */
@@ -499,8 +502,8 @@
   padding: 8px 14px;
   border-radius: 9999px;
   border: 1px solid var(--sp-border);
-  background: var(--sp-panel);
-  color: var(--sp-text);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #1a1816);
   font-family: 'Space Grotesk', sans-serif;
   font-size: 12px;
   font-weight: 700;
@@ -512,8 +515,8 @@
   }
 
   &:hover:not(:disabled) {
-    border-color: rgba(245, 190, 66, 0.4);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: color-mix(in srgb, var(--sp-gold-deep) 50%, var(--sp-border));
+    background: color-mix(in srgb, var(--sp-gold-deep) 10%, var(--color-surface));
   }
 
   &:disabled {
@@ -523,9 +526,9 @@
 }
 
 .streak-btn--primary {
-  border-color: rgba(245, 190, 66, 0.5);
-  background: rgba(245, 190, 66, 0.14);
-  color: var(--sp-gold);
+  border-color: color-mix(in srgb, var(--sp-gold-deep) 55%, var(--sp-border));
+  background: color-mix(in srgb, var(--sp-gold-deep) 16%, var(--color-surface));
+  color: var(--color-gold-dim, #8a6a14);
 }
 
 .streak-btn--danger {

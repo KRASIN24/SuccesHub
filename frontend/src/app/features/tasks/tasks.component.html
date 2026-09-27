@@ -35,7 +35,7 @@
                 <span class="field-label">{{ 'tasks.tag' | translate }}</span>
                 <input type="text" [(ngModel)]="editCategoryTag" name="editCategoryTag" />
               </label>
-              <label class="field checkbox">
+              <label class="field field--check">
                 <input type="checkbox" [(ngModel)]="editCategoryGrantXp" name="editCategoryGrantXp" />
                 <span>{{ 'tasks.grantXpOnComplete' | translate }}</span>
               </label>
@@ -43,8 +43,8 @@
                 <p class="form-error">{{ categorySaveError() }}</p>
               }
               <div class="form-actions">
-                <button type="button" class="btn-secondary" (click)="cancelEditCategory()">Cancel</button>
-                <button type="submit" class="btn-primary" [disabled]="!editCategoryName.trim()">Save</button>
+                <button type="button" class="btn-secondary" (click)="cancelEditCategory()">{{ 'tasks.cancel' | translate }}</button>
+                <button type="submit" class="btn-primary" [disabled]="!editCategoryName.trim()">{{ 'tasks.save' | translate }}</button>
               </div>
             </form>
           } @else {
@@ -182,14 +182,15 @@
       }
 
       @if (showNewCategoryForm()) {
-        <section class="column new-category-form add-form" style="min-width: 280px;">
+        <section class="column new-category-form add-form">
           <div class="column-head">
-            <h2 class="column-title">{{ 'tasks.editCategory' | translate }}</h2>
+            <h2 class="column-title">{{ 'tasks.newCategory' | translate }}</h2>
           </div>
           <input
             type="text"
             [placeholder]="'tasks.categoryName' | translate"
             [(ngModel)]="newCategoryName"
+            name="newCategoryName"
             class="add-form__input"
             required
           />
@@ -197,10 +198,11 @@
             type="text"
             [placeholder]="'tasks.categoryTag' | translate"
             [(ngModel)]="newCategoryTag"
+            name="newCategoryTag"
             class="add-form__input"
           />
-          <label class="field checkbox">
-            <input type="checkbox" id="newCategoryGrantXp" [(ngModel)]="newCategoryGrantXp" />
+          <label class="field field--check">
+            <input type="checkbox" id="newCategoryGrantXp" name="newCategoryGrantXp" [(ngModel)]="newCategoryGrantXp" />
             <span>{{ 'tasks.grantXpOnComplete' | translate }}</span>
           </label>
           <div class="add-form__actions">
@@ -209,14 +211,10 @@
           </div>
         </section>
       } @else {
-        <section
-          class="column new-column-btn"
-          style="border: 1px dashed var(--color-border-strong); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 250px; padding: 24px; cursor: pointer; background: var(--color-surface-2); transition: all 0.2s ease;"
-          (click)="showNewCategoryForm.set(true)"
-        >
-          <span class="material-icons" style="font-size: 32px; color: var(--color-text-faint); margin-bottom: 8px;">playlist_add</span>
-          <span style="color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 500;">Add Category</span>
-        </section>
+        <button type="button" class="column new-column-btn" (click)="showNewCategoryForm.set(true)">
+          <span class="material-icons new-column-btn__icon" aria-hidden="true">playlist_add</span>
+          <span class="new-column-btn__label">{{ 'tasks.addCategory' | translate }}</span>
+        </button>
       }
     </div>
   </div>

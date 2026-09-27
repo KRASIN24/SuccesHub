@@ -23,6 +23,11 @@ import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
+import { RewardLabelPipe } from '../../core/i18n/reward-label.pipe';
+import {
+  AchievementLabelPipe,
+  AchievementDescPipe,
+} from '../../core/i18n/achievement-label.pipe';
 
 @Component({
   selector: 'app-home',
@@ -35,6 +40,9 @@ import { TranslateService } from '../../core/i18n/translate.service';
     FrameOrnamentsComponent,
     DevToolsChipComponent,
     TranslatePipe,
+    RewardLabelPipe,
+    AchievementLabelPipe,
+    AchievementDescPipe,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',

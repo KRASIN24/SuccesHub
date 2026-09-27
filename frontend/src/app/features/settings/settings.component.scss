@@ -407,11 +407,12 @@
 
 /* ── Danger zone ─────────────────────────────────── */
 .danger-zone {
-  border-top: 1px solid rgba(211, 197, 175, 0.14);
+  border-top: 1px solid var(--color-border);
   padding-top: 2.5rem;
 }
 
 .danger-card {
+  --danger: var(--color-danger, #c94a35);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -419,8 +420,20 @@
   gap: 1.5rem;
   padding: 1.75rem 2rem;
   border-radius: 0.75rem;
-  background: rgba(135, 35, 52, 0.16);
-  border: 1px solid rgba(255, 178, 183, 0.2);
+  background: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--danger) 42%, transparent);
+  box-shadow:
+    inset 4px 0 0 0 var(--danger),
+    0 1px 2px color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+:host-context(.app-dark) .danger-card {
+  --danger: var(--color-danger, #e5654b);
+  background: color-mix(in srgb, var(--danger) 14%, #141417);
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  box-shadow:
+    inset 4px 0 0 0 var(--danger),
+    0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .danger-card__title {
@@ -430,7 +443,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   text-transform: uppercase;
-  color: var(--color-danger);
+  color: var(--danger, #c94a35);
 }
 
 .danger-card__body {
@@ -438,7 +451,11 @@
   max-width: 34rem;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--color-text-muted);
+  color: color-mix(in srgb, var(--danger, #c94a35) 55%, #3a2a28);
+}
+
+:host-context(.app-dark) .danger-card__body {
+  color: color-mix(in srgb, var(--danger, #e5654b) 35%, #d8cfcb);
 }
 
 .danger-card__actions {
@@ -455,21 +472,23 @@
   min-height: 2.75rem;
   padding: 0.85rem 1.35rem;
   border-radius: 0;
-  border: 1px solid rgba(255, 178, 183, 0.55);
-  background: rgba(255, 178, 183, 0.08);
+  border: 1px solid var(--danger, #c94a35);
+  background: var(--danger, #c94a35);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: var(--color-danger);
+  color: #fff;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s, filter 0.2s;
   box-sizing: border-box;
 }
 
 .btn-danger-outline:hover {
-  background: rgba(255, 178, 183, 0.16);
+  background: color-mix(in srgb, var(--danger, #c94a35) 82%, #000);
+  border-color: color-mix(in srgb, var(--danger, #c94a35) 82%, #000);
+  filter: none;
 }
 
 @keyframes spin {

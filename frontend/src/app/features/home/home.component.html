@@ -42,12 +42,12 @@
             </div>
           </div>
           @if (cosmetics.equippedFrame(); as frame) {
-            <p class="hero-frame-label">{{ frame.label }}</p>
+            <p class="hero-frame-label">{{ frame | rewardLabel }}</p>
           }
         </div>
 
         @if (cosmetics.equippedTitle(); as title) {
-          <p class="hero-title">{{ title.label }}</p>
+          <p class="hero-title">{{ title | rewardLabel }}</p>
         }
 
         <div class="xp-block">
@@ -60,27 +60,22 @@
           <div class="xp-track">
             <div class="xp-fill" [style.width.%]="xpPercent"></div>
           </div>
-        </div>
-
-        @if (daily(); as day) {
-          <div class="xp-block ritual-block">
-            <div class="xp-head">
-              <span class="xp-title">
-                <span class="material-icons ritual-icon">local_fire_department</span>
-                {{ day.currentStreak }}d streak · {{ day.streakTier }}
+          @if (daily(); as day) {
+            <div class="xp-foot">
+              <span class="xp-streak">
+                <span class="material-icons ritual-icon" aria-hidden="true">local_fire_department</span>
+                {{ day.currentStreak }}
               </span>
-              <span class="xp-count">
-                {{ day.xpEarnedToday | number }} <span class="muted">/ {{ day.xpEarnedToday + day.dailyXpRemaining | number }} {{ 'home.dailyXp' | translate }}</span>
+              <span class="xp-count xp-count--daily">
+                {{ day.xpEarnedToday | number }}
+                <span class="muted">/ {{ day.xpEarnedToday + day.dailyXpRemaining | number }} {{ 'home.dailyXp' | translate }}</span>
               </span>
-            </div>
-            <div class="xp-track daily-track">
-              <div class="xp-fill daily-fill" [style.width.%]="dailyXpPercent"></div>
             </div>
             @if (day.streakShields > 0) {
               <p class="ritual-meta">{{ i18n.t('home.streakShields', { count: day.streakShields }) }}</p>
             }
-          </div>
-        }
+          }
+        </div>
       </section>
     }
 
@@ -208,10 +203,10 @@
           <div class="merits">
             @for (merit of merits(); track merit.id) {
               <div class="merit" [class.locked]="merit.locked">
-                <div class="merit-hex" [title]="merit.description">
+                <div class="merit-hex" [title]="merit | achievementDesc">
                   <span class="material-icons">{{ merit.icon }}</span>
                 </div>
-                <span class="merit-label">{{ merit.label }}</span>
+                <span class="merit-label">{{ merit | achievementLabel }}</span>
               </div>
             } @empty {
               <p class="empty-merits">{{ 'home.noMerits' | translate }}</p>
@@ -227,7 +222,7 @@
               <span class="eyebrow">{{ 'home.forecast' | translate }}</span>
               <span class="material-icons widget-icon">trending_up</span>
             </div>
-            <p class="forecast-line">Next streak bonus at <strong>{{ fc.nextStreakMilestone }}d</strong> (+{{ fc.nextStreakBonusRate * 100 | number:'1.0-0' }}%)</p>
+            <p class="forecast-line">Next streak bonus at <strong>{{ fc.nextStreakMilestone }}</strong> (+{{ fc.nextStreakBonusRate * 100 | number:'1.0-0' }}%)</p>
             <p class="forecast-meta">Up to {{ fc.weeklyChallengeCount }} weekly challenges (difficulty ≥ {{ fc.weeklyChallengeMinDifficulty }})</p>
           </div>
         }

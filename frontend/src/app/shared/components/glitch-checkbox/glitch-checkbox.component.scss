@@ -5,9 +5,10 @@
 .glitch-checkbox {
   --glitch-primary: var(--color-primary, #f5be42);
   --glitch-secondary: #ff8a3d;
-  --glitch-text: #f2ece8;
-  --glitch-disabled: #6b6358;
-  --glitch-bg: var(--color-surface-container-lowest, #0f0d11);
+  /* Unchecked label must follow theme — hardcoded cream is invisible on light. */
+  --glitch-text: var(--color-text-muted, #5c574f);
+  --glitch-disabled: var(--color-text-faint, #8a847a);
+  --glitch-bg: var(--color-surface-container-lowest, #ffffff);
   --glitch-duration: 0.3s;
 
   display: flex;
@@ -31,7 +32,7 @@
   flex-shrink: 0;
   border: 2px solid var(--glitch-primary);
   position: relative;
-  background: rgba(245, 190, 66, 0.06);
+  background: color-mix(in srgb, var(--glitch-primary) 10%, var(--glitch-bg));
   transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   clip-path: polygon(
     15% 0,

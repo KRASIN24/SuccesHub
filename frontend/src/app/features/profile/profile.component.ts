@@ -15,6 +15,7 @@ import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments
 import { StreakPanelComponent } from './streak-panel/streak-panel.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
+import { RewardLabelPipe, RarityLabelPipe } from '../../core/i18n/reward-label.pipe';
 
 type Category = 'UTILITY' | 'TITLE' | 'AVATAR_FRAME';
 
@@ -37,6 +38,8 @@ interface OverviewStat {
     StreakPanelComponent,
     FrameOrnamentsComponent,
     TranslatePipe,
+    RewardLabelPipe,
+    RarityLabelPipe,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
@@ -68,11 +71,12 @@ export class ProfileComponent implements OnInit {
   readonly frameStacks = computed(() => this.byCategory('AVATAR_FRAME'));
 
   readonly rankLabel = computed(() => {
-    const title = this.cosmetics.equippedTitle()?.label;
+    this.i18n.revision();
+    const title = this.cosmetics.equippedTitle();
     if (title) {
-      return title;
+      return this.i18n.catalogLabel('rewards', title.key, title.label);
     }
-    return 'UNRANKED';
+    return this.i18n.t('profile.unranked');
   });
 
   readonly systemUid = computed(() => {

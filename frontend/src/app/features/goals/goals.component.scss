@@ -232,21 +232,21 @@
   align-items: center;
   padding: 3rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--color-text) 3%, var(--color-surface));
   border-radius: 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1px dashed var(--color-border-strong);
 }
 
 .empty-icon {
   font-size: 48px;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-faint);
   margin-bottom: 12px;
 }
 
 .empty-text {
   margin: 0;
   max-width: 420px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-muted);
   font-size: 16px;
   line-height: 1.5;
 }
@@ -263,18 +263,30 @@
   padding: 1.5rem;
   border-radius: var(--radius-card);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  border: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-3px);
-    border-color: var(--color-border-strong);
+    border-color: color-mix(in srgb, var(--color-gold) 45%, var(--color-border-strong));
   }
 
   &.featured {
-    border-color: rgba(232, 179, 62, 0.6);
-    box-shadow: 0 0 30px rgba(232, 179, 62, 0.12);
+    border-color: color-mix(in srgb, var(--color-gold) 70%, var(--color-border));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-gold) 40%, transparent),
+      var(--shadow-card);
   }
+}
+
+:host-context(.app-dark) .boss-card {
+  box-shadow: none;
+}
+
+:host-context(.app-dark) .boss-card.featured {
+  border-color: rgba(232, 179, 62, 0.6);
+  box-shadow: 0 0 30px rgba(232, 179, 62, 0.12);
 }
 
 .boss-card-top {
@@ -307,15 +319,15 @@
   padding: 1.75rem 0;
 }
 
+/* Same dark medal plate in both themes — gold (featured) vs muted (standard) */
 .portrait-hex {
   width: 150px;
   height: 168px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at 50% 35%, #34343c, #0e0e10 75%);
-  color: rgba(255, 255, 255, 0.55);
+  background: radial-gradient(circle at 50% 35%, #34343c, #0e0e10 75%);
+  color: rgba(255, 255, 255, 0.45);
 
   .material-icons {
     font-size: 64px;
@@ -324,7 +336,7 @@
 
 .featured .portrait-hex {
   background: radial-gradient(circle at 50% 35%, #3a3320, #100e08 75%);
-  color: var(--color-gold-bright);
+  color: #f0c14a;
 }
 
 .boss-health {
@@ -343,7 +355,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-faint);
+  color: var(--color-gold);
 }
 
 .health-val {
@@ -357,8 +369,12 @@
 .health-track {
   height: 5px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--color-text) 14%, transparent);
   overflow: hidden;
+}
+
+:host-context(.app-dark) .health-track {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .health-fill {
@@ -370,7 +386,7 @@
 
 .boss-foot {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
   padding-top: 1.25rem;
@@ -378,7 +394,18 @@
 }
 
 .boss-target {
+  flex-shrink: 0;
   font-size: 0.72rem;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+}
+
+.boss-hint {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  text-align: right;
   color: var(--color-text-muted);
 }
 
@@ -440,13 +467,19 @@
   display: grid;
   place-items: center;
   margin-bottom: 1rem;
-  background: radial-gradient(circle at 50% 35%, #2a2a30, #121214);
+  background: color-mix(in srgb, var(--color-text) 8%, var(--color-surface-2));
+  border: 1px solid var(--color-border);
   color: var(--color-text-faint);
   filter: grayscale(1);
 
   .material-icons {
     font-size: 32px;
   }
+}
+
+:host-context(.app-dark) .foe-avatar {
+  background: radial-gradient(circle at 50% 35%, #2a2a30, #121214);
+  border-color: transparent;
 }
 
 .foe-slain {
@@ -532,10 +565,12 @@
   padding: 2rem;
   border-radius: var(--radius-card);
   background: var(--color-surface);
-  border: 1px solid rgba(232, 179, 62, 0.25);
+  border: 1px solid color-mix(in srgb, var(--color-gold) 35%, var(--color-border));
+  box-shadow: var(--shadow-card);
 }
 
 .campaign-ring {
+  --campaign-ring-rest: color-mix(in srgb, var(--color-text) 12%, transparent);
   width: 130px;
   height: 130px;
   border-radius: 50%;

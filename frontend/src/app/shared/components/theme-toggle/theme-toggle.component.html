@@ -1,4 +1,8 @@
-<label class="theme-toggle" [attr.aria-label]="dark() ? 'Dark theme' : 'Light theme'">
+<label
+  class="theme-toggle"
+  [class.theme-toggle--dark]="dark()"
+  [attr.aria-label]="dark() ? 'Dark theme' : 'Light theme'"
+>
   <input
     type="checkbox"
     class="theme-toggle__input"
@@ -32,8 +36,8 @@
         </g>
 
         <g class="theme-toggle__moon">
-          <circle fill="#d3c5af" r="15.167" cy="15.167" cx="15.167"></circle>
-          <g fill="#a89a82" transform="translate(-24.415 -1.009)">
+          <circle fill="#c8c4bc" r="15.167" cy="15.167" cx="15.167"></circle>
+          <g fill="#8a8680" transform="translate(-24.415 -1.009)">
             <circle transform="translate(43.009 4.496)" r="2" cy="2" cx="2"></circle>
             <circle transform="translate(39.366 17.952)" r="2" cy="2" cx="2"></circle>
             <circle transform="translate(33.016 8.044)" r="1" cy="1" cx="1"></circle>

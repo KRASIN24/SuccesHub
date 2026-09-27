@@ -45,15 +45,18 @@
   transition-duration: 0.28s;
 }
 
+/* Day = light theme */
 .theme-toggle__track {
   fill: #d29f22;
 }
 
-/* Night = dark theme (checked) */
+/* Night = dark theme — black track like the original control */
+.theme-toggle--dark .theme-toggle__track,
 .theme-toggle__input:checked + .theme-toggle__svg .theme-toggle__track {
-  fill: #2b292d;
+  fill: #0a0a0c;
 }
 
+.theme-toggle--dark .theme-toggle__knob,
 .theme-toggle__input:checked + .theme-toggle__svg .theme-toggle__knob {
   transform: translate(28px, 2.333px);
 }
@@ -62,6 +65,7 @@
   opacity: 1;
 }
 
+.theme-toggle--dark .theme-toggle__sun,
 .theme-toggle__input:checked + .theme-toggle__svg .theme-toggle__sun {
   opacity: 0;
 }
@@ -70,6 +74,7 @@
   opacity: 0;
 }
 
+.theme-toggle--dark .theme-toggle__moon,
 .theme-toggle__input:checked + .theme-toggle__svg .theme-toggle__moon {
   opacity: 1;
 }
@@ -78,6 +83,7 @@
   opacity: 1;
 }
 
+.theme-toggle--dark .theme-toggle__cloud,
 .theme-toggle__input:checked + .theme-toggle__svg .theme-toggle__cloud {
   opacity: 0;
 }
@@ -86,6 +92,7 @@
   opacity: 0;
 }
 
+.theme-toggle--dark .theme-toggle__stars,
 .theme-toggle__input:checked + .theme-toggle__svg .theme-toggle__stars {
   opacity: 1;
 }

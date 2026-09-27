@@ -25,12 +25,12 @@
       </div>
       <div class="stat-chip">
         <span class="stat-key">{{ 'navbar.streak' | translate }}:</span>
-        <span class="stat-val">{{ prof.currentStreak }}d</span>
+        <span class="stat-val">{{ prof.currentStreak }}</span>
       </div>
       @if (cosmetics.equippedTitle(); as title) {
-        <div class="stat-chip title-chip" [title]="title.label">
+        <div class="stat-chip title-chip" [title]="title | rewardLabel">
           <span class="stat-key">{{ 'navbar.title' | translate }}:</span>
-          <span class="stat-val gold">{{ title.label }}</span>
+          <span class="stat-val gold">{{ title | rewardLabel }}</span>
         </div>
       }
     }
@@ -95,8 +95,8 @@
                       iconFor(row.type)
                     }}</span>
                     <span class="notif-row__text">
-                      <span class="notif-row__title">{{ row.title }}</span>
-                      <span class="notif-row__body">{{ row.body }}</span>
+                      <span class="notif-row__title">{{ notificationTitle(row) }}</span>
+                      <span class="notif-row__body">{{ notificationBody(row) }}</span>
                       <span class="notif-row__time">{{
                         relativeTime(row.createdAt)
                       }}</span>
