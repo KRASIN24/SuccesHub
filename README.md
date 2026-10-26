@@ -110,6 +110,7 @@ Portfolio strategy (Notion): [SuccessHub hub](https://app.notion.com/p/SuccessHu
 | Achievements | `/achievements` | Merit unlocks from engine rules |
 | Celestial Cache | `/loot-boxes` | Pending boxes → open → inventory |
 | Profile vault | `/profile` | Equip cosmetics; streak calendar; shields / utility cards |
+| Settings | `/settings` | Persisted dark/light theme and en/pl locale ([runtime guide](docs/theme-and-localization.md)) |
 | Login | Keycloak | Seed user for local demo |
 
 ### How rewards work (short)
@@ -210,7 +211,7 @@ Those live on the project’s Post-MVP backlog in Notion — not half-implemente
 | `src/main/resources/db/changelog/` | Liquibase migrations |
 | `frontend/` | Angular SPA |
 | `docker/` | Compose for Postgres / Keycloak / Adminer |
-| `docs/` | Local-dev, CI, README media |
+| `docs/` | Local-dev, CI, theme/localization, README media |
 | `.run/` | IntelliJ shared run configurations |
 | `.github/workflows/` | PR CI |
 
