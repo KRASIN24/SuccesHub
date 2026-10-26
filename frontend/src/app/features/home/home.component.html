@@ -88,9 +88,11 @@
           </div>
           <p class="celebrate-copy">{{ 'home.qualifyingCopy' | translate }}</p>
         </div>
-        <button type="button" class="celebrate-btn" [disabled]="celebrating()" (click)="celebrateDay()">
-          {{ celebrating() ? ('home.sealing' | translate) : ('home.sealDay' | translate) }}
-        </button>
+        <app-glitch-button
+          [label]="celebrating() ? ('home.sealing' | translate) : ('home.sealDay' | translate)"
+          [disabled]="celebrating()"
+          (pressed)="celebrateDay()"
+        />
       </section>
     } @else if (daily()?.daySealed) {
       <section class="celebrate-banner celebrate-banner--sealed">
@@ -150,7 +152,7 @@
           <section class="panel-block">
             <div class="block-head">
               <h2 class="block-title">{{ 'home.commitToday' | translate }}</h2>
-              <a routerLink="/tasks" class="link-muted">{{ 'home.strategyCanvasLink' | translate }}</a>
+              <a routerLink="/tasks" class="task-deep-link app-link">{{ 'home.strategyCanvasLink' | translate }}</a>
             </div>
             <ul class="task-list compact">
               @for (task of unscheduled(); track task.id) {
@@ -169,7 +171,7 @@
           <section class="panel-block">
             <div class="block-head">
               <h2 class="block-title">{{ 'home.weeklyChallenges' | translate }}</h2>
-              <a routerLink="/tasks" class="link-muted">{{ 'home.openStrategyCanvas' | translate }}</a>
+              <a routerLink="/tasks" class="task-deep-link app-link">{{ 'home.openStrategyCanvas' | translate }}</a>
             </div>
             <ul class="task-list">
               @for (task of daily()?.weeklyChallenges ?? []; track task.id) {
@@ -268,9 +270,9 @@
     <footer class="dash-footer">
       <p class="foot-line">{{ 'home.footer' | translate }}</p>
       <div class="foot-links">
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Protocol</a>
+        <a href="#" class="task-deep-link app-link">Privacy</a>
+        <a href="#" class="task-deep-link app-link">Terms</a>
+        <a href="#" class="task-deep-link app-link">Protocol</a>
       </div>
     </footer>
   </div>

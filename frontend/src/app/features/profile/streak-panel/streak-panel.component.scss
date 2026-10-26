@@ -160,10 +160,10 @@
   .p-datepicker.streak-calendar,
   .p-datepicker {
     --p-datepicker-panel-background: var(--sp-inset);
-    --p-datepicker-panel-border-color: var(--sp-border);
+    --p-datepicker-panel-border-color: transparent;
     --p-datepicker-panel-color: var(--sp-text);
     --p-datepicker-header-background: var(--sp-inset);
-    --p-datepicker-header-border-color: var(--sp-border);
+    --p-datepicker-header-border-color: transparent;
     --p-datepicker-header-color: var(--sp-text);
     --p-datepicker-date-color: var(--sp-text);
     --p-datepicker-date-hover-background: rgba(196, 146, 26, 0.12);
@@ -187,7 +187,7 @@
     --p-primary-contrast-color: #ffffff;
 
     width: 100% !important;
-    border: 1px solid var(--sp-border) !important;
+    border: none !important;
     border-radius: 14px !important;
     background: var(--sp-inset) !important;
     color: var(--color-text, var(--color-text)) !important;

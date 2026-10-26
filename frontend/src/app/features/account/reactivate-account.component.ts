@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { AccountService } from '../../core/services/account.service';
 import { AuthService } from '../../core/services/auth.service';
+import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
 
 @Component({
   selector: 'app-reactivate-account',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, GlitchButtonComponent],
   template: `
     <section class="reactivate" aria-labelledby="reactivate-title">
       <p class="reactivate__eyebrow">Account status</p>
@@ -21,10 +22,12 @@ import { AuthService } from '../../core/services/auth.service';
         <p class="reactivate__error" role="alert">{{ error() }}</p>
       }
       <div class="reactivate__actions">
-        <button type="button" class="reactivate__primary" [disabled]="busy()" (click)="reactivate()">
-          Reactivate account
-        </button>
-        <button type="button" class="reactivate__secondary" [disabled]="busy()" (click)="logout()">
+        <app-glitch-button
+          label="Reactivate account"
+          [disabled]="busy()"
+          (pressed)="reactivate()"
+        />
+        <button type="button" class="ghost-btn" [disabled]="busy()" (click)="logout()">
           Log out
         </button>
       </div>
@@ -68,28 +71,14 @@ import { AuthService } from '../../core/services/auth.service';
       flex-direction: column;
       gap: 0.75rem;
       margin-top: 0.5rem;
+      align-items: stretch;
     }
-    .reactivate__primary,
-    .reactivate__secondary {
-      border-radius: 0.75rem;
-      padding: 0.85rem 1.25rem;
-      font-weight: 600;
-      cursor: pointer;
+    .reactivate__actions .ghost-btn {
+      width: 100%;
     }
-    .reactivate__primary {
-      border: none;
-      background: linear-gradient(135deg, #f5be42, #e0a82e);
-      color: #402d00;
-    }
-    .reactivate__secondary {
-      border: 1px solid rgba(211, 197, 175, 0.35);
-      background: transparent;
-      color: var(--color-on-surface-variant, #c9b896);
-    }
-    .reactivate__primary:disabled,
-    .reactivate__secondary:disabled {
-      opacity: 0.55;
-      cursor: wait;
+    .reactivate__actions ::ng-deep app-glitch-button,
+    .reactivate__actions ::ng-deep .glitch-btn {
+      width: 100%;
     }
   `,
 })

@@ -67,18 +67,16 @@
         </div>
 
         <div class="hero__cta-wrap">
-          <button
-            type="button"
-            class="hero__cta"
-            [class.hero__cta--ready]="selectedPendingCount() > 0"
-            (click)="onOpenCache()"
-            [disabled]="!canOpen()"
-          >
-            {{ primaryLabel() }}
+          <div class="hero__cta" [class.hero__cta--ready]="selectedPendingCount() > 0">
+            <app-glitch-button
+              [label]="primaryLabel()"
+              [disabled]="!canOpen()"
+              (pressed)="onOpenCache()"
+            />
             @if (selectedPendingCount() > 0) {
-              <span class="hero__cta-badge">{{ selectedPendingCount() }}</span>
+              <app-count-badge class="hero__cta-badge" [count]="selectedPendingCount()" />
             }
-          </button>
+          </div>
           <p class="hero__cta-hint">{{ ctaHint() }}</p>
         </div>
       </section>
@@ -125,7 +123,7 @@
             <div class="tier-card__overlay" [style.background]="tier.cardOverlay"></div>
 
             @if (pendingCountAt(i) > 0) {
-              <span class="tier-card__badge">{{ pendingCountAt(i) }}</span>
+              <app-count-badge class="tier-card__badge" [count]="pendingCountAt(i)" />
             }
 
             <div class="tier-card__icon-wrap">
@@ -176,7 +174,12 @@
       <footer class="footer">
         <p class="footer__version">{{ 'loot.version' | translate }}</p>
         <nav class="footer__links">
-          <a href="javascript:void(0)" *ngFor="let link of footerLinks">{{ link.labelKey | translate }}</a>
+          <a
+            href="javascript:void(0)"
+            class="app-link"
+            *ngFor="let link of footerLinks"
+            >{{ link.labelKey | translate }}</a
+          >
         </nav>
       </footer>
     </main>

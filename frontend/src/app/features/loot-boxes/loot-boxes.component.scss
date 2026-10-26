@@ -359,16 +359,16 @@ a {
   top: 160px;
   width: 64px;
   height: 64px;
+  padding: 0;
   border-radius: 9999px;
   border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--color-border-strong, rgba(20, 16, 12, 0.18)));
   background: var(--color-surface, #ffffff);
   box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.08));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   color: var(--color-text, #1a1816);
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease;
 
   &:hover:not(:disabled) {
     border-color: var(--gold);
@@ -382,22 +382,35 @@ a {
 }
 
 .hero__nav-icon {
+  display: block;
   font-size: 28px;
   line-height: 1;
+  width: 1em;
+  height: 1em;
+  text-align: center;
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
 .hero__nav--prev {
-  left: -80px;
+  left: -104px;
 }
 
 .hero__nav--next {
-  right: -80px;
+  right: -104px;
+}
+
+/* Material chevrons sit optically off-center in a circle — nudge them. */
+.hero__nav--prev .hero__nav-icon {
+  transform: translateX(-1px);
+}
+
+.hero__nav--next .hero__nav-icon {
+  transform: translateX(1px);
 }
 
 .hero__nav-tooltip {
   position: absolute;
-  top: calc(100% + 14px);
+  top: calc(100% + 18px);
   left: 50%;
   transform: translateX(-50%);
   padding: 4px 12px;
@@ -412,6 +425,15 @@ a {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease;
+}
+
+/* Keep labels clear of the hexagon frame */
+.hero__nav--prev .hero__nav-tooltip {
+  transform: translateX(calc(-50% - 8px));
+}
+
+.hero__nav--next .hero__nav-tooltip {
+  transform: translateX(calc(-50% + 8px));
 }
 
 .hero__nav:hover:not(:disabled) .hero__nav-tooltip {
@@ -483,40 +505,18 @@ a {
 
 .hero__cta {
   position: relative;
-  padding: 20px 48px;
-  border-radius: 12px;
-  background: var(--gold-bright);
-  filter: drop-shadow(0 0 15px rgba(210, 159, 34, 0.4));
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: #261900;
-
-  &--ready {
-    box-shadow: 0 0 0 2px rgba(245, 190, 66, 0.5);
-  }
-
-  &:hover:not(:disabled) {
-    filter: drop-shadow(0 0 20px rgba(210, 159, 34, 0.55));
-  }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Room for glitch offset shadow + badge */
+  padding-right: 6px;
 }
 
 .hero__cta-badge {
   position: absolute;
   top: -10px;
-  right: -10px;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
-  border-radius: 9999px;
-  background: #5d0018;
-  color: var(--gold-bright);
-  font-size: 12px;
-  line-height: 24px;
-  letter-spacing: 0;
-  font-weight: 700;
+  right: -4px;
+  z-index: 2;
 }
 
 .hero__cta-secondary {
@@ -782,18 +782,6 @@ a {
   top: 4px;
   right: 4px;
   z-index: 2;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
-  border-radius: 9999px;
-  background: #5d0018;
-  color: var(--gold-bright);
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 12px;
-  line-height: 24px;
-  letter-spacing: 0;
-  font-weight: 700;
-  text-align: center;
 }
 
 .tier-card__body {
@@ -934,17 +922,20 @@ a {
 
 .footer__links {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 32px;
 
   a {
     font-size: 16px;
     line-height: 24px;
-    color: var(--color-text);
-    text-decoration: underline;
-    text-underline-offset: 4px;
+    color: inherit;
+    text-decoration: none;
 
     &:hover {
-      color: var(--gold-bright);
+      color: var(--color-gold);
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
   }
 }

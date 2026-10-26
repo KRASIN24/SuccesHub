@@ -11,13 +11,23 @@ import { UserProfile } from '../../core/models/profile.model';
 import { WeeklyInsight } from '../../core/models/gamification.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
+import { GlitchCheckboxComponent } from '../../shared/components/glitch-checkbox/glitch-checkbox.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-goals',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent, ErrorStateComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LoadingSkeletonComponent,
+    ErrorStateComponent,
+    GlitchButtonComponent,
+    GlitchCheckboxComponent,
+    TranslatePipe,
+  ],
   templateUrl: './goals.component.html',
   styleUrl: './goals.component.scss',
 })

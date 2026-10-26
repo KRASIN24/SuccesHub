@@ -381,21 +381,7 @@
 
 .inventory__cta {
   margin-top: 4px;
-  padding: 9px 20px;
-  border-radius: 9999px;
-  border: 1px solid rgba(245, 190, 66, 0.25);
-  color: var(--gold-bright);
-  font-family: var(--font-display, 'Space Grotesk', sans-serif);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   text-decoration: none;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: rgba(245, 190, 66, 0.1);
-  }
 }
 
 .inventory__group {

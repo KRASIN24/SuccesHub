@@ -533,11 +533,14 @@
     font-size: 0.7rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
+    /* link-deep: inherit body tone, gold + underline on hover */
     color: var(--color-text-muted);
     text-decoration: none;
 
     &:hover {
       color: var(--color-gold);
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
   }
 }
@@ -634,14 +637,17 @@
 
 .celebrate-btn,
 .schedule-btn {
+  /* Prefer shared .gold-btn; keep class for any leftover markup. */
   border: none;
-  border-radius: 6px;
-  padding: 0.4rem 0.85rem;
-  background: var(--color-gold);
-  color: #000;
-  font-weight: 600;
+  border-radius: var(--radius-btn);
+  padding: 0.8rem 1.25rem;
+  background: linear-gradient(135deg, #f6cf63, #e0a030);
+  color: #1a1305;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
 }
 
 .weekly-badge {
@@ -657,6 +663,7 @@
 }
 
 .link-muted {
+  /* Prefer shared .app-link */
   font-size: 0.75rem;
   color: var(--color-text-muted);
   text-decoration: none;

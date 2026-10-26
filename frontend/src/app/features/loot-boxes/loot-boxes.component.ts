@@ -13,6 +13,8 @@ import {
 } from './animated-loot-chest/animated-loot-chest.component';
 import { RevealCardComponent } from './reveal-card/reveal-card.component';
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
+import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
+import { CountBadgeComponent } from '../../shared/components/count-badge/count-badge.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
 import { RewardLabelPipe } from '../../core/i18n/reward-label.pipe';
@@ -117,6 +119,8 @@ const TIER_I18N = [
     AnimatedLootChestComponent,
     RevealCardComponent,
     DevToolsChipComponent,
+    GlitchButtonComponent,
+    CountBadgeComponent,
     TranslatePipe,
     RewardLabelPipe,
   ],

@@ -25,9 +25,10 @@
     <section class="section">
       <div class="section-head">
         <h2 class="section-title">{{ 'goals.activeEncounters' | translate }}</h2>
+        <span class="section-rule" aria-hidden="true"></span>
         <span class="section-meta">{{ i18n.t('goals.entitiesDetected', { count: activeGoals().length }) }}</span>
         @if (!showAddForm()) {
-          <button type="button" class="summon-btn" (click)="openAddForm()">
+          <button type="button" class="summon-btn ghost-btn" (click)="openAddForm()">
             <span class="material-icons">add</span>
             {{ 'goals.summonBoss' | translate }}
           </button>
@@ -100,25 +101,30 @@
                 name="goalXpReward"
               />
             </label>
-            <label class="form-field checkbox-field">
-              <input type="checkbox" [(ngModel)]="newGoalFeatured" name="goalFeatured" />
-              <span class="field-label">{{ 'goals.featuredBoss' | translate }}</span>
-            </label>
+            <div class="form-field checkbox-field">
+              <app-glitch-checkbox
+                [label]="'goals.featuredBoss' | translate"
+                [checked]="newGoalFeatured"
+                (checkedChange)="newGoalFeatured = $event"
+              />
+            </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-secondary" (click)="cancelAddForm()" [disabled]="saving()">
+            <button type="button" class="ghost-btn" (click)="cancelAddForm()" [disabled]="saving()">
               {{ 'common.cancel' | translate }}
             </button>
-            <button type="submit" class="btn-primary" [disabled]="saving() || !newGoalName.trim()">
-              {{ saving() ? ('goals.summoning' | translate) : ('goals.summonBoss' | translate) }}
-            </button>
+            <app-glitch-button
+              type="submit"
+              [label]="saving() ? ('goals.summoning' | translate) : ('goals.summonBoss' | translate)"
+              [disabled]="saving() || !newGoalName.trim()"
+            />
           </div>
         </form>
       }
 
       <div class="boss-grid">
         @for (boss of activeGoals(); track boss.id) {
-          <article class="boss-card" [class.featured]="boss.featured">
+          <article class="boss-card surface-card" [class.featured]="boss.featured">
             <div class="boss-card-top">
               <div>
                 <p class="boss-tier">{{ boss.tier || 'Standard Beast' }}</p>
@@ -129,7 +135,9 @@
 
             <div class="boss-portrait">
               <div class="portrait-hex">
-                <span class="material-icons">{{ boss.icon || 'savings' }}</span>
+                <div class="portrait-hex__inner">
+                  <span class="material-icons">{{ boss.icon || 'savings' }}</span>
+                </div>
               </div>
             </div>
 
@@ -139,7 +147,7 @@
                 <span class="health-val">{{ i18n.t('goals.remaining', { pct: healthRemaining(boss) }) }}</span>
               </div>
               <div class="health-track">
-                <div class="health-fill" [style.width.%]="progress(boss)"></div>
+                <div class="health-fill" [style.width.%]="healthRemaining(boss)"></div>
               </div>
             </div>
 
@@ -153,7 +161,7 @@
             <span class="material-icons empty-icon">shield</span>
             <p class="empty-text">{{ 'goals.emptyBosses' | translate }}</p>
             @if (!showAddForm()) {
-              <button type="button" class="summon-btn summon-btn--large" (click)="openAddForm()">
+              <button type="button" class="summon-btn summon-btn--large ghost-btn" (click)="openAddForm()">
                 <span class="material-icons">add</span>
                 {{ 'goals.summonBoss' | translate }}
               </button>
@@ -164,13 +172,14 @@
     </section>
 
     <section class="section">
-      <div class="section-head line">
+      <div class="section-head">
         <h2 class="section-title">{{ 'goals.conqueredFoes' | translate }}</h2>
+        <span class="section-rule" aria-hidden="true"></span>
       </div>
 
       <div class="foes-grid">
         @for (foe of conqueredGoals(); track foe.id) {
-          <article class="foe-card">
+          <article class="foe-card surface-card">
             <div class="foe-avatar">
               <span class="material-icons">{{ foe.icon || 'emoji_events' }}</span>
             </div>
@@ -202,7 +211,7 @@
           </div>
         </div>
 
-        <div class="campaign-panel">
+        <div class="campaign-panel surface-card">
           <div
             class="campaign-ring"
             [style.background]="'conic-gradient(var(--color-gold) ' + summ.overallPercent + '%, var(--campaign-ring-rest) 0)'"
