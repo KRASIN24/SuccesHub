@@ -1,0 +1,262 @@
+<div class="vl-page">
+  <header class="vl-top">
+    <div class="vl-top__intro">
+      <p class="eyebrow">Temporary · W14</p>
+      <h1>Visual Lab</h1>
+      <p class="vl-top__lede">
+        Same-role styles side by side. Pick one winner per group, then we align the app in W15.
+        Provenance under each sample shows where it came from.
+      </p>
+    </div>
+    <div class="vl-top__actions">
+      <button type="button" class="ghost-btn" (click)="toggleTheme()">
+        {{ theme.isDark() ? 'Light' : 'Dark' }} preview
+      </button>
+      <button type="button" class="gold-btn" (click)="copyPicks()">Copy picks JSON</button>
+      <button type="button" class="ghost-btn" (click)="clearPicks()">Reset recommended</button>
+      <a routerLink="/dashboard" class="vl-back">← Dashboard</a>
+      @if (copyStatus()) {
+        <span class="vl-copy-status">{{ copyStatus() }}</span>
+      }
+    </div>
+  </header>
+
+  <div class="vl-layout">
+    <nav class="vl-nav" aria-label="Specimen groups">
+      @for (group of groups; track group.id) {
+        <button type="button" class="vl-nav__item" (click)="scrollTo(group.id)">
+          {{ group.title }}
+          @if (picks.picks()[group.id]; as pickId) {
+            <span class="vl-nav__pick">{{ pickId }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <main class="vl-main">
+      @for (group of groups; track group.id) {
+        <section class="vl-group" [id]="'vl-group-' + group.id">
+          <header class="vl-group__head">
+            <h2>{{ group.title }}</h2>
+            <p>{{ group.description }}</p>
+          </header>
+
+          <div class="vl-gallery">
+            @for (specimen of group.specimens; track specimen.id) {
+              <article
+                class="vl-card"
+                [class.vl-card--selected]="isSelected(group.id, specimen.id)"
+              >
+                <div class="vl-card__sample vl-scope">
+                  @switch (specimen.id) {
+                    @case ('primary-glitch') {
+                      <app-glitch-button label="Primary action" />
+                    }
+                    @case ('danger-glitch') {
+                      <app-glitch-button label="Delete" variant="danger" />
+                    }
+                    @case ('form-checkbox-glitch') {
+                      <app-glitch-checkbox
+                        label="Glitch checkbox"
+                        [checked]="glitchCheck()"
+                        (checkedChange)="glitchCheck.set($event)"
+                      />
+                    }
+                    @case ('form-checkbox-native') {
+                      <label class="vl-native-check">
+                        <input type="checkbox" checked />
+                        Native checkbox
+                      </label>
+                    }
+                    @case ('brand-navbar') {
+                      <span class="vl-brand-navbar">SUCCESSHUB</span>
+                    }
+                    @case ('brand-register') {
+                      <div class="vl-brand-register">
+                        <p class="vl-brand-register__eyebrow">Elite Access</p>
+                        <p class="vl-brand-register__strong">SuccessHub</p>
+                        <p class="vl-brand-register__light">Elite Access</p>
+                      </div>
+                    }
+                    @case ('brand-login-portal') {
+                      <div class="vl-brand-login-portal">
+                        <span class="vl-brand-login-portal__eye">Access the</span>
+                        <span class="vl-brand-login-portal__title">Sovereign Portal</span>
+                      </div>
+                    }
+                    @case ('form-settings') {
+                      <input class="vl-form-settings" type="text" placeholder="Display name" />
+                    }
+                    @case ('form-goals') {
+                      <input class="vl-form-goals" type="text" placeholder="Boss name" />
+                    }
+                    @case ('form-tasks') {
+                      <input class="vl-form-tasks" type="text" placeholder="New quest" />
+                    }
+                    @case ('form-kc-input') {
+                      <input class="vl-form-kc" type="text" placeholder="Username" />
+                    }
+                    @case ('surface-card') {
+                      <div class="surface-card vl-surface-pad">
+                        <strong>Surface card</strong>
+                        <p>Shared utility from global.css</p>
+                      </div>
+                    }
+                    @case ('surface-tasks-column') {
+                      <div class="vl-surface-column">
+                        <strong>Tasks column</strong>
+                        <p>Local .column recipe</p>
+                      </div>
+                    }
+                    @case ('surface-merit') {
+                      <div class="vl-surface-merit">
+                        <span class="material-icons">emoji_events</span>
+                        <strong>Merit card</strong>
+                        <p>Achievement tile</p>
+                      </div>
+                    }
+                    @case ('surface-side') {
+                      <div class="vl-surface-side">
+                        <strong>Side card</strong>
+                        <p>Settings preference panel</p>
+                      </div>
+                    }
+                    @case ('surface-kc-card') {
+                      <div class="vl-surface-kc-card">
+                        <strong>Keycloak card</strong>
+                        <p>.card-pf clone</p>
+                      </div>
+                    }
+                    @case ('link-nav') {
+                      <a href="#" class="vl-link-nav" (click)="$event.preventDefault()">Quest Log</a>
+                    }
+                    @case ('link-muted') {
+                      <a href="#" class="vl-link-muted" (click)="$event.preventDefault()">Privacy</a>
+                    }
+                    @case ('link-deep') {
+                      <a href="#" class="vl-link-deep" (click)="$event.preventDefault()">Deep task link</a>
+                    }
+                    @case ('link-inventory') {
+                      <a href="#" class="vl-link-inventory" (click)="$event.preventDefault()">Go to Cache</a>
+                    }
+                    @case ('link-kc') {
+                      <a href="#" class="vl-link-kc" (click)="$event.preventDefault()">Forgot password?</a>
+                    }
+                    @case ('pair-current') {
+                      <div class="vl-pair">
+                        <button type="button" class="ghost-btn">Cancel</button>
+                        <app-glitch-button label="Save" />
+                      </div>
+                    }
+                    @case ('pair-notch-outline') {
+                      <div class="vl-pair">
+                        <button type="button" class="vl-ghost-notch vl-ghost-notch--outline">
+                          <span class="vl-ghost-notch__face">Cancel</span>
+                        </button>
+                        <app-glitch-button label="Save" />
+                      </div>
+                    }
+                    @case ('pair-notch-stripe') {
+                      <div class="vl-pair">
+                        <button type="button" class="vl-ghost-notch vl-ghost-notch--stripe">
+                          <span class="vl-ghost-notch__face">Cancel</span>
+                        </button>
+                        <app-glitch-button label="Save" />
+                      </div>
+                    }
+                    @case ('pair-notch-fill') {
+                      <div class="vl-pair">
+                        <button type="button" class="vl-ghost-notch vl-ghost-notch--fill">
+                          <span class="vl-ghost-notch__face">Cancel</span>
+                        </button>
+                        <app-glitch-button label="Save" />
+                      </div>
+                    }
+                    @case ('pair-rounded') {
+                      <div class="vl-pair">
+                        <button type="button" class="ghost-btn">Cancel</button>
+                        <button type="button" class="gold-btn">Save</button>
+                      </div>
+                    }
+                    @case ('icon-current') {
+                      <div class="vl-icon-row">
+                        <button type="button" class="vl-icon-current-edit" aria-label="Edit">
+                          <span class="material-icons">edit</span>
+                        </button>
+                        <button type="button" class="vl-icon-current-add" aria-label="Add">
+                          <span class="material-icons">add</span>
+                        </button>
+                      </div>
+                    }
+                    @case ('icon-chamfer') {
+                      <div class="vl-icon-row">
+                        <button type="button" class="vl-icon-chamfer vl-icon-chamfer--outline" aria-label="Edit">
+                          <span class="vl-icon-chamfer__face">
+                            <span class="material-icons">edit</span>
+                          </span>
+                        </button>
+                        <button type="button" class="vl-icon-chamfer vl-icon-chamfer--fill" aria-label="Add">
+                          <span class="vl-icon-chamfer__face">
+                            <span class="material-icons">add</span>
+                          </span>
+                        </button>
+                      </div>
+                    }
+                    @case ('icon-hex') {
+                      <div class="vl-icon-row">
+                        <button type="button" class="vl-icon-hex vl-icon-hex--outline" aria-label="Edit">
+                          <span class="material-icons">edit</span>
+                        </button>
+                        <button type="button" class="vl-icon-hex vl-icon-hex--fill" aria-label="Add">
+                          <span class="material-icons">add</span>
+                        </button>
+                      </div>
+                    }
+                    @case ('icon-round') {
+                      <div class="vl-icon-row">
+                        <button type="button" class="vl-icon-round vl-icon-round--outline" aria-label="Edit">
+                          <span class="material-icons">edit</span>
+                        </button>
+                        <button type="button" class="vl-icon-round vl-icon-round--fill" aria-label="Add">
+                          <span class="material-icons">add</span>
+                        </button>
+                      </div>
+                    }
+                    @default {
+                      <button type="button" [class]="specimen.sampleClass">
+                        {{ specimen.label }}
+                      </button>
+                    }
+                  }
+                </div>
+
+                <label class="vl-card__pick">
+                  <input
+                    type="radio"
+                    [name]="'pick-' + group.id"
+                    [checked]="isSelected(group.id, specimen.id)"
+                    (change)="select(group.id, specimen.id)"
+                  />
+                  Use this
+                </label>
+
+                <h3 class="vl-card__title">{{ specimen.label }}</h3>
+                <p class="vl-card__prov">
+                  <span class="vl-card__surface">{{ specimen.provenance.surface }}</span>
+                  · <code>{{ specimen.provenance.selector }}</code>
+                </p>
+                <p class="vl-card__file">{{ specimen.provenance.file }}</p>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="vl-export surface-card">
+        <h2>Export</h2>
+        <p>Paste this into the W15 handoff (or keep Copy picks JSON above).</p>
+        <pre class="vl-export__json">{{ picks.exportJson() }}</pre>
+      </section>
+    </main>
+  </div>
+</div>
