@@ -13,6 +13,9 @@ public class TaskMapper {
                 t.getCategory() != null ? t.getCategory().getId() : null,
                 t.getCategory() != null ? t.getCategory().getName() : null,
                 t.getGoal() != null ? t.getGoal().getId() : null,
+                t.getParentTask() != null ? t.getParentTask().getId() : null,
+                t.isStarred(),
+                t.getSortOrder(),
                 t.getTitle(),
                 t.getDescription(),
                 t.getXpReward(),
@@ -25,6 +28,7 @@ public class TaskMapper {
                 t.getMetaLabel(),
                 t.getMetaType(),
                 t.getDueDate(),
+                t.getReminderAt(),
                 t.getCompletedAt(),
                 t.getCreatedAt()
         );

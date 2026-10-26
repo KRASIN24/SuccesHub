@@ -44,4 +44,12 @@ public interface TaskCategoryService {
      * @param id     primary key of the category to delete
      */
     void delete(String userId, UUID id);
+
+    /**
+     * Rewrites {@code sortOrder} 0..n for the user's categories in the given order.
+     *
+     * @param userId Keycloak subject ID of the category owner
+     * @param req    reorder payload listing every category ID exactly once
+     */
+    void reorder(String userId, TaskCategoryDto.ReorderRequest req);
 }

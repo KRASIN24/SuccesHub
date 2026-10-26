@@ -7,5 +7,6 @@ public enum NotificationType {
     LOOT_EARNED,
     ACHIEVEMENT_UNLOCKED,
     STREAK_MILESTONE,
-    BOSS_DEFEATED
+    BOSS_DEFEATED,
+    TASK_REMINDER
 }

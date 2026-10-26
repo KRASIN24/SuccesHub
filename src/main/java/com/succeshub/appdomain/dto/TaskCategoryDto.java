@@ -1,8 +1,10 @@
 package com.succeshub.appdomain.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TaskCategoryDto {
@@ -28,4 +30,6 @@ public class TaskCategoryDto {
             boolean grantXp,
             int sortOrder
     ) {}
+
+    public record ReorderRequest(@NotEmpty List<UUID> orderedIds) {}
 }
