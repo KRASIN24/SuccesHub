@@ -26,5 +26,7 @@ xsi:schemaLocation="
     <include file="db/changelog/2026-09-26-01-create-notification.xml"/>
     <include file="db/changelog/2026-09-26-02-user-profile-deactivated-at.xml"/>
     <include file="db/changelog/2026-09-27-01-user-profile-theme-locale.xml"/>
+    <include file="db/changelog/2026-10-04-01-task-google-ux-columns.xml"/>
+    <include file="db/changelog/2026-10-04-02-task-reminder.xml"/>
 </databaseChangeLog>
 
