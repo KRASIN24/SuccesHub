@@ -1,8 +1,10 @@
 import { Component, input, model, output } from '@angular/core';
 
 /**
- * Reusable glitch-styled checkbox for future UI (Settings prefs, toggles, etc.).
- * Uses SuccessHub gold accents instead of the cyan/magenta sample palette.
+ * Reusable glitch-styled checkbox.
+ * Hover glitch overlay always uses the same string as the visible label
+ * so the animation width cannot drift short of the text.
+ * Pass an empty label + ariaLabel for box-only use (e.g. task rows).
  */
 @Component({
   selector: 'app-glitch-checkbox',
@@ -11,10 +13,10 @@ import { Component, input, model, output } from '@angular/core';
   styleUrl: './glitch-checkbox.component.scss',
 })
 export class GlitchCheckboxComponent {
-  /** Visible label text (uppercase recommended). */
-  readonly label = input.required<string>();
-  /** Optional override for glitch hover text; defaults to label. */
-  readonly glitchText = input<string | null>(null);
+  /** Visible label text (also drives the hover glitch overlay). Empty = box only. */
+  readonly label = input('');
+  /** Accessible name when label is empty. */
+  readonly ariaLabel = input('');
   readonly disabled = input(false);
   readonly checked = model(false);
   readonly checkedChange = output<boolean>();
@@ -24,9 +26,5 @@ export class GlitchCheckboxComponent {
     const next = (event.target as HTMLInputElement).checked;
     this.checked.set(next);
     this.checkedChange.emit(next);
-  }
-
-  displayGlitchText(): string {
-    return this.glitchText() ?? this.label();
   }
 }

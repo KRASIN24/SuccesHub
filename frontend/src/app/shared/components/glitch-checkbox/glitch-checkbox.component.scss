@@ -1,22 +1,25 @@
 :host {
   display: block;
+  max-width: 100%;
 }
 
 .glitch-checkbox {
   --glitch-primary: var(--color-primary, #f5be42);
   --glitch-secondary: #ff8a3d;
-  /* Unchecked label must follow theme — hardcoded cream is invisible on light. */
   --glitch-text: var(--color-text-muted, #5c574f);
   --glitch-disabled: var(--color-text-faint, #8a847a);
   --glitch-bg: var(--color-surface-container-lowest, #ffffff);
-  --glitch-duration: 0.3s;
+  --glitch-duration: 0.4s;
 
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   cursor: pointer;
   user-select: none;
   position: relative;
+  max-width: 100%;
+  font-size: 0.875rem;
+  line-height: 1.25;
 }
 
 .glitch-checkbox input[type='checkbox'] {
@@ -27,9 +30,12 @@
 }
 
 .glitch-checkbox__box {
-  width: 1.55em;
-  height: 1.55em;
+  width: 1.25em;
+  height: 1.25em;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
   flex-shrink: 0;
+  align-self: center;
   border: 2px solid var(--glitch-primary);
   position: relative;
   background: color-mix(in srgb, var(--glitch-primary) 10%, var(--glitch-bg));
@@ -60,15 +66,26 @@
   box-shadow: 0 0 10px rgba(245, 190, 66, 0.55);
 }
 
+/*
+ * Label box = exact text bounds. ::before/::after MUST use the same string
+ * as the visible label (data-text = label()) — a shorter overlay string is what
+ * made Settings animations look cut off.
+ */
 .glitch-checkbox__label {
+  position: relative;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
   color: var(--glitch-text);
   font-family: var(--font-label, Inter, system-ui, sans-serif);
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1em;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  position: relative;
-  white-space: nowrap;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   transition: color 0.25s ease, text-shadow 0.25s ease;
   z-index: 1;
 }
@@ -77,12 +94,34 @@
 .glitch-checkbox__label::after {
   content: attr(data-text);
   position: absolute;
-  top: 0;
   left: 0;
-  white-space: nowrap;
-  pointer-events: none;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  overflow: hidden;
   opacity: 0;
+  pointer-events: none;
+  white-space: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+
+.glitch-checkbox__label::before {
+  color: var(--glitch-secondary);
+  text-shadow: 2px 0 var(--glitch-primary);
   z-index: 2;
+}
+
+.glitch-checkbox__label::after {
+  color: var(--glitch-primary);
+  text-shadow: -2px 0 var(--glitch-secondary);
+  z-index: 3;
 }
 
 .glitch-checkbox input:checked + .glitch-checkbox__box {
@@ -105,15 +144,26 @@
   box-shadow: 0 0 14px rgba(245, 190, 66, 0.55);
 }
 
-/* One-shot glitch layers — fade out so the real label stays readable while hovered. */
 .glitch-checkbox:hover:not(.glitch-checkbox--disabled) .glitch-checkbox__label::before {
-  color: var(--glitch-secondary);
-  animation: glitch-anim-text var(--glitch-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: glitch-anim-text var(--glitch-duration) steps(2, end) forwards;
 }
 
 .glitch-checkbox:hover:not(.glitch-checkbox--disabled) .glitch-checkbox__label::after {
-  color: var(--glitch-primary);
-  animation: glitch-anim-text-alt var(--glitch-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: glitch-anim-text-alt var(--glitch-duration) steps(2, end) forwards;
+}
+
+.glitch-checkbox--box-only {
+  gap: 0;
+  /* Larger click target around the box */
+  padding: 0.35rem;
+  margin: -0.35rem;
+}
+
+.glitch-checkbox--box-only .glitch-checkbox__box {
+  width: 1.35rem;
+  height: 1.35rem;
+  min-width: 1.35rem;
+  min-height: 1.35rem;
 }
 
 .glitch-checkbox--disabled {
@@ -135,6 +185,7 @@
 .glitch-checkbox--disabled .glitch-checkbox__label::before,
 .glitch-checkbox--disabled .glitch-checkbox__label::after {
   content: none;
+  animation: none;
 }
 
 @keyframes glitch-anim-checkbox {
@@ -164,6 +215,7 @@
   }
 }
 
+/* Horizontal bands use % of the label box — always full text width. */
 @keyframes glitch-anim-text {
   0% {
     opacity: 1;
@@ -186,7 +238,7 @@
     clip-path: inset(80% 0 5% 0);
   }
   80% {
-    opacity: 0.85;
+    opacity: 0.9;
     transform: translate(2px, -2px);
     clip-path: inset(30% 0 45% 0);
   }
@@ -219,7 +271,7 @@
     clip-path: inset(20% 0 60% 0);
   }
   80% {
-    opacity: 0.85;
+    opacity: 0.9;
     transform: translate(-2px, 2px);
     clip-path: inset(50% 0 20% 0);
   }
