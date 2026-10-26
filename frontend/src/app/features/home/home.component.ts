@@ -21,6 +21,7 @@ import { LoadingSkeletonComponent } from '../../shared/components/loading-skelet
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';
 import { DevToolsChipComponent } from '../../shared/components/dev-tools/dev-tools-chip.component';
+import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
 import { RewardLabelPipe } from '../../core/i18n/reward-label.pipe';
@@ -39,6 +40,7 @@ import {
     ErrorStateComponent,
     FrameOrnamentsComponent,
     DevToolsChipComponent,
+    GlitchButtonComponent,
     TranslatePipe,
     RewardLabelPipe,
     AchievementLabelPipe,

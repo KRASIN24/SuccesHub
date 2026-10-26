@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
+import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
 
 @Component({
   selector: 'app-placeholder',
   standalone: true,
-  imports: [],
+  imports: [GlitchButtonComponent],
   template: `
     <div class="placeholder-page">
       <div class="placeholder-content">
@@ -17,7 +18,7 @@ import { map } from 'rxjs';
         <p class="placeholder-desc">
           This protocol is under construction. The Sovereign Interface will unlock it soon.
         </p>
-        <button type="button" class="gold-btn">Notify Me When Ready</button>
+        <app-glitch-button label="Notify Me When Ready" />
       </div>
     </div>
   `,

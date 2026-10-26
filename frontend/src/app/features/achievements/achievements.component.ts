@@ -32,7 +32,7 @@ import {
         <h1>{{ 'achievementsPage.title' | translate }}</h1>
         <div class="merits-grid">
           @for (a of achievements(); track a.id) {
-            <article class="merit-card" [class.locked]="a.locked">
+            <article class="merit-card surface-card" [class.locked]="a.locked">
               <span class="material-icons" aria-hidden="true">{{ a.icon }}</span>
               <h3>{{ a | achievementLabel }}</h3>
               <p>{{ a | achievementDesc }}</p>
@@ -59,11 +59,9 @@ import {
     .merit-card {
       min-width: 0;
       padding: 20px;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
+      /* W15: surface-card tokens; keep unlocked gold plate below */
+      border-radius: var(--radius-card, 14px);
       text-align: center;
-      box-shadow: none;
       color: var(--color-text-muted);
       overflow: hidden;
     }

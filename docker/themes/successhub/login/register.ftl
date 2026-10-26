@@ -8,7 +8,7 @@
       <aside class="sh-enroll__brand" aria-label="SuccessHub">
         <p class="sh-enroll__eyebrow">Initiate Protocol</p>
         <h1 class="sh-enroll__title">
-          <span class="sh-enroll__title-strong">SuccessHub</span>
+          <span class="sh-enroll__title-strong">SUCCESSHUB</span>
           <span class="sh-enroll__title-light">Elite Access</span>
         </h1>
         <p class="sh-enroll__lede">
@@ -112,7 +112,7 @@
 
             <div class="sh-field<#if messagesPerField.existsError('password-confirm')> sh-field--invalid</#if>" data-field="password-confirm">
               <label class="sh-field__label" for="password-confirm">Confirm Access</label>
-              <div class="sh-field__control">
+              <div class="sh-field__control sh-field__control--icon">
                 <input class="sh-field__input"
                        type="password"
                        id="password-confirm"
@@ -123,6 +123,12 @@
                        required
                        minlength="8"
                        maxlength="128" />
+                <button type="button" class="sh-field__eye" id="toggle-password-confirm" aria-label="Show password" tabindex="-1">
+                  <svg viewBox="0 0 24 24" width="18" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                    <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
+                    <circle cx="12" cy="12" r="2.5"/>
+                  </svg>
+                </button>
               </div>
               <p class="sh-field__error" id="error-password-confirm" role="alert" aria-live="polite"
                  <#if !messagesPerField.existsError('password-confirm')>hidden</#if>>
@@ -134,16 +140,18 @@
           </div>
 
           <div class="sh-field sh-field--terms" data-field="terms">
-            <label class="sh-terms">
+            <label class="sh-terms glitch-check">
               <input type="checkbox" id="terms" name="terms" value="true" required />
-              <span class="sh-terms__box" aria-hidden="true"></span>
-              <span class="sh-terms__text">I accept the Celestial Protocol</span>
+              <span class="glitch-check__box" aria-hidden="true">
+                <span class="glitch-check__mark"></span>
+              </span>
+              <span class="glitch-check__label" data-text="I accept the Celestial Protocol">I accept the Celestial Protocol</span>
             </label>
             <p class="sh-field__error" id="error-terms" role="alert" aria-live="polite" hidden></p>
           </div>
 
           <div class="sh-enroll__actions">
-            <button type="submit" class="sh-enroll__submit" id="kc-register" name="register">
+            <button type="submit" class="sh-enroll__submit" id="kc-register" name="register" data-text="Initialize Access">
               <span>Initialize Access</span>
               <svg class="sh-enroll__submit-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>

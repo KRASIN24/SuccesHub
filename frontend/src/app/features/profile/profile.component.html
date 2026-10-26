@@ -95,7 +95,7 @@
           <div class="inventory__empty">
             <span class="material-symbols-outlined">inventory_2</span>
             <p>{{ 'profile.emptyInventory' | translate }}</p>
-            <a routerLink="/loot-boxes" class="inventory__cta">{{ 'profile.goToCache' | translate }}</a>
+            <a routerLink="/loot-boxes" class="inventory__cta ghost-btn">{{ 'profile.goToCache' | translate }}</a>
           </div>
         } @else {
           @if (titleStacks().length > 0) {

@@ -12,7 +12,7 @@
 
         <div class="sh-info__actions">
             <#-- Hard-coded SPA escape hatch — do not depend on client.baseUrl or optional url.* helpers. -->
-            <a class="sh-info__primary" id="sh-continue-app" href="http://localhost:4200/oauth2/authorization/keycloak">Continue to SuccessHub</a>
+            <a class="sh-info__primary" id="sh-continue-app" href="http://localhost:4200/oauth2/authorization/keycloak" data-text="Continue to SuccessHub">Continue to SuccessHub</a>
             <a class="sh-info__secondary" id="sh-signout-kc"
                href="http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout?post_logout_redirect_uri=http%3A%2F%2Flocalhost%3A4200%2F&client_id=succeshub-backend">
                 Sign out of Keycloak
