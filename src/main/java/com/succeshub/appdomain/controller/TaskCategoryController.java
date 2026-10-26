@@ -92,4 +92,22 @@ public class TaskCategoryController {
         service.delete(principal.getSubject(), id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Rewrites sort_order for all of the user's category columns.
+     */
+    @Operation(summary = "Reorder task categories", description = "Sets sort_order 0..n for orderedIds (must list every category).")
+    @ApiResponse(responseCode = "204", description = "Order updated")
+    @ApiResponse(responseCode = "400", description = "Invalid orderedIds")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorderCategories(
+            @AuthenticationPrincipal OidcUser principal,
+            @Valid @RequestBody TaskCategoryDto.ReorderRequest req) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        service.reorder(principal.getSubject(), req);
+        return ResponseEntity.noContent().build();
+    }
 }

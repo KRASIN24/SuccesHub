@@ -66,8 +66,8 @@ class TaskServiceImplCompleteTest {
         profile = new UserProfile();
         profileDto = new ProfileDto("user-1", "Test", 1, 100, 200, 0, 0, true, "en-US");
         taskDto = new TaskDto.Response(
-                taskId, null, null, null, "Title", "Desc", 0, 3, 30, 2,
-                false, null, "TODO", null, null, null, null, null);
+                taskId, null, null, null, null, false, 0, "Title", "Desc", 0, 3, 30, 2,
+                false, null, "TODO", null, null, null, null, null, null);
 
         when(taskRepository.findByIdAndUserId(taskId, "user-1")).thenReturn(Optional.of(task));
         when(taskMapper.toDto(any(Task.class))).thenReturn(taskDto);

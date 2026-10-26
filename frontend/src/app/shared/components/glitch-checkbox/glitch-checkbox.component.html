@@ -1,17 +1,22 @@
 <label
   class="glitch-checkbox"
   [class.glitch-checkbox--disabled]="disabled()"
+  [class.glitch-checkbox--box-only]="!label()"
 >
   <input
     type="checkbox"
     [checked]="checked()"
     [disabled]="disabled()"
+    [attr.aria-label]="ariaLabel() || label() || null"
     (change)="onChange($event)"
   />
   <span class="glitch-checkbox__box" aria-hidden="true">
     <span class="glitch-checkbox__mark"></span>
   </span>
-  <span class="glitch-checkbox__label" [attr.data-text]="displayGlitchText()">
-    {{ label() }}
-  </span>
+  @if (label()) {
+    <span
+      class="glitch-checkbox__label"
+      [attr.data-text]="label()"
+    >{{ label() }}</span>
+  }
 </label>

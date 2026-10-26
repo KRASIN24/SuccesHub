@@ -15,207 +15,284 @@
 } @else {
   <div class="quest-log">
     <header class="page-head">
-      <h1 class="page-title">{{ 'tasks.title' | translate }}</h1>
-      <p class="page-subtitle">{{ 'tasks.subtitle' | translate }}</p>
+      <div class="page-head__text">
+        <h1 class="page-title">{{ 'tasks.title' | translate }}</h1>
+        <p class="page-subtitle">{{ 'tasks.subtitle' | translate }}</p>
+      </div>
     </header>
 
     <div class="board">
-      @for (column of columns(); track column.id) {
-        <section class="column">
-          @if (editingCategoryId() === column.id) {
-            <form class="category-edit-form" (ngSubmit)="saveCategoryEdit(column.id)">
+      <div
+        class="board-columns"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        [cdkDropListData]="columns()"
+        (cdkDropListDropped)="onCategoryDrop($event)"
+      >
+        @for (column of columns(); track column.id) {
+          <section class="column" cdkDrag>
+            @if (editingCategoryId() === column.id) {
+              <form class="category-edit-form" (ngSubmit)="saveCategoryEdit(column.id)">
+                <div class="column-head">
+                  <h2 class="column-title">{{ 'tasks.editCategory' | translate }}</h2>
+                </div>
+                <label class="field">
+                  <span class="field-label">{{ 'tasks.name' | translate }}</span>
+                  <input type="text" [(ngModel)]="editCategoryName" name="editCategoryName" required />
+                </label>
+                <div class="field field--check">
+                  <app-glitch-checkbox
+                    [label]="'tasks.grantXpOnComplete' | translate"
+                    [checked]="editCategoryGrantXp"
+                    (checkedChange)="editCategoryGrantXp = $event"
+                  />
+                </div>
+                @if (categorySaveError()) {
+                  <p class="form-error">{{ categorySaveError() }}</p>
+                }
+                <div class="form-actions form-actions--edit-category">
+                  <button type="button" class="ghost-btn ghost-btn--danger" (click)="deleteCategory(column.id)">
+                    {{ 'tasks.delete' | translate }}
+                  </button>
+                  <div class="form-actions__end">
+                    <button type="button" class="ghost-btn" (click)="cancelEditCategory()">{{ 'tasks.cancel' | translate }}</button>
+                    <app-glitch-button
+                      type="submit"
+                      [label]="'tasks.save' | translate"
+                      [disabled]="!editCategoryName.trim()"
+                    />
+                  </div>
+                </div>
+              </form>
+            } @else {
               <div class="column-head">
-                <h2 class="column-title">{{ 'tasks.editCategory' | translate }}</h2>
-              </div>
-              <label class="field">
-                <span class="field-label">{{ 'tasks.name' | translate }}</span>
-                <input type="text" [(ngModel)]="editCategoryName" name="editCategoryName" required />
-              </label>
-              <label class="field">
-                <span class="field-label">{{ 'tasks.tag' | translate }}</span>
-                <input type="text" [(ngModel)]="editCategoryTag" name="editCategoryTag" />
-              </label>
-              <label class="field field--check">
-                <input type="checkbox" [(ngModel)]="editCategoryGrantXp" name="editCategoryGrantXp" />
-                <span>{{ 'tasks.grantXpOnComplete' | translate }}</span>
-              </label>
-              @if (categorySaveError()) {
-                <p class="form-error">{{ categorySaveError() }}</p>
-              }
-              <div class="form-actions">
-                <button type="button" class="btn-secondary" (click)="cancelEditCategory()">{{ 'tasks.cancel' | translate }}</button>
-                <button type="submit" class="btn-primary" [disabled]="!editCategoryName.trim()">{{ 'tasks.save' | translate }}</button>
-              </div>
-            </form>
-          } @else {
-            <div class="column-head">
-              <h2 class="column-title">{{ column.name }}</h2>
-              <div class="column-actions">
                 <button
                   type="button"
-                  class="icon-btn"
-                  (click)="openEditCategoryForm(column)"
-                  [attr.aria-label]="'Edit ' + column.name"
+                  class="drag-handle column-drag"
+                  cdkDragHandle
+                  [attr.aria-label]="'tasks.dragCategory' | translate"
                 >
-                  <span class="material-icons">edit</span>
+                  <span class="material-icons">drag_indicator</span>
                 </button>
-                <button
-                  type="button"
-                  class="hex-add"
-                  [attr.aria-label]="'Add task to ' + column.name"
-                  (click)="openAddTaskForm(column.id)"
-                >
-                  <span class="material-icons">add</span>
-                </button>
+                <h2 class="column-title">{{ column.name }}</h2>
+                <div class="column-actions">
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    (click)="openSortSheet(column.id)"
+                    [attr.aria-label]="'tasks.sort' | translate"
+                  >
+                    <span class="material-icons">sort</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    (click)="openEditCategoryForm(column)"
+                    [attr.aria-label]="'Edit ' + column.name"
+                  >
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn icon-btn--fill"
+                    [attr.aria-label]="'Add task to ' + column.name"
+                    (click)="openCreateSheet(column.id)"
+                  >
+                    <span class="material-icons">add</span>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div class="column-controls">
-              <button
-                type="button"
-                class="toggle"
-                [class.on]="column.grantXp"
-                (click)="toggleGrantXp(column)"
-                [attr.aria-pressed]="column.grantXp"
-              >
-                <span class="knob"></span>
-              </button>
-              <span class="toggle-label">{{ 'tasks.grantXp' | translate }}</span>
-              <span class="column-tag">{{ column.tag }}</span>
-            </div>
-          }
-
-          <div class="tasks">
-            @if (activeAddTaskId() === column.id) {
-              <div class="quest-card add-form">
-                <input
-                  type="text"
-                  [placeholder]="'tasks.taskTitle' | translate"
-                  [(ngModel)]="newTaskTitle"
-                  class="add-form__input"
-                  required
+              <div class="column-controls">
+                <app-glitch-checkbox
+                  [label]="'tasks.grantXp' | translate"
+                  [checked]="column.grantXp"
+                  (checkedChange)="setGrantXp(column, $event)"
                 />
-                <input
-                  type="text"
-                  [placeholder]="'tasks.description' | translate"
-                  [(ngModel)]="newTaskDesc"
-                  class="add-form__input"
-                />
-                <div class="add-form__grid">
-                  <label class="add-form__label">
-                    {{ 'tasks.difficulty' | translate }}
-                    <input type="number" min="1" max="5" [(ngModel)]="newTaskDifficulty" (ngModelChange)="refreshXpPreview()" class="add-form__input" />
-                  </label>
-                  <label class="add-form__label">
-                    {{ 'tasks.minutes' | translate }}
-                    <input type="number" min="15" step="15" [(ngModel)]="newTaskDuration" (ngModelChange)="refreshXpPreview()" class="add-form__input" />
-                  </label>
-                  <label class="add-form__label">
-                    {{ 'tasks.priority' | translate }}
-                    <input type="number" min="1" max="3" [(ngModel)]="newTaskPriority" (ngModelChange)="refreshXpPreview()" class="add-form__input" />
-                  </label>
-                </div>
-                <select [(ngModel)]="newTaskGoalId" class="add-form__select">
-                  <option [ngValue]="null">{{ 'tasks.noBossLink' | translate }}</option>
-                  @for (goal of goals(); track goal.id) {
-                    <option [ngValue]="goal.id">{{ goal.name }}</option>
-                  }
-                </select>
-                @if (xpPreview(); as preview) {
-                  <p class="add-form__hint">{{ i18n.t('tasks.estXp', { xp: preview.estimatedTotalXp, remaining: preview.dailyXpRemaining }) }}</p>
-                }
-                @if (saveError()) {
-                  <p style="margin: 0; font-size: 12px; color: #ff6b6b;">{{ saveError() }}</p>
-                }
-                <div class="add-form__actions">
-                  <button type="button" (click)="cancelAddTask()" class="add-form__cancel">{{ 'tasks.cancel' | translate }}</button>
-                  <button type="button" (click)="saveTask(column.id)" class="add-form__save">{{ 'tasks.save' | translate }}</button>
-                </div>
+                <span class="column-count" [attr.aria-label]="column.taskCount + ' tasks'">{{ column.taskCount }}</span>
               </div>
             }
 
-            @for (task of column.tasks; track task.id) {
-              <article
-                class="quest-card"
-                [class.is-done]="task.status === 'DONE'"
-                [class.is-focused]="focusTaskId() === task.id"
-                [attr.id]="'task-' + task.id"
-              >
-                <button
-                  type="button"
-                  class="checkbox"
-                  [class.checked]="task.status === 'DONE'"
-                  (click)="toggleTask(task, column)"
-                  [attr.aria-pressed]="task.status === 'DONE'"
-                  [attr.aria-label]="task.title"
-                >
-                  @if (task.status === 'DONE') {
-                    <span class="material-icons">check</span>
-                  }
-                </button>
-                <div class="quest-body">
-                  <p class="quest-title">{{ task.title }}</p>
-                  @if (task.description) {
-                    <p class="quest-desc">{{ task.description }}</p>
-                  }
-                  <div class="quest-meta">
-                    @if (task.metaLabel) {
-                      <span class="meta-tag" [class]="task.metaType">{{ task.metaLabel }}</span>
-                    }
-                    @if (task.weeklyChallenge) {
-                      <span class="meta-tag">Weekly</span>
-                    }
-                    <span class="quest-xp">D{{ task.difficulty }} · {{ task.durationMinutes }}m</span>
-                    @if (task.status !== 'DONE' && !task.scheduledDate) {
-                      <button type="button" class="schedule-inline" (click)="scheduleTask(task)">+ Today</button>
+            <div
+              class="tasks"
+              cdkDropList
+              [id]="rootListId(column.id)"
+              [cdkDropListData]="column.roots"
+              [cdkDropListConnectedTo]="taskDropListIds()"
+              (cdkDropListDropped)="onRootDrop(column, $event)"
+            >
+              @for (task of column.roots; track task.id) {
+                <div class="task-block">
+                  <article
+                    class="task-row"
+                    cdkDrag
+                    [cdkDragData]="task"
+                    (cdkDragStarted)="onTaskDragStarted()"
+                    (cdkDragMoved)="onTaskDragMoved($event)"
+                    (cdkDragEnded)="onTaskDragEnded()"
+                    [class.is-done]="task.status === 'DONE'"
+                    [class.is-focused]="focusTaskId() === task.id"
+                    [attr.id]="'task-' + task.id"
+                  >
+                    <button type="button" class="drag-handle" cdkDragHandle [attr.aria-label]="'tasks.drag' | translate">
+                      <span class="material-icons">drag_indicator</span>
+                    </button>
+                    <app-glitch-checkbox
+                      class="task-check"
+                      [checked]="task.status === 'DONE'"
+                      [ariaLabel]="task.title"
+                      (checkedChange)="toggleTask(task, column)"
+                      (click)="$event.stopPropagation()"
+                    />
+                    <button type="button" class="task-body" (click)="openEditSheet(task)">
+                      <p class="task-title">{{ task.title }}</p>
+                      <span class="task-xp">+{{ task.xpReward }} XP</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="star-btn"
+                      [class.is-on]="task.starred"
+                      (click)="toggleStar(task, $event)"
+                      [attr.aria-label]="'tasks.star' | translate"
+                      [attr.aria-pressed]="task.starred"
+                    >
+                      <span class="material-icons">{{ task.starred ? 'star' : 'star_border' }}</span>
+                    </button>
+                  </article>
+
+                  <div
+                    class="subtask-list"
+                    [class.is-empty]="childrenOf(column, task.id).length === 0"
+                    [class.is-armed]="taskDragActive()"
+                    [attr.data-nest-for]="task.id"
+                    cdkDropList
+                    [id]="subListId(task.id)"
+                    [cdkDropListData]="childrenOf(column, task.id)"
+                    [cdkDropListConnectedTo]="taskDropListIds()"
+                    [cdkDropListEnterPredicate]="canEnterSubtaskList"
+                    [cdkDropListSortingDisabled]="childrenOf(column, task.id).length === 0"
+                    (cdkDropListDropped)="onSubtaskDrop(column, task.id, $event)"
+                  >
+                    @for (child of childrenOf(column, task.id); track child.id) {
+                      <article
+                        class="task-row task-row--sub"
+                        cdkDrag
+                        [cdkDragData]="child"
+                        (cdkDragStarted)="onTaskDragStarted()"
+                        (cdkDragMoved)="onTaskDragMoved($event)"
+                        (cdkDragEnded)="onTaskDragEnded()"
+                        [class.is-done]="child.status === 'DONE'"
+                        [attr.id]="'task-' + child.id"
+                      >
+                        <button type="button" class="drag-handle" cdkDragHandle [attr.aria-label]="'tasks.drag' | translate">
+                          <span class="material-icons">drag_indicator</span>
+                        </button>
+                        <app-glitch-checkbox
+                          class="task-check"
+                          [checked]="child.status === 'DONE'"
+                          [ariaLabel]="child.title"
+                          (checkedChange)="toggleTask(child, column)"
+                          (click)="$event.stopPropagation()"
+                        />
+                        <button type="button" class="task-body" (click)="openEditSheet(child)">
+                          <p class="task-title">{{ child.title }}</p>
+                          <span class="task-xp">+{{ child.xpReward }} XP</span>
+                        </button>
+                        <button
+                          type="button"
+                          class="star-btn"
+                          [class.is-on]="child.starred"
+                          (click)="toggleStar(child, $event)"
+                          [attr.aria-label]="'tasks.star' | translate"
+                          [attr.aria-pressed]="child.starred"
+                        >
+                          <span class="material-icons">{{ child.starred ? 'star' : 'star_border' }}</span>
+                        </button>
+                      </article>
                     }
                   </div>
                 </div>
-              </article>
-            } @empty {
-              <div class="empty-quest" style="padding: 16px; text-align: center; color: rgba(255,255,255,0.3); font-size: 13px;">
-                No tasks in this category.
-              </div>
-            }
-          </div>
-        </section>
-      }
+              } @empty {
+                <div class="empty-quest">{{ 'tasks.emptyCategory' | translate }}</div>
+              }
+            </div>
+          </section>
+        }
+      </div>
 
-      @if (showNewCategoryForm()) {
-        <section class="column new-category-form add-form">
-          <div class="column-head">
-            <h2 class="column-title">{{ 'tasks.newCategory' | translate }}</h2>
-          </div>
-          <input
-            type="text"
-            [placeholder]="'tasks.categoryName' | translate"
-            [(ngModel)]="newCategoryName"
-            name="newCategoryName"
-            class="add-form__input"
-            required
-          />
-          <input
-            type="text"
-            [placeholder]="'tasks.categoryTag' | translate"
-            [(ngModel)]="newCategoryTag"
-            name="newCategoryTag"
-            class="add-form__input"
-          />
-          <label class="field field--check">
-            <input type="checkbox" id="newCategoryGrantXp" name="newCategoryGrantXp" [(ngModel)]="newCategoryGrantXp" />
-            <span>{{ 'tasks.grantXpOnComplete' | translate }}</span>
-          </label>
-          <div class="add-form__actions">
-            <button type="button" (click)="showNewCategoryForm.set(false)" class="add-form__cancel">{{ 'tasks.cancel' | translate }}</button>
-            <button type="button" (click)="saveCategory()" class="add-form__save">{{ 'tasks.save' | translate }}</button>
-          </div>
-        </section>
-      } @else {
-        <button type="button" class="column new-column-btn" (click)="showNewCategoryForm.set(true)">
-          <span class="material-icons new-column-btn__icon" aria-hidden="true">playlist_add</span>
-          <span class="new-column-btn__label">{{ 'tasks.addCategory' | translate }}</span>
-        </button>
-      }
+      <div class="board-add">
+        @if (showNewCategoryForm()) {
+          <section class="column new-category-form add-form">
+            <div class="column-head">
+              <h2 class="column-title">{{ 'tasks.newCategory' | translate }}</h2>
+            </div>
+            <input
+              type="text"
+              [placeholder]="'tasks.categoryName' | translate"
+              [(ngModel)]="newCategoryName"
+              name="newCategoryName"
+              class="add-form__input"
+              required
+            />
+            <div class="field field--check">
+              <app-glitch-checkbox
+                [label]="'tasks.grantXpOnComplete' | translate"
+                [checked]="newCategoryGrantXp"
+                (checkedChange)="newCategoryGrantXp = $event"
+              />
+            </div>
+            <div class="add-form__actions">
+              <button type="button" (click)="showNewCategoryForm.set(false)" class="ghost-btn">{{ 'tasks.cancel' | translate }}</button>
+              <app-glitch-button
+                [label]="'tasks.save' | translate"
+                (pressed)="saveCategory()"
+              />
+            </div>
+          </section>
+        } @else {
+          <button type="button" class="new-column-btn" (click)="showNewCategoryForm.set(true)">
+            <span class="material-icons new-column-btn__icon" aria-hidden="true">playlist_add</span>
+            <span class="new-column-btn__label">{{ 'tasks.addCategory' | translate }}</span>
+          </button>
+        }
+      </div>
     </div>
+  </div>
+}
+
+<app-task-editor-sheet
+  [open]="editorOpen()"
+  [mode]="editorMode()"
+  [task]="editorTask()"
+  [categoryId]="editorCategoryId()"
+  [categories]="columns()"
+  [parentCandidates]="parentCandidatesForEditor()"
+  [goals]="goals()"
+  [subtasks]="editorSubtasks()"
+  (closed)="closeEditor()"
+  (saved)="onEditorSaved()"
+  (deleted)="onEditorDeleted()"
+  (subtaskAdded)="onSubtaskAdded()"
+  (openSubtask)="openEditSheet($event)"
+  (toggleComplete)="toggleTaskFromSheet($event)"
+  (toggleStar)="setStar($event, $event.starred)"
+/>
+
+@if (sortSheetCategoryId(); as sortCatId) {
+  <div class="sort-backdrop" (click)="closeSortSheet()" role="presentation"></div>
+  <div class="sort-sheet" role="dialog" aria-modal="true" [attr.aria-label]="'tasks.sort' | translate">
+    <h3 class="sort-sheet__title">{{ 'tasks.sort' | translate }}</h3>
+    <button type="button" class="sort-option" [class.is-active]="sortModeFor(sortCatId) === 'manual'" (click)="setSortMode('manual')">
+      {{ 'tasks.sortManual' | translate }}
+    </button>
+    <button type="button" class="sort-option" [class.is-active]="sortModeFor(sortCatId) === 'starred'" (click)="setSortMode('starred')">
+      {{ 'tasks.sortStarred' | translate }}
+    </button>
+    <button type="button" class="sort-option" [class.is-active]="sortModeFor(sortCatId) === 'title'" (click)="setSortMode('title')">
+      {{ 'tasks.sortTitle' | translate }}
+    </button>
+    <button type="button" class="sort-option" [class.is-active]="sortModeFor(sortCatId) === 'due'" (click)="setSortMode('due')">
+      {{ 'tasks.sortDue' | translate }}
+    </button>
   </div>
 }

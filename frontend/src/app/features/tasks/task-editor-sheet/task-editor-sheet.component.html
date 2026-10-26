@@ -1,0 +1,252 @@
+@if (open) {
+  <div class="sheet-backdrop" (click)="onBackdrop()" role="presentation"></div>
+  <aside
+    class="task-sheet"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="(mode === 'create' ? 'tasks.newTask' : 'tasks.editTask') | translate"
+  >
+    <header class="task-sheet__head">
+      <h2 class="task-sheet__title">
+        {{ (mode === 'create' ? 'tasks.newTask' : 'tasks.editTask') | translate }}
+      </h2>
+      <div class="task-sheet__head-actions">
+        <button
+          type="button"
+          class="star-btn"
+          [class.is-on]="starred"
+          (click)="onStarClick()"
+          [attr.aria-label]="'tasks.star' | translate"
+          [attr.aria-pressed]="starred"
+        >
+          <span class="material-icons">{{ starred ? 'star' : 'star_border' }}</span>
+        </button>
+        <button type="button" class="icon-btn" (click)="onCancel()" [attr.aria-label]="'tasks.cancel' | translate">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="task-sheet__body">
+      <label class="field">
+        <span class="field-label">{{ 'tasks.taskTitle' | translate }}</span>
+        <input type="text" [(ngModel)]="title" name="sheetTitle" required />
+      </label>
+
+      <label class="field">
+        <span class="field-label">{{ 'tasks.details' | translate }}</span>
+        <textarea [(ngModel)]="description" name="sheetDesc" rows="3"></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">{{ 'tasks.category' | translate }}</span>
+        <select
+          [(ngModel)]="selectedCategoryId"
+          name="sheetCategory"
+          (ngModelChange)="onCategoryChange()"
+        >
+          @for (cat of categories; track cat.id) {
+            <option [ngValue]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field-label">{{ 'tasks.parentTask' | translate }}</span>
+        <select [(ngModel)]="selectedParentId" name="sheetParent">
+          <option [ngValue]="null">{{ 'tasks.noParent' | translate }}</option>
+          @for (p of filteredParentCandidates(); track p.id) {
+            <option [ngValue]="p.id">{{ p.title }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="field">
+        <span class="field-label">{{ 'tasks.duration' | translate }}</span>
+        <div class="duration-presets">
+          @for (mins of durationPresets; track mins) {
+            <button
+              type="button"
+              class="chip"
+              [class.is-active]="!durationCustom && durationMinutes === mins"
+              (click)="setDurationPreset(mins)"
+            >
+              {{ mins }}m
+            </button>
+          }
+          <button
+            type="button"
+            class="chip"
+            [class.is-active]="durationCustom"
+            (click)="enableCustomDuration()"
+          >
+            {{ 'tasks.custom' | translate }}
+          </button>
+        </div>
+        @if (durationCustom) {
+          <input
+            type="number"
+            min="1"
+            step="1"
+            [(ngModel)]="durationMinutes"
+            (ngModelChange)="refreshXpPreview()"
+            name="sheetDurationCustom"
+          />
+        }
+      </div>
+
+      <div class="field-grid">
+        <label class="field">
+          <span class="field-label">{{ 'tasks.difficulty' | translate }}</span>
+          <input type="number" min="1" max="5" [(ngModel)]="difficulty" (ngModelChange)="refreshXpPreview()" />
+        </label>
+        <label class="field">
+          <span class="field-label">{{ 'tasks.priority' | translate }}</span>
+          <input type="number" min="1" max="3" [(ngModel)]="priority" (ngModelChange)="refreshXpPreview()" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">{{ 'tasks.bossLink' | translate }}</span>
+        <select [(ngModel)]="goalId" name="sheetGoal">
+          <option [ngValue]="null">{{ 'tasks.noBossLink' | translate }}</option>
+          @for (goal of goals; track goal.id) {
+            <option [ngValue]="goal.id">{{ goal.name }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="schedule-block">
+        <label class="field">
+          <span class="field-label">{{ 'tasks.dueDate' | translate }}</span>
+          <div class="date-control" [class.is-empty]="!dueDate">
+            <span class="date-control__value">{{ dueDateLabel() }}</span>
+            <input
+              type="date"
+              class="date-control__native"
+              [(ngModel)]="dueDate"
+              name="sheetDue"
+              [attr.aria-label]="'tasks.dueDate' | translate"
+            />
+            <span class="material-icons date-control__icon" aria-hidden="true">event</span>
+          </div>
+          <div class="duration-presets schedule-chips">
+            <button
+              type="button"
+              class="chip"
+              [class.is-active]="isDueToday()"
+              (click)="setDueToday()"
+            >
+              {{ 'tasks.scheduleToday' | translate }}
+            </button>
+            <button
+              type="button"
+              class="chip"
+              [class.is-active]="isDueTomorrow()"
+              (click)="setDueTomorrow()"
+            >
+              {{ 'tasks.scheduleTomorrow' | translate }}
+            </button>
+            @if (dueDate) {
+              <button type="button" class="chip chip--quiet" (click)="clearDueDate()">
+                {{ 'tasks.clearDue' | translate }}
+              </button>
+            }
+          </div>
+        </label>
+
+        <label class="field">
+          <span class="field-label">{{ 'tasks.reminder' | translate }}</span>
+          <div class="date-control" [class.is-empty]="!reminderLocal">
+            <span class="date-control__value">{{ reminderLabel() }}</span>
+            <input
+              type="datetime-local"
+              class="date-control__native"
+              [(ngModel)]="reminderLocal"
+              name="sheetReminder"
+              [attr.aria-label]="'tasks.reminder' | translate"
+            />
+            @if (reminderLocal) {
+              <button
+                type="button"
+                class="date-control__clear"
+                (click)="clearReminder(); $event.stopPropagation()"
+                [attr.aria-label]="'tasks.clearReminder' | translate"
+              >
+                <span class="material-icons" aria-hidden="true">close</span>
+              </button>
+            }
+            <span class="material-icons date-control__icon" aria-hidden="true">notifications_none</span>
+          </div>
+        </label>
+      </div>
+
+      @if (xpPreview(); as preview) {
+        <p class="hint">{{ i18n.t('tasks.estXp', { xp: preview.estimatedTotalXp, remaining: preview.dailyXpRemaining }) }}</p>
+      }
+
+      @if (mode === 'edit' && task) {
+        @if (!task.parentTaskId && !selectedParentId) {
+          <section class="subtasks">
+            <h3 class="subtasks__title">{{ 'tasks.subtasks' | translate }}</h3>
+            <ul class="subtasks__list">
+              @for (child of subtasks; track child.id) {
+                <li class="subtasks__item">
+                  <app-glitch-checkbox
+                    class="task-check"
+                    [checked]="child.status === 'DONE'"
+                    [ariaLabel]="child.title"
+                    (checkedChange)="toggleComplete.emit(child)"
+                  />
+                  <button type="button" class="subtasks__open" (click)="openSubtask.emit(child)">
+                    <span [class.is-done]="child.status === 'DONE'">{{ child.title }}</span>
+                  </button>
+                </li>
+              } @empty {
+                <li class="subtasks__empty">{{ 'tasks.noSubtasks' | translate }}</li>
+              }
+            </ul>
+            <div class="subtasks__add">
+              <input
+                type="text"
+                [placeholder]="'tasks.addSubtask' | translate"
+                [ngModel]="newSubtaskTitle()"
+                (ngModelChange)="newSubtaskTitle.set($event)"
+                (keydown.enter)="addSubtask()"
+              />
+              <button
+                type="button"
+                class="icon-btn icon-btn--fill"
+                (click)="addSubtask()"
+                [disabled]="addingSubtask() || !newSubtaskTitle().trim()"
+                [attr.aria-label]="'tasks.addSubtask' | translate"
+              >
+                <span class="material-icons">add</span>
+              </button>
+            </div>
+          </section>
+        }
+      }
+
+      @if (saveError()) {
+        <p class="form-error">{{ saveError() }}</p>
+      }
+    </div>
+
+    <footer class="task-sheet__foot">
+      @if (mode === 'edit') {
+        <button type="button" class="ghost-btn ghost-btn--danger" (click)="onDelete()">
+          {{ 'tasks.delete' | translate }}
+        </button>
+      }
+      <div class="task-sheet__foot-end">
+        <button type="button" class="ghost-btn" (click)="onCancel()">{{ 'tasks.cancel' | translate }}</button>
+        <app-glitch-button
+          [label]="'tasks.save' | translate"
+          [disabled]="saving() || !title.trim() || !selectedCategoryId"
+          (pressed)="onSave()"
+        />
+      </div>
+    </footer>
+  </aside>
+}

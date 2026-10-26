@@ -34,6 +34,16 @@ public class Task {
     @JoinColumn(name = "goal_id")
     private Goal goal;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_task_id")
+    private Task parentTask;
+
+    @Column(name = "starred", nullable = false)
+    private boolean starred = false;
+
+    @Column(name = "sort_order", nullable = false)
+    private int sortOrder = 0;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -73,6 +83,12 @@ public class Task {
 
     @Column(name = "due_date")
     private LocalDate dueDate;
+
+    @Column(name = "reminder_at")
+    private Instant reminderAt;
+
+    @Column(name = "reminder_notified", nullable = false)
+    private boolean reminderNotified = false;
 
     @Column(name = "completed_at")
     private Instant completedAt;

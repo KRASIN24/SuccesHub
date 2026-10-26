@@ -146,4 +146,65 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
      * @param userId Keycloak subject ID
      */
     void deleteByUserId(String userId);
+
+    /**
+     * Returns root or sibling tasks in a category ordered by sort order.
+     *
+     * @param userId       Keycloak subject ID of the task owner
+     * @param categoryId   category column (nullable for uncategorized)
+     * @param parentTaskId parent for subtasks, or null for roots
+     * @return sibling tasks ordered by {@code sortOrder} ascending
+     */
+    List<Task> findByUserIdAndCategory_IdAndParentTask_IdOrderBySortOrderAsc(
+            String userId, UUID categoryId, UUID parentTaskId);
+
+    /**
+     * Returns root tasks (no parent) in a category ordered by sort order.
+     *
+     * @param userId     Keycloak subject ID of the task owner
+     * @param categoryId category column
+     * @return root tasks ordered by {@code sortOrder} ascending
+     */
+    List<Task> findByUserIdAndCategory_IdAndParentTaskIsNullOrderBySortOrderAsc(
+            String userId, UUID categoryId);
+
+    /**
+     * Counts children of a parent task (for max sort order assignment).
+     *
+     * @param parentId parent task ID
+     * @return number of direct subtasks
+     */
+    long countByParentTask_Id(UUID parentId);
+
+    /**
+     * Counts root tasks in a category for the user.
+     *
+     * @param userId     Keycloak subject ID
+     * @param categoryId category column
+     * @return number of root tasks
+     */
+    long countByUserIdAndCategory_IdAndParentTaskIsNull(String userId, UUID categoryId);
+
+    /**
+     * Returns direct children of a parent task.
+     *
+     * @param parentId parent task ID
+     * @return child tasks
+     */
+    List<Task> findByParentTask_Id(UUID parentId);
+
+    /**
+     * Returns incomplete tasks whose reminder is due and not yet notified.
+     *
+     * @param now cutoff instant
+     * @return tasks ready for reminder notifications
+     */
+    @Query("""
+            SELECT t FROM Task t
+            WHERE t.reminderAt IS NOT NULL
+              AND t.reminderAt <= :now
+              AND t.reminderNotified = false
+              AND t.status <> com.succeshub.appdomain.model.Task.Status.DONE
+            """)
+    List<Task> findDueReminders(@Param("now") Instant now);
 }

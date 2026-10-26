@@ -141,4 +141,41 @@ public class TaskController {
         service.delete(principal.getSubject(), id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Sets or clears the starred flag on a task.
+     */
+    @Operation(summary = "Star or unstar task", description = "Updates the starred boolean used by client-side sort modes.")
+    @ApiResponse(responseCode = "200", description = "Star state updated")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "404", description = "Task not found")
+    @PatchMapping("/{id}/star")
+    public ResponseEntity<TaskDto.Response> starTask(
+            @AuthenticationPrincipal OidcUser principal,
+            @Parameter(description = "Task ID") @PathVariable UUID id,
+            @Valid @RequestBody TaskDto.StarRequest req) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(service.setStarred(principal.getSubject(), id, req.starred()));
+    }
+
+    /**
+     * Rewrites sort_order for a sibling group (roots in a category, or children of a parent).
+     */
+    @Operation(summary = "Reorder tasks", description = "Sets sort_order 0..n for the given orderedIds within a category/parent group.")
+    @ApiResponse(responseCode = "204", description = "Order updated")
+    @ApiResponse(responseCode = "400", description = "Invalid sibling group or orderedIds")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "404", description = "Task or category not found")
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorderTasks(
+            @AuthenticationPrincipal OidcUser principal,
+            @Valid @RequestBody TaskDto.ReorderRequest req) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        service.reorder(principal.getSubject(), req);
+        return ResponseEntity.noContent().build();
+    }
 }

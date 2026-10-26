@@ -72,4 +72,22 @@ public interface TaskService {
      * @param id     primary key of the task to delete
      */
     void delete(String userId, UUID id);
+
+    /**
+     * Sets or clears the starred flag on a task.
+     *
+     * @param userId  Keycloak subject ID of the task owner
+     * @param id      task ID
+     * @param starred new starred value
+     * @return updated task
+     */
+    TaskDto.Response setStarred(String userId, UUID id, boolean starred);
+
+    /**
+     * Rewrites {@code sortOrder} for a sibling group (roots in a category, or children of a parent).
+     *
+     * @param userId Keycloak subject ID of the task owner
+     * @param req    reorder payload
+     */
+    void reorder(String userId, TaskDto.ReorderRequest req);
 }
