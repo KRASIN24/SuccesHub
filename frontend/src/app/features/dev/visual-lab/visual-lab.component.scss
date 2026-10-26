@@ -1,0 +1,997 @@
+/* Visual Lab page chrome + specimen clones.
+ * Clones cite source with "from: path" comments — do not use as product CSS. */
+
+.vl-page {
+  min-height: 100%;
+  padding: 1.5rem 1.75rem 3rem;
+  background: var(--color-app-bg);
+  color: var(--color-text);
+}
+
+.vl-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.vl-top h1 {
+  margin: 0.25rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  letter-spacing: 0.04em;
+}
+
+.vl-top__lede {
+  margin: 0;
+  max-width: 40rem;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.vl-top__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.vl-back {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.vl-back:hover {
+  color: var(--color-gold);
+}
+
+.vl-copy-status {
+  font-size: 0.75rem;
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.vl-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .vl-layout {
+    grid-template-columns: 1fr;
+  }
+  .vl-nav {
+    position: static !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+}
+
+.vl-nav {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vl-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.vl-nav__item:hover {
+  border-color: color-mix(in srgb, var(--color-gold) 45%, var(--color-border));
+}
+.vl-nav__pick {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--color-gold);
+  word-break: break-all;
+}
+
+.vl-group {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 1rem;
+}
+
+.vl-group__head h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+.vl-group__head p {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+.vl-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.vl-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.vl-card--selected {
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.vl-card__sample {
+  min-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--color-surface-2);
+  border: 1px dashed var(--color-border);
+}
+
+.vl-card__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.vl-card__title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.vl-card__prov {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+.vl-card__surface {
+  color: var(--color-gold);
+  font-weight: 600;
+}
+.vl-card__prov code {
+  font-size: 0.68rem;
+  color: var(--color-text);
+}
+.vl-card__file {
+  margin: 0;
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+  word-break: break-all;
+  line-height: 1.35;
+}
+
+.vl-export {
+  padding: 1.25rem;
+  margin-top: 1rem;
+}
+.vl-export h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+.vl-export__json {
+  margin: 0.75rem 0 0;
+  padding: 0.85rem;
+  overflow: auto;
+  max-height: 280px;
+  border-radius: 8px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+/* ── Brand clones ───────────────────────────────── */
+
+/* from: navbar.component.scss .brand */
+.vl-brand-navbar {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--color-gold);
+}
+
+/* from: successhub.css .sh-enroll__brand */
+.vl-brand-register {
+  text-align: left;
+}
+.vl-brand-register__eyebrow {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.vl-brand-register__strong {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.04em;
+  color: var(--color-text);
+  line-height: 1;
+}
+.vl-brand-register__light {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 1.35rem;
+  letter-spacing: -0.04em;
+  color: var(--color-text-muted);
+  line-height: 1.1;
+}
+
+/* from: successhub.css login header / Sovereign Portal */
+.vl-brand-login-portal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  text-align: center;
+}
+.vl-brand-login-portal__eye {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+.vl-brand-login-portal__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--color-gold);
+}
+
+/* ── Primary clones ─────────────────────────────── */
+
+/* from: tasks.component.scss .btn-primary */
+.vl-primary-tasks {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f6cf63, #e0a030);
+  color: #1a1305;
+}
+
+/* from: goals.component.scss .btn-primary */
+.vl-primary-goals {
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f6cf63, #e0a030);
+  color: #1a1305;
+}
+
+/* from: settings.component.scss .btn-primary */
+.vl-primary-settings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-headline);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* from: loot-boxes.component.scss .hero__cta */
+.vl-primary-loot {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  background: #f5be42;
+  filter: drop-shadow(0 0 12px rgba(210, 159, 34, 0.4));
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #261900;
+  cursor: pointer;
+}
+
+/* from: home.component.scss .celebrate-btn */
+.vl-primary-celebrate {
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  background: var(--color-gold);
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+/* from: successhub.css .sh-submit */
+.vl-primary-kc-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.25rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: #d29f22;
+  color: #402d00;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* from: successhub.css .sh-enroll__submit */
+.vl-primary-kc-enroll {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, #f5be42 0%, #e0a82e 100%);
+  color: #402d00;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ── Secondary clones ───────────────────────────── */
+
+/* from: tasks.component.scss .btn-secondary */
+.vl-secondary-tasks {
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* from: goals.component.scss .summon-btn */
+.vl-secondary-summon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid rgba(232, 179, 62, 0.45);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(246, 207, 99, 0.18), rgba(208, 154, 44, 0.08));
+  color: var(--color-gold-bright);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* from: loot-boxes.component.scss .hero__cta-secondary */
+.vl-secondary-loot {
+  padding: 8px 20px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+/* from: successhub.css .btn-default */
+.vl-secondary-kc {
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--color-surface-3) 80%, transparent);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+/* ── Danger clones ──────────────────────────────── */
+
+/* from: settings.component.scss .btn-danger-outline */
+.vl-danger-settings {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.85rem 1.35rem;
+  border-radius: 0;
+  border: 1px solid var(--color-danger);
+  background: var(--color-danger);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* from: streak-panel.component.scss .streak-btn--danger */
+.vl-danger-streak {
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: var(--color-surface);
+  color: #f87171;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* from: dev-tools-host.component.scss .dev-btn--danger */
+.vl-danger-dev {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(255, 120, 120, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffc9c9;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* ── Link clones ────────────────────────────────── */
+
+/* from: sidebar.component.scss .nav-link */
+.vl-link-nav {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--color-gold) 16%, transparent);
+  color: var(--color-gold);
+}
+
+/* from: home.component.scss .link-muted */
+.vl-link-muted {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.vl-link-muted:hover {
+  color: var(--color-gold);
+}
+
+/* from: home.component.scss .task-deep-link */
+.vl-link-deep {
+  color: var(--color-text);
+  text-decoration: none;
+}
+.vl-link-deep:hover {
+  color: var(--color-gold);
+  text-decoration: underline;
+}
+
+/* from: profile.component.scss .inventory__cta */
+.vl-link-inventory {
+  padding: 9px 20px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 190, 66, 0.25);
+  color: var(--color-gold-bright);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* from: successhub.css gold text links */
+.vl-link-kc {
+  color: var(--color-gold);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.vl-link-kc:hover {
+  text-decoration: underline;
+}
+
+/* ── Surface clones ─────────────────────────────── */
+
+.vl-surface-pad {
+  padding: 1rem;
+  width: 100%;
+}
+.vl-surface-pad p {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* from: tasks.component.scss .column */
+.vl-surface-column {
+  width: 100%;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.vl-surface-column p {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* from: achievements.component.ts .merit-card */
+.vl-surface-merit {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-start;
+}
+.vl-surface-merit .material-icons {
+  color: var(--color-gold);
+}
+.vl-surface-merit p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* from: settings.component.scss .side-card */
+.vl-surface-side {
+  width: 100%;
+  padding: 1rem;
+  background: var(--color-surface-container-high);
+  border: 1px solid rgba(211, 197, 175, 0.12);
+  border-radius: 0.75rem;
+}
+.vl-surface-side p {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* from: successhub.css .card-pf */
+.vl-surface-kc-card {
+  position: relative;
+  width: 100%;
+  padding: 1.1rem 1.15rem;
+  background: var(--color-surface);
+  border: 1px solid rgba(79, 70, 53, 0.25);
+  border-radius: 1.5rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+.vl-surface-kc-card p {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Form clones ────────────────────────────────── */
+
+/* from: settings.component.scss .field__input */
+.vl-form-settings {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+.vl-form-settings:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(245, 190, 66, 0.18);
+}
+
+/* from: goals.component.scss .form-field input */
+.vl-form-goals {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+}
+
+/* from: tasks.component.scss .add-form__input */
+.vl-form-tasks {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+/* from: successhub.css .sh-input */
+.vl-form-kc {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(79, 70, 53, 0.6);
+  border-radius: 0;
+  color: var(--color-text);
+  padding: 0.55rem 0.1rem;
+  font-weight: 300;
+  font-size: 0.95rem;
+}
+.vl-form-kc:focus {
+  outline: none;
+  border-bottom-color: var(--color-gold);
+}
+
+.vl-native-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+.vl-native-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-gold);
+}
+
+/* ── Button pair options (shape language) ───────── */
+
+.vl-pair {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/*
+ * Notch secondary: outer shell = stroke, inner face = fill.
+ * Same clip-path on both so the outline wraps the 45° cut (no bitten border).
+ */
+.vl-ghost-notch {
+  /* Light panels: opaque mid-gray ≥3:1 on cream/white. */
+  --vl-notch-stroke: color-mix(in srgb, var(--color-text) 62%, #8a847a);
+  --vl-notch-face: var(--color-surface);
+  --vl-notch-cut: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  /* Parallel inset so the outer shell paints a full stroke on the 45° cut. */
+  --vl-notch-cut-inner: polygon(
+    2px 2px,
+    calc(100% - 2px) 2px,
+    calc(100% - 2px) calc(100% - 2px),
+    11.5px calc(100% - 2px),
+    2px calc(100% - 11.5px)
+  );
+
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: stretch;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-family: var(--font-headline, 'Space Grotesk', sans-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  cursor: pointer;
+  box-sizing: border-box;
+  color: var(--color-text);
+  clip-path: var(--vl-notch-cut);
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.app-dark .vl-ghost-notch {
+  /* Dark panel #141417 / #1a1a1e: muted text (#9a9aa2) clears 3:1 easily */
+  --vl-notch-stroke: var(--color-text-muted, #9a9aa2);
+  --vl-notch-face: var(--color-surface, #141417);
+}
+
+.vl-ghost-notch__face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 2.75rem;
+  padding: 0.85rem 1.35rem;
+  box-sizing: border-box;
+  clip-path: var(--vl-notch-cut-inner);
+  background: var(--vl-notch-face);
+  color: inherit;
+}
+
+/* B · outlined notch (stroke wraps diagonal) */
+.vl-ghost-notch--outline {
+  background: var(--vl-notch-stroke);
+}
+
+.vl-ghost-notch--outline:hover {
+  --vl-notch-stroke: color-mix(in srgb, var(--color-gold) 70%, var(--color-text));
+  color: var(--color-gold);
+}
+
+.app-dark .vl-ghost-notch--outline:hover {
+  --vl-notch-stroke: var(--color-gold-bright, #f5be42);
+  color: var(--color-gold-bright, #f5be42);
+}
+
+/* C · notch + muted edge stripe (stripe is separate depth cue) */
+.vl-ghost-notch--stripe {
+  background: var(--vl-notch-stroke);
+  box-shadow: 6px 0 0 color-mix(in srgb, var(--color-text) 28%, transparent);
+  margin-right: 6px;
+}
+
+.app-dark .vl-ghost-notch--stripe {
+  box-shadow: 6px 0 0 color-mix(in srgb, #fff 32%, transparent);
+}
+
+.vl-ghost-notch--stripe:hover {
+  --vl-notch-stroke: color-mix(in srgb, var(--color-gold) 65%, var(--color-text));
+  box-shadow: 6px 0 0 rgba(232, 179, 62, 0.55);
+}
+
+/* D · filled notch, no outline shell — solid face only */
+.vl-ghost-notch--fill {
+  background: transparent;
+  clip-path: var(--vl-notch-cut);
+}
+
+.vl-ghost-notch--fill .vl-ghost-notch__face {
+  clip-path: var(--vl-notch-cut);
+  background: color-mix(in srgb, var(--color-text) 10%, var(--color-surface));
+}
+
+.vl-ghost-notch--fill:hover .vl-ghost-notch__face {
+  background: color-mix(in srgb, var(--color-gold) 16%, var(--color-surface));
+}
+
+/* ── Icon button options ────────────────────────── */
+
+.vl-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vl-icon-row .material-icons {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.vl-icon-current-edit {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-gold);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-gold);
+  cursor: pointer;
+}
+
+.vl-icon-current-add {
+  width: 32px;
+  height: 36px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: grid;
+  place-items: center;
+  border: none;
+  background: linear-gradient(160deg, #f6cf63, #d09a2c);
+  color: #1a1305;
+  cursor: pointer;
+}
+
+.vl-icon-chamfer {
+  --vl-icon-cut: polygon(0 0, 100% 0, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+  --vl-icon-cut-inner: polygon(
+    2px 2px,
+    calc(100% - 2px) 2px,
+    calc(100% - 2px) calc(100% - 2px),
+    8.5px calc(100% - 2px),
+    2px calc(100% - 8.5px)
+  );
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: stretch;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  clip-path: var(--vl-icon-cut);
+}
+
+.vl-icon-chamfer__face {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  clip-path: var(--vl-icon-cut-inner);
+}
+
+.vl-icon-chamfer--outline {
+  background: color-mix(in srgb, var(--color-text) 62%, #8a847a);
+  color: var(--color-text);
+}
+
+.vl-icon-chamfer--outline .vl-icon-chamfer__face {
+  background: var(--color-surface);
+  color: inherit;
+}
+
+.app-dark .vl-icon-chamfer--outline {
+  background: var(--color-text-muted, #9a9aa2);
+  color: var(--color-text);
+}
+
+.app-dark .vl-icon-chamfer--outline .vl-icon-chamfer__face {
+  background: var(--color-surface, #211f23);
+  color: inherit;
+}
+
+.vl-icon-chamfer--outline:hover {
+  background: color-mix(in srgb, var(--color-gold) 70%, var(--color-text));
+  color: var(--color-gold);
+}
+
+.app-dark .vl-icon-chamfer--outline:hover {
+  background: var(--color-gold-bright, #f5be42);
+  color: var(--color-gold-bright, #f5be42);
+}
+
+.vl-icon-chamfer--fill {
+  background: #f5be42;
+  box-shadow: 4px 0 0 #d29f22;
+  margin-right: 4px;
+  color: #1a1305;
+}
+
+.vl-icon-chamfer--fill .vl-icon-chamfer__face {
+  clip-path: var(--vl-icon-cut);
+  background: linear-gradient(160deg, #f6cf63, #d09a2c);
+  color: #1a1305;
+}
+
+.vl-icon-hex {
+  width: 34px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  padding: 0;
+}
+
+.vl-icon-hex--outline {
+  /* Shell stroke via filter so hex perimeter keeps outline */
+  background: var(--color-surface);
+  color: var(--color-gold);
+  filter:
+    drop-shadow(0 0 0.4px var(--color-gold))
+    drop-shadow(1px 0 0 var(--color-gold))
+    drop-shadow(-1px 0 0 var(--color-gold))
+    drop-shadow(0 1px 0 var(--color-gold))
+    drop-shadow(0 -1px 0 var(--color-gold));
+}
+
+.app-dark .vl-icon-hex--outline {
+  color: var(--color-gold-bright, #f5be42);
+  filter:
+    drop-shadow(0 0 0.4px var(--color-gold-bright, #f5be42))
+    drop-shadow(1px 0 0 var(--color-gold-bright, #f5be42))
+    drop-shadow(-1px 0 0 var(--color-gold-bright, #f5be42))
+    drop-shadow(0 1px 0 var(--color-gold-bright, #f5be42))
+    drop-shadow(0 -1px 0 var(--color-gold-bright, #f5be42));
+}
+
+.vl-icon-hex--fill {
+  background: linear-gradient(160deg, #f6cf63, #d09a2c);
+  color: #1a1305;
+}
+
+.vl-icon-round {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.vl-icon-round--outline {
+  background: transparent;
+  border: 1.5px solid var(--color-gold);
+  color: var(--color-gold);
+}
+
+.app-dark .vl-icon-round--outline {
+  border-color: var(--color-gold-bright, #f5be42);
+  color: var(--color-gold-bright, #f5be42);
+}
+
+.vl-icon-round--fill {
+  background: linear-gradient(160deg, #f6cf63, #d09a2c);
+  border: none;
+  color: #1a1305;
+}

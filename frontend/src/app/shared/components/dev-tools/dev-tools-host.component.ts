@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { DevToolId, DevToolsService } from '../../../core/services/dev-tools.service';
@@ -24,7 +24,7 @@ const TOOL_META: Record<
 @Component({
   selector: 'app-dev-tools-host',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './dev-tools-host.component.html',
   styleUrl: './dev-tools-host.component.scss',
 })

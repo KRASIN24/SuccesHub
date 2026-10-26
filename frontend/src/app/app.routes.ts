@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { activeAccountGuard } from './core/guards/active-account.guard';
+import { devGrantsGuard } from './core/guards/dev-grants.guard';
 
 export const routes: Routes = [
   {
@@ -75,6 +76,15 @@ export const routes: Routes = [
         (m) => m.SettingsComponent
       ),
     title: 'Settings — SuccesHub',
+  },
+  {
+    path: 'dev/visual-lab',
+    canActivate: [authGuard, activeAccountGuard, devGrantsGuard],
+    loadComponent: () =>
+      import('./features/dev/visual-lab/visual-lab.component').then(
+        (m) => m.VisualLabComponent
+      ),
+    title: 'Visual Lab — SuccesHub',
   },
   {
     path: '**',
