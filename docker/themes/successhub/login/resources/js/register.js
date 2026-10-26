@@ -19,6 +19,7 @@
   var firstName = document.getElementById("firstName");
   var lastName = document.getElementById("lastName");
   var eye = document.getElementById("toggle-password");
+  var eyeConfirm = document.getElementById("toggle-password-confirm");
   var submitBtn = document.getElementById("kc-register");
 
   var usernameTaken = false;
@@ -56,9 +57,10 @@
 
   function updateSubmitState() {
     if (!submitBtn) return;
-    var disable = hasVisibleErrors();
-    submitBtn.disabled = disable;
-    submitBtn.setAttribute("aria-disabled", disable ? "true" : "false");
+    // Keep CTA clickable and gold; validateAll still blocks bad submits.
+    if (submitBtn.dataset.submitting === "1") return;
+    submitBtn.disabled = false;
+    submitBtn.removeAttribute("aria-disabled");
   }
 
   function syncNames() {
@@ -331,13 +333,17 @@
     return true;
   });
 
-  if (eye && password) {
-    eye.addEventListener("click", function () {
-      var show = password.type === "password";
-      password.type = show ? "text" : "password";
-      eye.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  function bindPasswordToggle(btn, input) {
+    if (!btn || !input) return;
+    btn.addEventListener("click", function () {
+      var show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
     });
   }
+
+  bindPasswordToggle(eye, password);
+  bindPasswordToggle(eyeConfirm, confirm);
 
   document.body.classList.add("sh-register-page");
   restoreDraft();
