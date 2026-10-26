@@ -228,36 +228,307 @@
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 
-    &:hover {
+    &:hover:not(:disabled) {
       transform: translateY(-1px);
       box-shadow: var(--shadow-glow-gold);
       filter: brightness(1.05);
     }
-    &:active {
+    &:active:not(:disabled) {
       transform: translateY(0);
+    }
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      filter: none;
+      box-shadow: none;
     }
   }
 
-  .ghost-btn {
+  /* W15: primary CTA alias — same winner as .gold-btn */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.25rem;
+    border: none;
+    border-radius: var(--radius-btn);
+    background: linear-gradient(135deg, #f6cf63, #e0a030);
+    color: #1a1305;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-glow-gold);
+      filter: brightness(1.05);
+    }
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  /*
+   * W15 secondary — Visual Lab B · Notch family (outline).
+   * Shell paints the rim (incl. 45° cut); ::before is the face.
+   * Hover: gold rim + gold label/icon only — face background stays put.
+   */
+  .ghost-btn,
+  .btn-secondary {
+    --ghost-cut: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    --ghost-cut-inner: polygon(
+      2px 2px,
+      calc(100% - 2px) 2px,
+      calc(100% - 2px) calc(100% - 2px),
+      11.5px calc(100% - 2px),
+      2px calc(100% - 11.5px)
+    );
+    --ghost-stroke: color-mix(in srgb, var(--color-text) 62%, #8a847a);
+    /* White/card face — must not match muted read-only inputs (surface-2) */
+    --ghost-face: var(--color-surface);
+
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    background: var(--color-surface-2);
-    border: 1px solid var(--color-border-strong);
+    min-height: 2.75rem;
+    padding: 0.85rem 1.35rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--ghost-stroke);
     color: var(--color-text);
-    font-size: 0.72rem;
+    font-family: var(--font-headline, 'Space Grotesk', sans-serif);
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    cursor: pointer;
+    clip-path: var(--ghost-cut);
+    box-sizing: border-box;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .ghost-btn::before,
+  .btn-secondary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ghost-face);
+    clip-path: var(--ghost-cut-inner);
+    z-index: -1;
+    transition: background 0.15s ease;
+  }
+
+  .app-dark .ghost-btn,
+  .app-dark .btn-secondary {
+    --ghost-stroke: var(--color-text-muted, #9a9aa2);
+    --ghost-face: var(--color-surface);
+  }
+
+  .ghost-btn:hover:not(:disabled),
+  .btn-secondary:hover:not(:disabled) {
+    --ghost-stroke: color-mix(in srgb, var(--color-gold) 70%, var(--color-text));
+    color: var(--color-gold);
+  }
+
+  .app-dark .ghost-btn:hover:not(:disabled),
+  .app-dark .btn-secondary:hover:not(:disabled) {
+    --ghost-stroke: var(--color-gold-bright, #f5be42);
+    color: var(--color-gold-bright, #f5be42);
+  }
+
+  .ghost-btn:disabled,
+  .btn-secondary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /*
+   * W15 icon buttons — Visual Lab B · Chamfer square pair.
+   * Outline = secondary (same rim/label colors + hover as .ghost-btn).
+   * --fill = add / primary icon action.
+   */
+  .icon-btn {
+    --icon-cut: polygon(0 0, 100% 0, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+    --icon-cut-inner: polygon(
+      2px 2px,
+      calc(100% - 2px) 2px,
+      calc(100% - 2px) calc(100% - 2px),
+      8.5px calc(100% - 2px),
+      2px calc(100% - 8.5px)
+    );
+    --icon-stroke: color-mix(in srgb, var(--color-text) 62%, #8a847a);
+    --icon-face: var(--color-surface);
+
+    position: relative;
+    isolation: isolate;
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--icon-stroke);
+    color: var(--color-text);
+    clip-path: var(--icon-cut);
+    cursor: pointer;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .icon-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--icon-face);
+    clip-path: var(--icon-cut-inner);
+    z-index: -1;
+  }
+
+  .app-dark .icon-btn {
+    --icon-stroke: var(--color-text-muted, #9a9aa2);
+    --icon-face: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .icon-btn .material-icons,
+  .icon-btn .material-symbols-outlined {
+    position: relative;
+    z-index: 1;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .icon-btn:hover:not(:disabled) {
+    --icon-stroke: color-mix(in srgb, var(--color-gold) 70%, var(--color-text));
+    color: var(--color-gold);
+  }
+
+  .app-dark .icon-btn:hover:not(:disabled) {
+    --icon-stroke: var(--color-gold-bright, #f5be42);
+    color: var(--color-gold-bright, #f5be42);
+  }
+
+  .icon-btn--active {
+    --icon-stroke: var(--color-gold-bright, #f5be42);
+    color: var(--color-gold-bright, #f5be42);
+  }
+
+  .icon-btn--fill {
+    --icon-stroke: #f5be42;
+    background: #f5be42;
+    color: #1a1305;
+    box-shadow: 4px 0 0 #d29f22;
+    margin-right: 4px;
+  }
+
+  .icon-btn--fill::before {
+    clip-path: var(--icon-cut);
+    background: linear-gradient(160deg, #f6cf63, #d09a2c);
+  }
+
+  .icon-btn--fill:hover:not(:disabled) {
+    --icon-stroke: #f5be42;
+    color: #1a1305;
+    filter: brightness(1.06);
+  }
+
+  .app-dark .icon-btn--fill {
+    background: #f5be42;
+    color: #1a1305;
+  }
+
+  .icon-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    filter: none;
+  }
+
+  /* W15: danger — Settings filled danger, shared radius */
+  .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.25rem;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--color-danger);
+    background: var(--color-danger);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: filter 0.15s ease, background 0.15s ease;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.92);
+    }
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  /* W15: .app-input — Settings look, Boss Battle compact height */
+  .app-input {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: var(--color-text-faint);
+      opacity: 1;
+    }
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(245, 190, 66, 0.18);
+    }
+  }
+
+  /* W15: link-deep winner — inherit color, gold underline on hover */
+  .app-link {
+    color: inherit;
+    text-decoration: none;
 
     &:hover {
-      background: var(--color-surface-3);
-      border-color: rgba(232, 179, 62, 0.5);
+      color: var(--color-gold);
+      text-decoration: underline;
+    }
+  }
+
+  .task-deep-link {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--color-gold);
+      text-decoration: underline;
     }
   }
 
