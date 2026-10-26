@@ -4,6 +4,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { LootPendingService } from '../../../core/services/loot-pending.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { CountBadgeComponent } from '../count-badge/count-badge.component';
 
 interface NavItem {
   labelKey: string;
@@ -15,7 +16,7 @@ interface NavItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe, CountBadgeComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
   host: {

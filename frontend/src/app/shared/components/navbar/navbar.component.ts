@@ -19,6 +19,7 @@ import { FrameOrnamentsComponent } from '../frame-ornaments/frame-ornaments.comp
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { TranslateService } from '../../../core/i18n/translate.service';
 import { RewardLabelPipe } from '../../../core/i18n/reward-label.pipe';
+import { CountBadgeComponent } from '../count-badge/count-badge.component';
 
 const BOX_NAME_BY_EN: Record<string, string> = {
   'Glowing Orb': 'ARCANE_ORB',
@@ -45,7 +46,7 @@ const ACHIEVEMENT_KEY_BY_EN_LABEL: Record<string, string> = {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, FrameOrnamentsComponent, TranslatePipe, RewardLabelPipe],
+  imports: [RouterLink, DecimalPipe, FrameOrnamentsComponent, TranslatePipe, RewardLabelPipe, CountBadgeComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })

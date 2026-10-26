@@ -8,7 +8,7 @@
     <span class="material-icons">close</span>
   </button>
 
-  <div class="nav-section">
+  <div class="nav-section nav-section--main">
     @for (item of navItems; track item.route) {
       <a
         class="nav-link"
@@ -19,26 +19,23 @@
         <span class="material-icons nav-icon">{{ item.icon }}</span>
         <span class="nav-label">{{ item.labelKey | translate }}</span>
         @if (item.showPendingBadge && lootPending.totalPendingCount() > 0) {
-          <span class="nav-badge" aria-label="Pending caches">
-            {{ lootPending.totalPendingCount() }}
-          </span>
+          <app-count-badge
+            class="nav-badge"
+            [count]="lootPending.totalPendingCount()"
+            ariaLabel="Pending caches"
+          />
         }
         <span class="nav-marker" aria-hidden="true"></span>
       </a>
     }
   </div>
 
-  <a routerLink="/goals" class="gold-btn new-objective">
-    <span class="material-icons">add</span>
-    {{ 'nav.newObjective' | translate }}
-  </a>
-
   <div class="nav-spacer"></div>
 
-  <div class="nav-section nav-bottom">
+  <div class="nav-section nav-section--bottom">
     @for (item of bottomItems; track item.route) {
       <a
-        class="nav-link subtle"
+        class="nav-link"
         [routerLink]="item.route"
         routerLinkActive="active"
         [attr.aria-label]="item.labelKey | translate"
@@ -47,7 +44,7 @@
         <span class="nav-label">{{ item.labelKey | translate }}</span>
       </a>
     }
-    <button type="button" class="nav-link subtle" (click)="logout()" [attr.aria-label]="'common.signOut' | translate">
+    <button type="button" class="nav-link" (click)="logout()" [attr.aria-label]="'common.signOut' | translate">
       <span class="material-icons nav-icon">logout</span>
       <span class="nav-label">{{ 'common.signOut' | translate }}</span>
     </button>

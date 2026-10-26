@@ -3,7 +3,7 @@
     @if (!sidebarOpen()) {
       <button
         type="button"
-        class="icon-btn menu-btn"
+        class="nav-icon-btn menu-btn"
         (click)="onMenuToggle()"
         [attr.aria-label]="'navbar.openNav' | translate"
       >
@@ -38,8 +38,8 @@
     <div class="notif-wrap">
       <button
         type="button"
-        class="icon-btn"
-        [class.icon-btn--active]="panelOpen()"
+        class="nav-icon-btn"
+        [class.nav-icon-btn--active]="panelOpen()"
         (click)="togglePanel($event)"
         [attr.aria-expanded]="panelOpen()"
         aria-haspopup="true"
@@ -51,9 +51,13 @@
         }}</span>
         @if (notifications.unreadCount(); as unread) {
           @if (unread > 0) {
-            <span class="notif-badge" aria-hidden="true">{{
-              unread > 99 ? '99+' : unread
-            }}</span>
+            <app-count-badge
+              class="notif-badge"
+              size="sm"
+              [count]="unread"
+              [max]="99"
+              [ariaHidden]="true"
+            />
           }
         }
       </button>

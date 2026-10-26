@@ -70,7 +70,7 @@
   }
 }
 
-.icon-btn {
+.nav-icon-btn {
   position: relative;
   display: grid;
   place-items: center;
@@ -84,16 +84,16 @@
   transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
-.icon-btn .material-icons {
+.nav-icon-btn .material-icons {
   font-size: 20px;
 }
 
-.icon-btn:hover {
+.nav-icon-btn:hover {
   color: var(--color-text);
   background: var(--color-surface-2);
 }
 
-.icon-btn--active {
+.nav-icon-btn--active {
   color: var(--color-text);
   background: var(--color-surface-2);
   border-color: var(--color-border);
@@ -107,17 +107,6 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: #5d0018;
-  color: var(--color-gold-bright, #f5be42);
-  font-size: 0.62rem;
-  font-weight: 700;
-  line-height: 16px;
-  text-align: center;
-  pointer-events: none;
 }
 
 .notif-panel {
