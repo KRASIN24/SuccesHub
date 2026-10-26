@@ -313,6 +313,9 @@ public class TaskServiceImpl implements TaskService {
             task.setParentTask(null);
             return;
         }
+        if (task.getId() != null && taskRepository.countByParentTask_Id(task.getId()) > 0) {
+            throw new IllegalArgumentException("Task with subtasks cannot become a subtask");
+        }
         Task parent = taskRepository.findByIdAndUserId(parentTaskId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent task not found: " + parentTaskId));
         if (parent.getParentTask() != null) {

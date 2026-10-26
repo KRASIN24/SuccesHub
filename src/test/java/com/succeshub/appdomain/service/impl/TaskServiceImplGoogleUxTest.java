@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -116,6 +117,26 @@ class TaskServiceImplGoogleUxTest {
         verify(taskRepository).save(captor.capture());
         assertEquals(root, captor.getValue().getParentTask());
         assertEquals(1, captor.getValue().getSortOrder());
+    }
+
+    @Test
+    void update_rejectsNestingTaskThatAlreadyHasChildren() {
+        UUID newParentId = UUID.randomUUID();
+
+        when(taskRepository.findByIdAndUserId(rootId, "user-1")).thenReturn(Optional.of(root));
+        when(taskRepository.countByParentTask_Id(rootId)).thenReturn(1L);
+
+        TaskDto.UpdateRequest req = new TaskDto.UpdateRequest(
+                categoryId, null, newParentId, false, false, 0,
+                "Root", null, 0, 3, 30, 2, "TODO",
+                null, null, null, null, false);
+
+        IllegalArgumentException error = assertThrows(
+                IllegalArgumentException.class,
+                () -> taskService.update("user-1", rootId, req));
+
+        assertEquals("Task with subtasks cannot become a subtask", error.getMessage());
+        verify(taskRepository, never()).save(any(Task.class));
     }
 
     @Test
