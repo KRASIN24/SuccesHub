@@ -24,6 +24,8 @@
         <p class="dev-panel__clock">
           Effective today <strong>{{ tools.effectiveToday() || '—' }}</strong>
           · offset {{ tools.dayOffset() }}
+          ·
+          <a class="dev-panel__lab" routerLink="/dev/visual-lab" (click)="closePanel()">Visual Lab</a>
         </p>
 
         @if (tools.feedback()) {

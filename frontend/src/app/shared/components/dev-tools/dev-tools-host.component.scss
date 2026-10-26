@@ -126,6 +126,15 @@
   line-height: 1.4;
 }
 
+.dev-panel__lab {
+  color: #f5be42;
+  font-weight: 600;
+  text-decoration: none;
+}
+.dev-panel__lab:hover {
+  text-decoration: underline;
+}
+
 .dev-panel__reply {
   margin: 0 0 0.75rem;
   padding: 0.55rem 0.7rem;
