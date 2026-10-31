@@ -1,18 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="SuccessHub">
-  <!-- Pointy-top hex: near-black fill, gold rim (reads at 16×16) -->
+  <!--
+    Pointy-top hex inset ~5px so stroke + round joins stay inside the viewBox
+    at 16×16 tab size (a flush rim clips the left/top facets).
+  -->
   <polygon
-    points="16,2.5 28.5,9.5 28.5,22.5 16,29.5 3.5,22.5 3.5,9.5"
+    points="16,5 26.5,11 26.5,21 16,27 5.5,21 5.5,11"
     fill="#0a0a0c"
     stroke="#e8b33e"
-    stroke-width="2.25"
+    stroke-width="2"
     stroke-linejoin="round"
   />
   <!-- Soft gold bevel on upper-right facets -->
   <polyline
-    points="16,2.5 28.5,9.5 28.5,22.5"
+    points="16,5 26.5,11 26.5,21"
     fill="none"
     stroke="#f6cf63"
-    stroke-width="1.15"
+    stroke-width="1"
     stroke-linejoin="round"
     stroke-linecap="round"
     opacity="0.85"
