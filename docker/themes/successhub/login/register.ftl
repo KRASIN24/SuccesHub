@@ -6,13 +6,13 @@
     <div class="sh-enroll" id="sh-enroll">
       <script>document.body.classList.add("sh-register-page");</script>
       <aside class="sh-enroll__brand" aria-label="SuccessHub">
-        <p class="sh-enroll__eyebrow">Initiate Protocol</p>
+        <p class="sh-enroll__eyebrow">${msg("shRegisterEyebrow")}</p>
         <h1 class="sh-enroll__title">
-          <span class="sh-enroll__title-strong">SUCCESSHUB</span>
-          <span class="sh-enroll__title-light">Elite Access</span>
+          <span class="sh-enroll__title-strong">${msg("shRegisterTitleStrong")}</span>
+          <span class="sh-enroll__title-light">${msg("shRegisterTitleLight")}</span>
         </h1>
         <p class="sh-enroll__lede">
-          Step into the vacuum of luxury. Join the celestial circle where achievement is curated and precision is the only standard.
+          ${msg("shRegisterLede")}
         </p>
         <div class="sh-enroll__members">
           <div class="sh-enroll__avatars" aria-hidden="true">
@@ -20,7 +20,7 @@
             <span class="sh-enroll__avatar sh-enroll__avatar--b"></span>
             <span class="sh-enroll__avatar sh-enroll__avatar--count">+4k</span>
           </div>
-          <span class="sh-enroll__members-label">Elite Tier Members</span>
+          <span class="sh-enroll__members-label">${msg("shRegisterMembers")}</span>
         </div>
       </aside>
 
@@ -37,7 +37,7 @@
 
           <div class="sh-enroll__grid">
             <div class="sh-field<#if messagesPerField.existsError('username')> sh-field--invalid</#if>" data-field="username">
-              <label class="sh-field__label" for="username">Username</label>
+              <label class="sh-field__label" for="username">${msg("shRegisterUsername")}</label>
               <div class="sh-field__control">
                 <input class="sh-field__input"
                        type="text"
@@ -61,7 +61,7 @@
             </div>
 
             <div class="sh-field<#if messagesPerField.existsError('email')> sh-field--invalid</#if>" data-field="email">
-              <label class="sh-field__label" for="email">Celestial Email</label>
+              <label class="sh-field__label" for="email">${msg("shRegisterEmail")}</label>
               <div class="sh-field__control">
                 <input class="sh-field__input"
                        type="email"
@@ -83,7 +83,7 @@
             </div>
 
             <div class="sh-field<#if messagesPerField.existsError('password')> sh-field--invalid</#if>" data-field="password">
-              <label class="sh-field__label" for="password">Password</label>
+              <label class="sh-field__label" for="password">${msg("shRegisterPassword")}</label>
               <div class="sh-field__control sh-field__control--icon">
                 <input class="sh-field__input"
                        type="password"
@@ -111,7 +111,7 @@
             </div>
 
             <div class="sh-field<#if messagesPerField.existsError('password-confirm')> sh-field--invalid</#if>" data-field="password-confirm">
-              <label class="sh-field__label" for="password-confirm">Confirm Access</label>
+              <label class="sh-field__label" for="password-confirm">${msg("shRegisterConfirm")}</label>
               <div class="sh-field__control sh-field__control--icon">
                 <input class="sh-field__input"
                        type="password"
@@ -145,14 +145,14 @@
               <span class="glitch-check__box" aria-hidden="true">
                 <span class="glitch-check__mark"></span>
               </span>
-              <span class="glitch-check__label" data-text="I accept the Celestial Protocol">I accept the Celestial Protocol</span>
+              <span class="glitch-check__label" data-text="${msg("shRegisterTerms")}">${msg("shRegisterTerms")}</span>
             </label>
             <p class="sh-field__error" id="error-terms" role="alert" aria-live="polite" hidden></p>
           </div>
 
           <div class="sh-enroll__actions">
-            <button type="submit" class="sh-enroll__submit" id="kc-register" name="register" data-text="Initialize Access">
-              <span>Initialize Access</span>
+            <button type="submit" class="sh-enroll__submit" id="kc-register" name="register" data-text="${msg("shRegisterSubmit")}">
+              <span>${msg("shRegisterSubmit")}</span>
               <svg class="sh-enroll__submit-icon" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true">
                 <path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -161,10 +161,10 @@
         </form>
 
         <footer class="sh-enroll__footer">
-          <p class="sh-enroll__footer-hint">Already hold status?</p>
+          <p class="sh-enroll__footer-hint">${msg("shRegisterAlready")}</p>
           <#-- Fresh BFF login — loginRestartFlowUrl / loginUrl die when the registration tab session expires. -->
           <a class="sh-enroll__footer-link" href="http://localhost:4200/oauth2/authorization/keycloak">
-            Return to Vault
+            ${msg("shRegisterBack")}
             <svg viewBox="0 0 16 8" width="14" height="7" aria-hidden="true">
               <path d="M1 4h12M10 1l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -175,12 +175,12 @@
 
     <div class="sh-enroll__status" aria-hidden="true">
       <div class="sh-enroll__status-block">
-        <span class="sh-enroll__status-label">System Status</span>
-        <span class="sh-enroll__status-value sh-enroll__status-value--gold">Operational</span>
+        <span class="sh-enroll__status-label">${msg("shRegisterSystemStatus")}</span>
+        <span class="sh-enroll__status-value sh-enroll__status-value--gold">${msg("shRegisterOperational")}</span>
       </div>
       <span class="sh-enroll__status-divider"></span>
       <div class="sh-enroll__status-block">
-        <span class="sh-enroll__status-label">Uptime</span>
+        <span class="sh-enroll__status-label">${msg("shRegisterUptime")}</span>
         <span class="sh-enroll__status-value">99.998%</span>
       </div>
     </div>

@@ -225,6 +225,11 @@ header.login-pf-header {
   margin-bottom: 0.75rem;
 }
 
+.sh-eyebrow:empty,
+.sh-title-accent:empty {
+  display: none;
+}
+
 .sh-title-accent {
   color: var(--sh-gold);
   font-style: italic;
