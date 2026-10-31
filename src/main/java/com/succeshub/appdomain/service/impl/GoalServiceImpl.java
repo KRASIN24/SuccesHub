@@ -1,12 +1,22 @@
 package com.succeshub.appdomain.service.impl;
 
 import com.succeshub.appdomain.dto.GoalDto;
+import com.succeshub.appdomain.dto.GoalSubscriptionDto;
+import com.succeshub.appdomain.dto.TaskDto;
 import com.succeshub.appdomain.model.Goal;
+import com.succeshub.appdomain.model.GoalCategorySubscription;
+import com.succeshub.appdomain.model.Task;
+import com.succeshub.appdomain.model.TaskCategory;
+import com.succeshub.appdomain.repository.GoalCategorySubscriptionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
+import com.succeshub.appdomain.repository.TaskCategoryRepository;
+import com.succeshub.appdomain.repository.TaskRepository;
 import com.succeshub.appdomain.service.GoalService;
 import com.succeshub.appdomain.service.UserProfileService;
+import com.succeshub.coreinfra.exception_handler.base.AppException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +30,10 @@ public class GoalServiceImpl implements GoalService {
 
     private final GoalRepository repository;
     private final UserProfileService profileService;
+    private final TaskRepository taskRepository;
+    private final TaskCategoryRepository categoryRepository;
+    private final GoalCategorySubscriptionRepository subscriptionRepository;
+    private final TaskMapper taskMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,6 +49,12 @@ public class GoalServiceImpl implements GoalService {
         return repository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, Goal.Status.COMPLETED).stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GoalDto.Response getById(String userId, UUID id) {
+        return toDto(requireGoal(userId, id));
     }
 
     @Override
@@ -65,8 +85,7 @@ public class GoalServiceImpl implements GoalService {
     @Override
     @Transactional
     public GoalDto.Response update(String userId, UUID id, GoalDto.UpdateRequest req) {
-        Goal goal = repository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Goal not found: " + id));
+        Goal goal = requireGoal(userId, id);
 
         goal.setName(req.name());
         goal.setTier(req.tier());
@@ -94,9 +113,114 @@ public class GoalServiceImpl implements GoalService {
     @Override
     @Transactional
     public void delete(String userId, UUID id) {
-        Goal goal = repository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new EntityNotFoundException("Goal not found: " + id));
+        Goal goal = requireGoal(userId, id);
         repository.delete(goal);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskDto.Response> getLinkedTasks(String userId, UUID goalId) {
+        requireGoal(userId, goalId);
+        return taskRepository.findByUserIdAndGoal_IdOrderByCreatedAtDesc(userId, goalId).stream()
+                .map(taskMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public TaskDto.Response attachTask(String userId, UUID goalId, UUID taskId) {
+        Goal goal = requireGoal(userId, goalId);
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found: " + taskId));
+        task.setGoal(goal);
+        return taskMapper.toDto(taskRepository.save(task));
+    }
+
+    @Override
+    @Transactional
+    public TaskDto.Response detachTask(String userId, UUID goalId, UUID taskId) {
+        requireGoal(userId, goalId);
+        Task task = taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found: " + taskId));
+        if (task.getGoal() == null || !task.getGoal().getId().equals(goalId)) {
+            throw new IllegalArgumentException("Task is not linked to this campaign");
+        }
+        task.setGoal(null);
+        return taskMapper.toDto(taskRepository.save(task));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GoalSubscriptionDto.Response> listSubscriptions(String userId, UUID goalId) {
+        requireGoal(userId, goalId);
+        return subscriptionRepository.findByGoal_IdAndUserId(goalId, userId).stream()
+                .map(this::toSubscriptionDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public GoalSubscriptionDto.Response subscribeCategory(
+            String userId, UUID goalId, GoalSubscriptionDto.SubscribeRequest req) {
+        Goal goal = requireGoal(userId, goalId);
+        TaskCategory category = categoryRepository.findById(req.categoryId())
+                .filter(c -> c.getUserId().equals(userId))
+                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + req.categoryId()));
+
+        subscriptionRepository.findByCategory_Id(category.getId()).ifPresent(existing -> {
+            if (!existing.getGoal().getId().equals(goalId)) {
+                throw new AppException(
+                        "Category is already subscribed to another campaign",
+                        HttpStatus.CONFLICT,
+                        "CATEGORY_ALREADY_SUBSCRIBED");
+            }
+            throw new AppException(
+                    "Category is already subscribed to this campaign",
+                    HttpStatus.CONFLICT,
+                    "CATEGORY_ALREADY_SUBSCRIBED");
+        });
+
+        GoalCategorySubscription sub = new GoalCategorySubscription();
+        sub.setUserId(userId);
+        sub.setGoal(goal);
+        sub.setCategory(category);
+        GoalCategorySubscription saved = subscriptionRepository.save(sub);
+
+        List<Task> openUnlinked = taskRepository.findByUserIdAndCategory_IdAndGoalIsNullAndStatusNot(
+                userId, category.getId(), Task.Status.DONE);
+        for (Task t : openUnlinked) {
+            t.setGoal(goal);
+        }
+        if (!openUnlinked.isEmpty()) {
+            taskRepository.saveAll(openUnlinked);
+        }
+
+        return toSubscriptionDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public void unsubscribeCategory(String userId, UUID goalId, UUID categoryId) {
+        requireGoal(userId, goalId);
+        GoalCategorySubscription sub = subscriptionRepository
+                .findByGoal_IdAndCategory_IdAndUserId(goalId, categoryId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription not found"));
+        subscriptionRepository.delete(sub);
+    }
+
+    private Goal requireGoal(String userId, UUID id) {
+        return repository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Goal not found: " + id));
+    }
+
+    private GoalSubscriptionDto.Response toSubscriptionDto(GoalCategorySubscription s) {
+        return new GoalSubscriptionDto.Response(
+                s.getId(),
+                s.getGoal().getId(),
+                s.getCategory().getId(),
+                s.getCategory().getName(),
+                s.getCreatedAt()
+        );
     }
 
     private GoalDto.Response toDto(Goal g) {
@@ -107,6 +231,7 @@ public class GoalServiceImpl implements GoalService {
                 g.getTargetDescription(),
                 g.getTargetValue(),
                 g.getCurrentProgress(),
+                g.getPendingDamage(),
                 g.getHealthRemaining(),
                 g.getXpReward(),
                 g.getIcon(),

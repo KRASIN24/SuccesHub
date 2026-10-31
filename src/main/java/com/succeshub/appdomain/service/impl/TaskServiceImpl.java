@@ -6,6 +6,7 @@ import com.succeshub.appdomain.dto.gamification.GamificationDto.TaskCompletionDt
 import com.succeshub.appdomain.model.Goal;
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.model.TaskCategory;
+import com.succeshub.appdomain.repository.GoalCategorySubscriptionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
 import com.succeshub.appdomain.repository.TaskCategoryRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
@@ -37,6 +38,7 @@ public class TaskServiceImpl implements TaskService {
     private final XpEventRepository xpEventRepository;
     private final TaskCategoryRepository categoryRepository;
     private final GoalRepository goalRepository;
+    private final GoalCategorySubscriptionRepository subscriptionRepository;
     private final UserProfileService profileService;
     private final GamificationEngine gamificationEngine;
     private final GamificationTimeUtil timeUtil;
@@ -81,7 +83,11 @@ public class TaskServiceImpl implements TaskService {
         }
 
         applyParent(userId, task, req.parentTaskId());
-        applyGoal(userId, task, req.goalId());
+        if (req.goalId() != null) {
+            applyGoal(userId, task, req.goalId());
+        } else {
+            applySubscribedGoal(task);
+        }
 
         if (req.sortOrder() != null) {
             task.setSortOrder(req.sortOrder());
@@ -352,6 +358,15 @@ public class TaskServiceImpl implements TaskService {
         Goal goal = goalRepository.findByIdAndUserId(goalId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Goal not found: " + goalId));
         task.setGoal(goal);
+    }
+
+    /** Live category subscription: inherit campaign when the category is subscribed. */
+    private void applySubscribedGoal(Task task) {
+        if (task.getCategory() == null) {
+            return;
+        }
+        subscriptionRepository.findByCategory_IdAndUserId(task.getCategory().getId(), task.getUserId())
+                .ifPresent(sub -> task.setGoal(sub.getGoal()));
     }
 
     private static int defaultInt(Integer value, int fallback) {

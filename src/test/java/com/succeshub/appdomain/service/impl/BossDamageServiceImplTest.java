@@ -4,6 +4,7 @@ import com.succeshub.appdomain.dto.gamification.GamificationDto.BossDamageDto;
 import com.succeshub.appdomain.model.Goal;
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.repository.GoalRepository;
+import com.succeshub.appdomain.service.UserProfileService;
 import com.succeshub.config.GamificationProperties;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ class BossDamageServiceImplTest {
 
     @Mock GoalRepository goalRepository;
     @Mock ApplicationEventPublisher eventPublisher;
+    @Mock UserProfileService profileService;
 
     private GamificationProperties properties;
     private BossDamageServiceImpl service;
@@ -43,7 +45,7 @@ class BossDamageServiceImplTest {
     void setUp() {
         properties = new GamificationProperties();
         properties.setBossDamageFactor(2);
-        service = new BossDamageServiceImpl(goalRepository, properties, eventPublisher);
+        service = new BossDamageServiceImpl(goalRepository, properties, eventPublisher, profileService);
 
         goalId = UUID.randomUUID();
         goal = new Goal();
@@ -52,6 +54,7 @@ class BossDamageServiceImplTest {
         goal.setName("Hydra");
         goal.setTargetValue(100);
         goal.setCurrentProgress(0);
+        goal.setPendingDamage(0);
         goal.setXpReward(200);
         goal.setStatus(Goal.Status.ACTIVE);
 
@@ -62,74 +65,85 @@ class BossDamageServiceImplTest {
 
     @Test
     void applyDamage_returnsNullWhenTaskHasNoGoal() {
-        // Arrange
         task.setGoal(null);
 
-        // Act
         BossDamageDto dto = service.applyDamage("user-1", task);
 
-        // Assert
         assertNull(dto);
     }
 
     @Test
     void applyDamage_returnsNullWhenGoalAlreadyCompleted() {
-        // Arrange
         goal.setStatus(Goal.Status.COMPLETED);
         when(goalRepository.findByIdAndUserId(goalId, "user-1")).thenReturn(Optional.of(goal));
 
-        // Act
         BossDamageDto dto = service.applyDamage("user-1", task);
 
-        // Assert
         assertNull(dto);
     }
 
     @Test
     void applyDamage_throwsWhenGoalMissingForUser() {
-        // Arrange
         when(goalRepository.findByIdAndUserId(goalId, "user-1")).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> service.applyDamage("user-1", task));
     }
 
     @Test
-    void applyDamage_appliesDifficultyTimesFactor() {
-        // Arrange
+    void applyDamage_banksDifficultyTimesFactorWithoutChangingHp() {
         when(goalRepository.findByIdAndUserId(goalId, "user-1")).thenReturn(Optional.of(goal));
 
-        // Act
         BossDamageDto dto = service.applyDamage("user-1", task);
 
-        // Assert
         assertNotNull(dto);
         assertEquals(10.0, dto.progressDelta());
-        assertEquals(90, dto.healthRemaining());
+        assertEquals(100, dto.healthRemaining());
         assertFalse(dto.goalCompleted());
         assertEquals(0, dto.goalXpReward());
-        assertEquals(10.0, goal.getCurrentProgress());
+        assertEquals(0.0, goal.getCurrentProgress());
+        assertEquals(10.0, goal.getPendingDamage());
     }
 
     @Test
-    void applyDamage_completesGoalAndAwardsXpWhenHealthDepleted() {
-        // Arrange
-        goal.setCurrentProgress(95);
+    void strike_appliesPendingAndClearsBank() {
+        goal.setPendingDamage(25);
         when(goalRepository.findByIdAndUserId(goalId, "user-1")).thenReturn(Optional.of(goal));
 
-        // Act
-        BossDamageDto dto = service.applyDamage("user-1", task);
+        BossDamageDto dto = service.strike("user-1", goalId);
 
-        // Assert
+        assertEquals(25.0, dto.progressDelta());
+        assertEquals(75, dto.healthRemaining());
+        assertFalse(dto.goalCompleted());
+        assertEquals(25.0, goal.getCurrentProgress());
+        assertEquals(0.0, goal.getPendingDamage());
+    }
+
+    @Test
+    void strike_completesGoalWhenPendingDepletesHp() {
+        goal.setCurrentProgress(95);
+        goal.setPendingDamage(10);
+        when(goalRepository.findByIdAndUserId(goalId, "user-1")).thenReturn(Optional.of(goal));
+
+        BossDamageDto dto = service.strike("user-1", goalId);
+
         assertTrue(dto.goalCompleted());
         assertEquals(200, dto.goalXpReward());
         assertEquals(Goal.Status.COMPLETED, goal.getStatus());
         assertEquals("Slain", goal.getSlainLabel());
         assertNotNull(goal.getCompletedAt());
         assertEquals(0, dto.healthRemaining());
+        assertEquals(0.0, goal.getPendingDamage());
+        verify(profileService).addXp("user-1", 200);
 
         ArgumentCaptor<Goal> captor = ArgumentCaptor.forClass(Goal.class);
         verify(goalRepository).save(captor.capture());
         assertEquals(Goal.Status.COMPLETED, captor.getValue().getStatus());
+    }
+
+    @Test
+    void strike_throwsWhenNoPendingDamage() {
+        when(goalRepository.findByIdAndUserId(goalId, "user-1")).thenReturn(Optional.of(goal));
+
+        assertThrows(IllegalStateException.class, () -> service.strike("user-1", goalId));
     }
 }

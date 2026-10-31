@@ -7,6 +7,7 @@ import com.succeshub.appdomain.dto.gamification.GamificationDto.TaskCompletionDt
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.model.TaskCategory;
 import com.succeshub.appdomain.model.UserProfile;
+import com.succeshub.appdomain.repository.GoalCategorySubscriptionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
 import com.succeshub.appdomain.repository.TaskCategoryRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
@@ -38,6 +39,7 @@ class TaskServiceImplCompleteTest {
     @Mock XpEventRepository xpEventRepository;
     @Mock TaskCategoryRepository categoryRepository;
     @Mock GoalRepository goalRepository;
+    @Mock GoalCategorySubscriptionRepository subscriptionRepository;
     @Mock UserProfileService profileService;
     @Mock GamificationEngine gamificationEngine;
     @Mock GamificationTimeUtil timeUtil;
