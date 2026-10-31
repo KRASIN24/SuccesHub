@@ -89,7 +89,7 @@
                           races into login() and bounces back to the login page).
                         -->
                         <a tabindex="6" id="sh-create-account"
-                           href="http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout?client_id=succeshub-backend&post_logout_redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Foauth2%2Fauthorization%2Fkeycloak%3Fregister%3D1">${msg("shLoginCreateAccount")}</a>
+                           href="http://localhost:8080/realms/successhub-realm/protocol/openid-connect/logout?client_id=successhub-backend&post_logout_redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Foauth2%2Fauthorization%2Fkeycloak%3Fregister%3D1">${msg("shLoginCreateAccount")}</a>
                     </p>
                 </#if>
             </form>

@@ -5,7 +5,7 @@ import { DevToolsService } from '../services/dev-tools.service';
 import { GamificationService } from '../services/gamification.service';
 
 /**
- * Allows navigation only when {@code succeshub.loot.enable-dev-grants} is on
+ * Allows navigation only when {@code successhub.loot.enable-dev-grants} is on
  * (same gate as the floating Dev bubble).
  */
 export const devGrantsGuard: CanActivateFn = () => {

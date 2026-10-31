@@ -459,9 +459,9 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         label: 'B · Notch family (outline secondary)',
         sampleClass: 'vl-pair',
         provenance: {
-          file: 'proposed',
-          selector: 'same 45° cut; ghost outline, no stripe',
-          surface: 'Recommended',
+          file: 'frontend/src/global.css',
+          selector: '.ghost-btn + glitch-btn · 45° cut outline',
+          surface: 'Recommended · shipped',
         },
       },
       {
@@ -517,9 +517,9 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         label: 'B · Chamfer square pair',
         sampleClass: 'vl-icon-row',
         provenance: {
-          file: 'proposed',
-          selector: '45° cut square · outline edit / fill add',
-          surface: 'Matches glitch CTA',
+          file: 'frontend/src/global.css',
+          selector: '.icon-btn + .icon-btn--fill',
+          surface: 'Recommended · shipped',
         },
       },
       {

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd" logicalFilePath="db/changelog/2026-10-30-02-goal-category-subscription.xml">
+
+    <changeSet id="2026-10-30-02-goal-category-subscription" author="krasin">
+        <createTable tableName="goal_category_subscription" schemaName="successhub">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="goal_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="UUID">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="successhub"
+                baseTableName="goal_category_subscription"
+                baseColumnNames="goal_id"
+                referencedTableSchemaName="successhub"
+                referencedTableName="goal"
+                referencedColumnNames="id"
+                constraintName="fk_goal_cat_sub_goal"
+                onDelete="CASCADE"/>
+        <addForeignKeyConstraint
+                baseTableSchemaName="successhub"
+                baseTableName="goal_category_subscription"
+                baseColumnNames="category_id"
+                referencedTableSchemaName="successhub"
+                referencedTableName="task_category"
+                referencedColumnNames="id"
+                constraintName="fk_goal_cat_sub_category"
+                onDelete="CASCADE"/>
+        <createIndex tableName="goal_category_subscription" schemaName="successhub"
+                     indexName="idx_goal_cat_sub_goal">
+            <column name="goal_id"/>
+        </createIndex>
+        <createIndex tableName="goal_category_subscription" schemaName="successhub"
+                     indexName="idx_goal_cat_sub_user">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

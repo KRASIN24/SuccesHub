@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd" logicalFilePath="db/changelog/2026-10-30-01-goal-pending-damage.xml">
+
+    <!-- Add goal.pending_damage for buffered strike releases. -->
+    <changeSet id="2026-10-30-01-goal-pending-damage" author="krasin">
+        <addColumn tableName="goal" schemaName="successhub">
+            <column name="pending_damage" type="DOUBLE PRECISION" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

@@ -1,69 +1,49 @@
-# =========================
-# BACKEND (Spring Boot)
-# =========================
+# Backend (Spring Boot)
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# =========================
-# FRONTEND (Angular)
-# =========================
+# Frontend (Angular)
 node_modules/
 frontend/node_modules/
-
 dist/
 frontend/dist/
-
 .angular/
 frontend/.angular/
-
 out-tsc/
 
-# =========================
 # Logs
-# =========================
 *.log
 npm-debug.log*
 yarn-error.log*
 
-# =========================
 # IDEs
-# =========================
 .idea/
 *.iws
 *.iml
 *.ipr
-
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# =========================
 # OS
-# =========================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# =========================
 # Misc
-# =========================
 coverage/
 .sass-cache/
 tmp/
 .worktrees/
 
-# =========================
-# Local env (optional)
-# =========================
+# Local env
 .env
 .env.local
 environment.local.ts
 
-# =========================
 # Local workspace cache (knowledge graph, notes)
-# =========================
 .local/
-desktop.ini

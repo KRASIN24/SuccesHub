@@ -1,0 +1,76 @@
+package com.successhub.appdomain.service;
+
+import com.successhub.appdomain.dto.ProfileDto;
+import com.successhub.appdomain.entity.UserProfile;
+
+/**
+ * Application service for user profiles, XP totals, and level progression.
+ */
+public interface UserProfileService {
+
+    /**
+     * Returns the profile for the given Keycloak subject ID.
+     * Creates a new profile row on first access.
+     *
+     * @param keycloakId  OIDC subject ({@code sub}) from the authenticated session
+     * @param displayName human-readable name synced from Keycloak; may be {@code null}
+     * @return current profile state exposed to the dashboard
+     */
+    ProfileDto getOrCreateProfile(String keycloakId, String displayName);
+
+    /**
+     * Sets a user-chosen display name from Settings. Marks the profile so Keycloak
+     * sync on subsequent logins does not overwrite the custom value.
+     *
+     * @param keycloakId  OIDC subject ({@code sub}) of the authenticated user
+     * @param displayName trimmed display name (1–64 characters)
+     * @return updated profile snapshot
+     */
+    ProfileDto updateDisplayName(String keycloakId, String displayName);
+
+    /**
+     * Updates UI theme and/or interface locale on the profile.
+     * Null arguments leave the existing value unchanged.
+     *
+     * @param keycloakId OIDC subject ({@code sub}) of the authenticated user
+     * @param darkTheme  when non-null, prefer dark ({@code true}) or light ({@code false})
+     * @param locale     when non-null, BCP 47 code from the allow-list ({@code en-US}, {@code pl-PL})
+     * @return updated profile snapshot
+     * @throws IllegalArgumentException when {@code locale} is non-null and not allow-listed
+     */
+    ProfileDto updatePreferences(String keycloakId, Boolean darkTheme, String locale);
+
+    /**
+     * Adds XP to the user's profile and applies any resulting level-ups.
+     *
+     * @param keycloakId OIDC subject ({@code sub}) of the user receiving XP
+     * @param amount     XP points to add; must be positive in normal flows
+     * @return updated profile after persistence
+     * @throws IllegalStateException when no profile exists for the given user
+     */
+    ProfileDto addXp(String keycloakId, int amount);
+
+    /**
+     * Loads the profile entity for gamification flows, creating a row on first access.
+     *
+     * @param keycloakId OIDC subject ({@code sub}) of the user
+     * @return persisted profile entity
+     */
+    UserProfile requireProfile(String keycloakId);
+
+    /**
+     * Resets daily XP counters when the calendar day changes (server timezone in V1).
+     *
+     * @param profile profile entity to update in memory
+     * @param today   current local date used for day boundaries
+     */
+    void resetDailyCountersIfNeeded(UserProfile profile, java.time.LocalDate today);
+
+    /**
+     * Maps a persisted profile entity to the API DTO.
+     *
+     * @param profile profile entity
+     * @return dashboard profile snapshot
+     */
+    ProfileDto mapToDto(UserProfile profile);
+}

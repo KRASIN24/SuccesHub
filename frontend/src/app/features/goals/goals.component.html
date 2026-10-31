@@ -35,7 +35,7 @@
         <form class="add-goal-form surface-card" (ngSubmit)="saveGoal()">
           <h3 class="form-title">{{ 'goals.summonNewBoss' | translate }}</h3>
           @if (saveError()) {
-            <p class="form-error">{{ saveError() }}</p>
+            <p class="form-error-box">{{ saveError() }}</p>
           }
           <div class="form-grid">
             <label class="form-field span-2">

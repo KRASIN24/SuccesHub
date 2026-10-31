@@ -1,5 +1,5 @@
 # Multi-stage backend image for SuccessHub (Spring Boot 3 / Java 21).
-# Build from repo root: docker build -f Dockerfile.backend -t succeshub-backend .
+# Build from repo root: docker build -f Dockerfile.backend -t successhub-backend .
 
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /workspace
@@ -11,7 +11,7 @@ RUN chmod +x mvnw \
 
 COPY src ./src
 RUN ./mvnw -B -DskipTests package \
-  && mv target/succes-hub-*.jar /workspace/app.jar
+  && mv target/successhub-*.jar /workspace/app.jar
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app

@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "succes-hub-frontend": {
+    "successhub-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -21,7 +21,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/succes-hub-frontend",
+            "outputPath": "dist/successhub-frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -33,6 +33,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "src",
+                "output": "/"
+              },
+              {
+                "glob": "favicon.svg",
+                "input": "src",
+                "output": "/"
               },
               {
                 "glob": "**/*",
@@ -83,10 +93,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "succes-hub-frontend:build:production"
+              "buildTarget": "successhub-frontend:build:production"
             },
             "development": {
-              "buildTarget": "succes-hub-frontend:build:development"
+              "buildTarget": "successhub-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -108,6 +118,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "src",
+                "output": "/"
+              },
+              {
+                "glob": "favicon.svg",
+                "input": "src",
+                "output": "/"
               },
               {
                 "glob": "**/*",

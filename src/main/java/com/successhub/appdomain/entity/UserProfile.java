@@ -1,0 +1,137 @@
+package com.successhub.appdomain.entity;
+
+import com.successhub.appdomain.enums.StreakTier;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Entity
+@Table(name = "user_profile", schema = "successhub")
+@Getter
+@Setter
+@NoArgsConstructor
+public class UserProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(name = "keycloak_id", unique = true, nullable = false)
+    private String keycloakId;
+
+    @Column(name = "display_name")
+    private String displayName;
+
+    @Column(name = "display_name_customized", nullable = false)
+    private boolean displayNameCustomized = false;
+
+    /** Prefer dark orbital theme in the SPA and Keycloak login bridge. */
+    @Column(name = "dark_theme", nullable = false)
+    private boolean darkTheme = true;
+
+    /** BCP 47 UI locale, e.g. en-US or pl-PL. */
+    @Column(name = "locale", nullable = false, length = 16)
+    private String locale = "en-US";
+
+    @Column(name = "level", nullable = false)
+    private int level = 1;
+
+    @Column(name = "current_xp", nullable = false)
+    private int currentXp = 0;
+
+    @Column(name = "next_level_xp", nullable = false)
+    private int nextLevelXp = 1000;
+
+    @Column(name = "current_streak", nullable = false)
+    private int currentStreak = 0;
+
+    @Column(name = "global_rank", nullable = false)
+    private int globalRank = 9999;
+
+    @Column(name = "last_active_date")
+    private LocalDate lastActiveDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "streak_tier")
+    private StreakTier streakTier = StreakTier.NONE;
+
+    @Column(name = "streak_shields", nullable = false)
+    private int streakShields = 0;
+
+    @Column(name = "daily_xp_earned", nullable = false)
+    private int dailyXpEarned = 0;
+
+    @Column(name = "daily_xp_date")
+    private LocalDate dailyXpDate;
+
+    @Column(name = "lifetime_xp", nullable = false)
+    private int lifetimeXp = 0;
+
+    @Column(name = "first_task_completed_today", nullable = false)
+    private boolean firstTaskCompletedToday = false;
+
+    @Column(name = "last_processed_day")
+    private LocalDate lastProcessedDay;
+
+    /** Armed Double Strike card — next task completion awards 2× XP (then cleared). */
+    @Column(name = "pending_double_strike", nullable = false)
+    private boolean pendingDoubleStrike = false;
+
+    /** Armed Surge Token — next task gains +50 XP ignoring the daily cap (then cleared). */
+    @Column(name = "pending_surge_token", nullable = false)
+    private boolean pendingSurgeToken = false;
+
+    /** Calendar day the user last acknowledged via Celebrate (client seal state). */
+    @Column(name = "last_celebrated_day")
+    private LocalDate lastCelebratedDay;
+
+    /** Monday of the last week that received a WEEKLY_RESET loot grant. */
+    @Column(name = "last_weekly_loot_week")
+    private LocalDate lastWeeklyLootWeek;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt = Instant.now();
+
+    /** When set, account is in the 30-day deletion grace period. */
+    @Column(name = "deactivated_at")
+    private Instant deactivatedAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+    public static StreakTier tierForStreak(int streak) {
+        if (streak >= 100) {
+            return StreakTier.GOLD;
+        }
+        if (streak >= 30) {
+            return StreakTier.SILVER;
+        }
+        if (streak >= 7) {
+            return StreakTier.BRONZE;
+        }
+        return StreakTier.NONE;
+    }
+
+    /**
+     * Award XP and automatically level up when the threshold is reached.
+     * Each level requires 20% more XP than the previous one.
+     */
+    public void addXp(int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        this.lifetimeXp += amount;
+        this.currentXp += amount;
+        while (this.currentXp >= this.nextLevelXp) {
+            this.currentXp -= this.nextLevelXp;
+            this.level++;
+            this.nextLevelXp = (int) (this.nextLevelXp * 1.2);
+        }
+    }
+}

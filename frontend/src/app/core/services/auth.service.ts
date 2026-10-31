@@ -109,8 +109,8 @@ export class AuthService {
           + `&kc_locale=${encodeURIComponent(loc)}`
           + `&sh_theme=${shTheme}`;
         window.location.href =
-          'http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout'
-          + '?client_id=succeshub-backend'
+          'http://localhost:8080/realms/successhub-realm/protocol/openid-connect/logout'
+          + '?client_id=successhub-backend'
           + '&post_logout_redirect_uri='
           + encodeURIComponent(returnTo);
         return;

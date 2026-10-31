@@ -1,9 +1,4 @@
-/* ============================================================
-   SuccessHub login theme — "Sovereign Portal"
-   Adapted from the Figma design (node 11:5):
-     surface #141317 · card #211f23 · gold #f5be42
-     Space Grotesk (display) + Inter (body) + Material Symbols
-   ============================================================ */
+/* SuccessHub login theme */
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 
@@ -26,6 +21,8 @@
   --sh-error: #c94a35;
   --sh-font: "Inter", "Helvetica Neue", Arial, sans-serif;
   --sh-font-display: "Space Grotesk", "Inter", sans-serif;
+  --sh-page-radial: radial-gradient(circle at 50% 38%, rgba(210, 159, 34, 0.10) 0%, transparent 60%);
+  --sh-page-linear: linear-gradient(180deg, var(--sh-bg) 0%, var(--sh-bg-2) 100%);
 }
 
 html.app-dark,
@@ -68,7 +65,6 @@ html {
 
 body.login-pf,
 .login-pf body {
-  min-height: 100vh;
   min-height: 100dvh;
   margin: 0;
 }
@@ -78,7 +74,6 @@ body.login-pf,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   min-height: 100dvh;
   padding: 1.25rem 1rem 1.5rem;
   box-sizing: border-box;
@@ -101,7 +96,7 @@ body.login-pf,
   padding: 0 !important;
   text-align: center !important;
   color: var(--sh-gold) !important;
-  font-family: var(--sh-font-display);
+  font-family: var(--sh-font-display), sans-serif;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -123,14 +118,9 @@ body.login-pf,
 .login-pf body,
 .login-pf {
   position: relative;
-  background-image: none !important;
-  background-color: var(--sh-bg) !important;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(210, 159, 34, 0.10) 0%, transparent 60%),
-    linear-gradient(180deg, var(--sh-bg) 0%, var(--sh-bg-2) 100%) !important;
-  background-attachment: fixed !important;
+  background: var(--sh-page-radial) fixed, var(--sh-page-linear) fixed !important;
   color: var(--sh-on);
-  font-family: var(--sh-font);
+  font-family: var(--sh-font), sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -139,8 +129,7 @@ body.login-pf,
 #kc-info-wrapper,
 .login-pf-page #kc-info,
 .login-pf-signup {
-  background: transparent !important;
-  background-image: none !important;
+  background: none !important;
   border: none !important;
   box-shadow: none !important;
   color: var(--sh-on-variant) !important;
@@ -162,21 +151,26 @@ body::after {
 body::before { top: -6rem; left: -6rem; }
 body::after { bottom: -6rem; right: -6rem; }
 
-/* ---- Login card ("Auth Vessel") — W15 surface-card ---- */
+/* ---- Login / enroll card — W15 surface-card ---- */
 .card-pf,
-.login-pf-page .card-pf {
+.login-pf-page .card-pf,
+.sh-enroll__vessel {
   position: relative;
   background: var(--sh-card);
   border: 1px solid color-mix(in srgb, var(--sh-outline-variant) 70%, transparent);
-  border-top: 1px solid color-mix(in srgb, var(--sh-outline-variant) 70%, transparent) !important;
   border-radius: 14px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  padding: 2.25rem 2.5rem 2rem;
-  margin: 0 auto;
-  max-width: 480px;
   width: 100%;
   overflow: visible;
   box-sizing: border-box;
+}
+
+.card-pf,
+.login-pf-page .card-pf {
+  border-top: 1px solid color-mix(in srgb, var(--sh-outline-variant) 70%, transparent) !important;
+  padding: 2.25rem 2.5rem 2rem;
+  margin: 0 auto;
+  max-width: 480px;
   flex-shrink: 0;
 }
 
@@ -199,7 +193,7 @@ header.login-pf-header {
 }
 
 #kc-page-title {
-  font-family: var(--sh-font-display);
+  font-family: var(--sh-font-display), sans-serif;
   color: var(--sh-gold);
   font-weight: 700;
   font-size: clamp(1.15rem, 3vw, 1.35rem);
@@ -215,7 +209,7 @@ header.login-pf-header {
 }
 
 .sh-eyebrow {
-  font-family: var(--sh-font);
+  font-family: var(--sh-font), sans-serif;
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.32em;
@@ -267,13 +261,16 @@ header.login-pf-header {
 label,
 .control-label,
 .sh-label,
+.sh-field__label,
 #kc-form-login label {
   color: var(--sh-on-variant) !important;
-  font-family: var(--sh-font);
+  font-family: var(--sh-font), sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  margin: 0;
+  transition: color 0.15s ease;
 }
 
 .sh-label {
@@ -303,32 +300,32 @@ label,
   color: inherit !important;
   text-decoration: none !important;
 }
-.sh-forgot:hover {
-  color: var(--sh-gold) !important;
-  text-decoration: underline !important;
-}
-
-/* ---- Inputs — W15 form-settings / .app-input look ---- */
-input[type="text"]:not(.sh-field__input),
-input[type="password"]:not(.sh-field__input),
-input[type="email"]:not(.sh-field__input),
-input[type="number"]:not(.sh-field__input),
-.form-control:not(.sh-field__input),
-.pf-c-form-control:not(.sh-field__input),
-.sh-input {
-  background: var(--sh-card) !important;
+/* ---- Inputs — login + register share one boxed field look ---- */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+.form-control,
+.pf-c-form-control,
+.sh-input,
+.sh-field__input {
+  background: var(--sh-card) none !important;
   border: 1px solid color-mix(in srgb, var(--sh-outline-variant) 85%, transparent) !important;
   border-radius: 8px !important;
+  outline: none !important;
   color: var(--sh-on) !important;
+  caret-color: var(--sh-gold);
   height: auto !important;
   min-height: 2.5rem !important;
   padding: 0.55rem 0.65rem !important;
-  font-family: var(--sh-font);
+  margin: 0 !important;
+  font-family: var(--sh-font), sans-serif !important;
   font-weight: 400;
   font-size: 0.85rem !important;
   letter-spacing: 0.02em;
   line-height: 1.4;
   box-shadow: none !important;
+  -webkit-box-shadow: none !important;
   box-sizing: border-box !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -339,22 +336,28 @@ input[type="password"].sh-input {
   -webkit-text-fill-color: var(--sh-on);
 }
 
-input[type="text"]:not(.sh-field__input):focus,
-input[type="password"]:not(.sh-field__input):focus,
-input[type="email"]:not(.sh-field__input):focus,
-.form-control:not(.sh-field__input):focus,
-.pf-c-form-control:not(.sh-field__input):focus,
-.sh-input:focus {
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+.form-control:focus,
+.pf-c-form-control:focus,
+.sh-input:focus,
+.sh-field__input:focus,
+.sh-field__input:focus-visible {
   border-color: var(--sh-gold) !important;
   box-shadow: 0 0 0 3px rgba(245, 190, 66, 0.18) !important;
   outline: none !important;
 }
 
 input::placeholder,
-.sh-input::placeholder {
-  color: var(--sh-placeholder);
+.sh-input::placeholder,
+.sh-field__input::placeholder {
+  color: var(--sh-placeholder) !important;
   opacity: 1;
   letter-spacing: normal;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* autofill — keep theme text color */
@@ -437,7 +440,7 @@ input:-webkit-autofill:focus {
   opacity: 0.85;
 }
 
-/* ---- Primary button — W15 primary-glitch, full form width ---- */
+/* ---- Primary button — gold cut corner + edge stripe (Keycloak forms) ---- */
 .btn-primary,
 #kc-login,
 .sh-submit,
@@ -448,32 +451,25 @@ input[type="submit"].btn-primary,
   --sh-glitch-fill: #f5be42;
   --sh-glitch-edge: #d29f22;
   --sh-glitch-ink: #402d00;
-  position: relative;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
   width: 100%;
-  max-width: none;
-  min-width: 0;
-  margin: 0;
-  margin-right: 6px; /* room for edge stripe */
-  background: linear-gradient(45deg, transparent 5%, var(--sh-glitch-fill) 5%) !important;
-  border: none !important;
+  margin: 0 6px 0 0;
+  padding: 0.85rem 1.35rem !important;
+  min-height: 2.75rem;
+  border: 0 !important;
   border-radius: 0 !important;
+  background: linear-gradient(45deg, transparent 5%, var(--sh-glitch-fill) 5%) !important;
+  box-shadow: 6px 0 0 var(--sh-glitch-edge) !important;
   color: var(--sh-glitch-ink) !important;
   -webkit-text-fill-color: var(--sh-glitch-ink);
-  font-family: var(--sh-font-display) !important;
-  font-weight: 700 !important;
+  font: 700 0.75rem/1.2 var(--sh-font-display), sans-serif !important;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  font-size: 0.75rem !important;
-  line-height: 1.2;
-  min-height: 2.75rem;
-  padding: 0.85rem 1.35rem !important;
-  box-shadow: 6px 0 0 var(--sh-glitch-edge) !important;
-  cursor: pointer;
   text-decoration: none !important;
+  cursor: pointer;
   box-sizing: border-box;
   transition: filter 0.2s ease;
 }
@@ -503,74 +499,11 @@ input[type="submit"].btn-primary,
   transform: none;
 }
 
-/* Hover glitch slice (needs data-text on the button) */
-.sh-submit::after,
-.sh-enroll__submit::after,
-.sh-info__primary::after {
-  --slice-0: inset(50% 50% 50% 50%);
-  --slice-1: inset(80% -6px 0 0);
-  --slice-2: inset(50% -6px 30% 0);
-  --slice-3: inset(10% -6px 85% 0);
-  --slice-4: inset(40% -6px 43% 0);
-  --slice-5: inset(80% -6px 5% 0);
-  content: attr(data-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  inset: 0;
-  padding: inherit;
-  background: linear-gradient(
-    45deg,
-    transparent 3%,
-    var(--sh-glitch-edge) 3%,
-    var(--sh-glitch-edge) 5%,
-    var(--sh-glitch-fill) 5%
-  );
-  color: var(--sh-glitch-ink);
-  -webkit-text-fill-color: var(--sh-glitch-ink);
-  text-shadow: -2px -2px 0 #ffdea1, 2px 2px 0 var(--sh-glitch-edge);
-  clip-path: var(--slice-0);
-  pointer-events: none;
-  box-sizing: border-box;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-}
-
-.sh-submit:hover::after,
-.sh-enroll__submit:hover:not(:disabled)::after,
-.sh-info__primary:hover::after {
-  animation: sh-glitch-btn 1s steps(2, end);
-}
-
-@keyframes sh-glitch-btn {
-  0% { clip-path: var(--slice-1); transform: translate(-12px, -6px); }
-  10% { clip-path: var(--slice-3); transform: translate(8px, 8px); }
-  20% { clip-path: var(--slice-1); transform: translate(-8px, 8px); }
-  30% { clip-path: var(--slice-3); transform: translate(0, 4px); }
-  40% { clip-path: var(--slice-2); transform: translate(-4px, 0); }
-  50% { clip-path: var(--slice-3); transform: translate(4px, 0); }
-  60% { clip-path: var(--slice-4); transform: translate(4px, 8px); }
-  70% { clip-path: var(--slice-2); transform: translate(-8px, 8px); }
-  80% { clip-path: var(--slice-5); transform: translate(12px, -8px); }
-  90% { clip-path: var(--slice-1); transform: translate(-8px, 0); }
-  100% { clip-path: var(--slice-1); transform: translate(0); }
-}
-
 .sh-submit .sh-icon,
 .sh-enroll__submit-icon {
   width: 1.05rem;
   height: 1.05rem;
   color: var(--sh-glitch-ink);
-  position: relative;
-  z-index: 1;
-}
-
-.sh-submit > span,
-.sh-enroll__submit > span {
-  position: relative;
-  z-index: 1;
 }
 
 .sh-enroll__submit:disabled {
@@ -580,70 +513,39 @@ input[type="submit"].btn-primary,
   filter: grayscale(0.2);
 }
 
-.sh-enroll__submit:disabled::after {
-  animation: none;
-  content: none;
-}
-
-/* secondary / default — W15 notch outline (matches SPA .ghost-btn) */
+/* secondary — notched outline (single-layer; not SPA .ghost-btn) */
 .btn-default,
 .pf-c-button.pf-m-secondary {
-  --sh-ghost-cut: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  --sh-ghost-cut-inner: polygon(
-    2px 2px,
-    calc(100% - 2px) 2px,
-    calc(100% - 2px) calc(100% - 2px),
-    11.5px calc(100% - 2px),
-    2px calc(100% - 11.5px)
-  );
-  --sh-ghost-stroke: color-mix(in srgb, var(--sh-on) 55%, #8a847a);
-  --sh-ghost-face: var(--sh-card);
-
-  position: relative;
-  isolation: isolate;
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
   min-height: 2.75rem;
   padding: 0.85rem 1.35rem !important;
-  background: var(--sh-ghost-stroke) !important;
-  border: 0 !important;
+  border: 2px solid color-mix(in srgb, var(--sh-on) 55%, #8a847a) !important;
   border-radius: 0 !important;
+  background: var(--sh-card) !important;
   color: var(--sh-on) !important;
-  font-family: var(--sh-font-display) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700 !important;
+  font-family: var(--sh-font-display), sans-serif !important;
   font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
-  clip-path: var(--sh-ghost-cut);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
   box-sizing: border-box;
-  transition: color 0.15s ease, background 0.15s ease;
-}
-
-.btn-default::before,
-.pf-c-button.pf-m-secondary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--sh-ghost-face);
-  clip-path: var(--sh-ghost-cut-inner);
-  z-index: -1;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .app-dark .btn-default,
 .app-dark .pf-c-button.pf-m-secondary {
-  --sh-ghost-stroke: var(--sh-muted);
-  --sh-ghost-face: var(--sh-card);
+  border-color: var(--sh-muted) !important;
 }
 
 .btn-default:hover,
 .pf-c-button.pf-m-secondary:hover {
-  --sh-ghost-stroke: var(--sh-gold);
+  border-color: var(--sh-gold) !important;
   color: var(--sh-gold) !important;
-  background: var(--sh-ghost-stroke) !important;
-  border-color: transparent !important;
 }
 
 /* ---- Links — W15 link-deep ---- */
@@ -655,9 +557,15 @@ a,
   text-decoration: none;
   font-weight: 500;
 }
-a:hover {
+
+a:hover,
+.sh-forgot:hover,
+.sh-create-account a:hover,
+#sh-create-account:hover,
+.sh-enroll__footer-link:hover,
+.sh-info__secondary:hover {
   color: var(--sh-gold) !important;
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 
 /* ---- Registration / info footer ---- */
@@ -673,44 +581,20 @@ a:hover {
   color: inherit !important;
   font-weight: 600;
   border-bottom: none;
-  margin-left: 0.25rem;
+  margin: 0 0 0 0.25rem;
   text-decoration: none !important;
 }
-.sh-create-account a:hover,
-#sh-create-account:hover {
-  color: var(--sh-gold) !important;
-  text-decoration: underline !important;
-}
-
+/* Info / registration footer copy (not field errors) */
 #kc-registration,
 #kc-info-message,
-.instruction {
-  color: var(--sh-on-variant);
-  text-align: center;
-  font-weight: 300;
-  font-size: 0.875rem;
-  margin-top: 1.5rem;
-}
-
-/* Do NOT style register field errors via this — it blew open form whitespace */
-#kc-content-wrapper > p,
 #kc-info-message p,
+#kc-content-wrapper > p,
 .instruction {
   color: var(--sh-on-variant);
   text-align: center;
   font-weight: 300;
   font-size: 0.875rem;
   margin-top: 1.5rem;
-}
-#kc-registration a {
-  color: inherit !important;
-  border-bottom: none;
-  font-weight: 500;
-  text-decoration: none !important;
-}
-#kc-registration a:hover {
-  color: var(--sh-gold) !important;
-  text-decoration: underline !important;
 }
 
 /* ---- Error / alert feedback ---- */
@@ -782,15 +666,11 @@ header.login-pf-header {
   .login-pf body,
   body.login-pf,
   .login-pf {
-    background-image: none !important;
-    background:
-      radial-gradient(circle at 50% 38%, rgba(210, 159, 34, 0.10) 0%, transparent 60%),
-      linear-gradient(180deg, var(--sh-bg) 0%, var(--sh-bg-2) 100%) !important;
+    background: var(--sh-page-radial), var(--sh-page-linear) !important;
   }
 
   #kc-header {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding-inline: 0 !important;
     text-align: center !important;
   }
 
@@ -830,19 +710,12 @@ header.login-pf-header {
     width: 100%;
     max-width: none;
   }
-
-  #kc-header-wrapper {
-    font-size: 1rem !important;
-    letter-spacing: 0.16em !important;
-    color: var(--sh-gold) !important;
-  }
 }
 
 @media (max-height: 700px) {
   .login-pf-page {
     justify-content: flex-start;
-    padding-top: 0.75rem;
-    padding-bottom: 1rem;
+    padding-block: 0.75rem 1rem;
   }
 
   .card-pf,
@@ -859,70 +732,36 @@ header.login-pf-header {
   }
 }
 
-/* ============================================================
-   Registration — "Refined Vessel Enrollment" (Figma 1:1745)
-   Full-viewport canvas; content grid centered (not left-stuck).
-   ============================================================ */
-
-/* Pin readable tokens to this canvas — :root light defaults otherwise
-   paint dark text onto the dark enroll background. */
-body.sh-register-page,
-body:has(#kc-register-form),
-body.sh-register-page.login-pf,
-.login-pf body.sh-register-page {
-  --sh-on: #f4efe8;
-  --sh-on-variant: #d9cfc0;
-  --sh-muted: #c9bda8;
-  --sh-placeholder: #a89882;
-  --sh-gold: #f5be42;
-  --sh-gold-dim: #e0a92e;
-  --sh-card: #2a272c;
-  --sh-surface-high: #363338;
-  --sh-outline-variant: #5a5040;
-  --sh-error: #ff8a80;
+/* Registration layout — theme tokens from :root / .app-dark; no re-pin */
+:is(body.sh-register-page, body:has(#kc-register-form)),
+:is(body.sh-register-page, body:has(#kc-register-form)).login-pf,
+.login-pf :is(body.sh-register-page, body:has(#kc-register-form)) {
+  --sh-enroll-glow: rgba(210, 159, 34, 0.08);
   display: flex !important;
   flex-direction: column;
   align-items: center !important;
   justify-content: center !important;
-  min-height: 100vh !important;
   min-height: 100dvh !important;
   width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
   background:
-    radial-gradient(circle at 58% 45%, rgba(210, 159, 34, 0.1) 0%, transparent 42%),
-    linear-gradient(180deg, #141317 0%, #0f0d11 100%) !important;
+    radial-gradient(circle at 58% 45%, var(--sh-enroll-glow) 0%, transparent 42%),
+    linear-gradient(180deg, var(--sh-bg) 0%, var(--sh-bg-2) 100%) !important;
 }
 
-/* Light-theme enroll: white canvas + dark type */
-html:not(.app-dark) body.sh-register-page,
-html:not(.app-dark) body:has(#kc-register-form),
-html:not(.app-dark) body.sh-register-page.login-pf,
-html:not(.app-dark) .login-pf body.sh-register-page {
-  --sh-on: #1a1816;
-  --sh-on-variant: #4a453f;
-  --sh-muted: #5c574f;
-  --sh-placeholder: #9a948c;
-  --sh-gold: #d29f22;
-  --sh-gold-dim: #c4921a;
-  --sh-card: #ffffff;
-  --sh-surface-high: #f0f0f0;
-  --sh-outline-variant: #c9c0b0;
-  --sh-error: #b42318;
-  background:
-    radial-gradient(circle at 58% 45%, rgba(210, 159, 34, 0.08) 0%, transparent 42%),
-    linear-gradient(180deg, #ffffff 0%, #f7f5f2 100%) !important;
+html.app-dark :is(body.sh-register-page, body:has(#kc-register-form)),
+.app-dark :is(body.sh-register-page, body:has(#kc-register-form)) {
+  --sh-enroll-glow: rgba(210, 159, 34, 0.1);
 }
 
-body.sh-register-page .login-pf-page,
-body:has(#kc-register-form) .login-pf-page {
+:is(body.sh-register-page, body:has(#kc-register-form)) .login-pf-page {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   width: 100% !important;
   max-width: none !important;
-  min-height: 100vh !important;
   min-height: 100dvh !important;
   margin: 0 auto !important;
   padding: 3rem clamp(1.5rem, 8vw, 8.5rem) 5rem !important;
@@ -931,14 +770,8 @@ body:has(#kc-register-form) .login-pf-page {
 }
 
 /* Kill PatternFly container floats / fixed widths that shove content left */
-body.sh-register-page #kc-container,
-body:has(#kc-register-form) #kc-container,
-body.sh-register-page #kc-container-wrapper,
-body:has(#kc-register-form) #kc-container-wrapper,
-body.sh-register-page .container,
-body:has(#kc-register-form) .container,
-body.sh-register-page .pf-c-login,
-body:has(#kc-register-form) .pf-c-login {
+/* Descendant combinator required — a comma here hid headers on every login page. */
+:is(body.sh-register-page, body:has(#kc-register-form)) :is(#kc-container, #kc-container-wrapper, .container, .pf-c-login) {
   width: 100% !important;
   max-width: none !important;
   margin: 0 auto !important;
@@ -947,31 +780,19 @@ body:has(#kc-register-form) .pf-c-login {
   display: block !important;
 }
 
-body.sh-register-page #kc-header,
-body:has(#kc-register-form) #kc-header,
-body.sh-register-page .login-pf-page-header,
-body:has(#kc-register-form) .login-pf-page-header,
-body.sh-register-page #kc-page-title,
-body:has(#kc-register-form) #kc-page-title,
-body.sh-register-page .login-pf-header,
-body:has(#kc-register-form) .login-pf-header,
-body.sh-register-page #kc-content-wrapper > .alert,
-body:has(#kc-register-form) #kc-locale,
-body.sh-register-page #kc-info,
-body:has(#kc-register-form) #kc-info {
+:is(body.sh-register-page, body:has(#kc-register-form)) :is(
+    #kc-header,
+    .login-pf-page-header,
+    #kc-page-title,
+    .login-pf-header,
+    #kc-content-wrapper > .alert,
+    #kc-locale,
+    #kc-info
+  ) {
   display: none !important;
 }
 
-body.sh-register-page .card-pf,
-body:has(#kc-register-form) .card-pf,
-body.sh-register-page #kc-content,
-body:has(#kc-register-form) #kc-content,
-body.sh-register-page #kc-content-wrapper,
-body:has(#kc-register-form) #kc-content-wrapper,
-body.sh-register-page #kc-form,
-body:has(#kc-register-form) #kc-form,
-body.sh-register-page #kc-form-wrapper,
-body:has(#kc-register-form) #kc-form-wrapper {
+:is(body.sh-register-page, body:has(#kc-register-form)) :is(.card-pf, #kc-content, #kc-content-wrapper, #kc-form, #kc-form-wrapper) {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -1006,7 +827,7 @@ body:has(#kc-register-form) #kc-form-wrapper {
 
 .sh-enroll__eyebrow {
   margin: 0 0 1rem;
-  font-family: var(--sh-font-display);
+  font-family: var(--sh-font-display), sans-serif;
   font-weight: 700;
   font-size: 0.75rem;
   letter-spacing: 0.3em;
@@ -1019,7 +840,7 @@ body:has(#kc-register-form) #kc-form-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0;
-  font-family: var(--sh-font-display);
+  font-family: var(--sh-font-display), sans-serif;
   line-height: 1;
   letter-spacing: -0.05em;
 }
@@ -1043,7 +864,7 @@ body:has(#kc-register-form) #kc-form-wrapper {
 .sh-enroll__lede {
   margin: 2rem 0 0;
   max-width: 24rem;
-  font-family: var(--sh-font);
+  font-family: var(--sh-font), sans-serif;
   font-weight: 400;
   font-size: 1.125rem;
   line-height: 1.625;
@@ -1054,8 +875,8 @@ body:has(#kc-register-form) #kc-form-wrapper {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1rem;
+  margin: 2rem 0 0;
+  padding: 1rem 0 0;
 }
 
 .sh-enroll__avatars {
@@ -1068,7 +889,7 @@ body:has(#kc-register-form) #kc-form-wrapper {
   height: 40px;
   border-radius: 9999px;
   border: 2px solid var(--sh-bg, #141317);
-  margin-right: -12px;
+  margin: 0 -12px 0 0;
   box-sizing: border-box;
 }
 
@@ -1084,10 +905,10 @@ body:has(#kc-register-form) #kc-form-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 0;
+  margin: 0;
   background: var(--sh-surface-high);
   color: var(--sh-gold);
-  font-family: var(--sh-font);
+  font-family: var(--sh-font), sans-serif;
   font-weight: 700;
   font-size: 0.625rem;
 }
@@ -1101,19 +922,11 @@ body:has(#kc-register-form) #kc-form-wrapper {
 }
 
 .sh-enroll__vessel {
-  background: var(--sh-card);
-  border: 1px solid color-mix(in srgb, var(--sh-outline-variant) 70%, transparent);
-  border-radius: 14px;
   padding: clamp(1.5rem, 3vw, 2.25rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  position: relative;
-  overflow: visible;
-  width: 100%;
   justify-self: stretch;
-  box-sizing: border-box;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .sh-enroll__vessel::before {
@@ -1156,14 +969,9 @@ body:has(#kc-register-form) #kc-form-wrapper {
 }
 
 .sh-field__label {
-  margin: 0;
-  font-family: var(--sh-font);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--sh-muted);
-  transition: color 0.15s ease;
+  color: var(--sh-muted) !important;
 }
 
 .sh-field__control {
@@ -1178,73 +986,18 @@ body:has(#kc-register-form) #kc-form-wrapper {
   display: none;
 }
 
-.sh-field__control--icon .sh-field__input {
-  padding-right: 2.5rem !important;
-}
-
 .sh-field__input {
   width: 100%;
-  border: 1px solid color-mix(in srgb, var(--sh-outline-variant) 85%, transparent) !important;
-  border-radius: 8px !important;
-  outline: none !important;
-  background: var(--sh-card) !important;
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  padding: 0.55rem 0.65rem !important;
-  margin: 0 !important;
-  height: auto !important;
-  min-height: 2.5rem !important;
-  font-family: var(--sh-font) !important;
-  font-size: 0.85rem !important;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
-  color: var(--sh-on) !important;
-  caret-color: var(--sh-gold);
-  box-sizing: border-box !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .sh-field__control--icon .sh-field__input {
   padding-right: 2.5rem !important;
-}
-
-/* Kill Keycloak/PatternFly focus underlines — boxed focus ring instead */
-.sh-enroll .sh-field__input,
-.sh-enroll .sh-field__input:hover,
-.sh-enroll .sh-field__input:focus,
-.sh-enroll .sh-field__input:focus-visible,
-.sh-enroll .sh-field__input:active,
-body.sh-register-page .sh-field input,
-body.sh-register-page .sh-field input:focus,
-body:has(#kc-register-form) .sh-field input,
-body:has(#kc-register-form) .sh-field input:focus {
-  border: 1px solid color-mix(in srgb, var(--sh-outline-variant) 85%, transparent) !important;
-  outline: none !important;
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  background-image: none !important;
-  background: var(--sh-card) !important;
-}
-
-.sh-enroll .sh-field__input:focus,
-.sh-enroll .sh-field__input:focus-visible,
-body.sh-register-page .sh-field input:focus,
-body:has(#kc-register-form) .sh-field input:focus {
-  border-color: var(--sh-gold) !important;
-  box-shadow: 0 0 0 3px rgba(245, 190, 66, 0.18) !important;
 }
 
 .sh-field--invalid .sh-field__input,
 .sh-field--invalid .sh-field__input:focus {
   border-color: var(--sh-error, #c94a35) !important;
   box-shadow: 0 0 0 3px rgba(201, 74, 53, 0.16) !important;
-}
-
-.sh-field__input::placeholder {
-  color: var(--sh-placeholder) !important;
-  opacity: 1;
-  font-weight: 400;
-  font-style: normal;
 }
 
 .sh-field__eye {
@@ -1270,11 +1023,10 @@ body:has(#kc-register-form) .sh-field input:focus {
 .sh-enroll p.sh-field__error {
   display: block;
   margin: 0.15rem 0 0 !important;
-  margin-block: 0.15rem 0 !important;
   padding: 0 !important;
   min-height: 0 !important;
   max-height: none !important;
-  font-family: var(--sh-font) !important;
+  font-family: var(--sh-font), sans-serif !important;
   font-size: 0.7rem !important;
   font-weight: 600 !important;
   line-height: 1.25 !important;
@@ -1308,7 +1060,7 @@ body:has(#kc-register-form) .sh-field input:focus {
   align-items: flex-start;
 }
 
-/* Glitch checkbox — mirrors SPA app-glitch-checkbox */
+/* Terms checkbox — gold square; keeps register.ftl markup, not SPA glitch-checkbox */
 .sh-terms.glitch-check,
 .glitch-check {
   display: flex;
@@ -1316,9 +1068,7 @@ body:has(#kc-register-form) .sh-field input:focus {
   gap: 0.75rem;
   cursor: pointer;
   user-select: none;
-  max-width: 100%;
   font-size: 0.8125rem;
-  line-height: 1.25;
 }
 
 .glitch-check input {
@@ -1333,112 +1083,36 @@ body:has(#kc-register-form) .sh-field input:focus {
   height: 1.15em;
   flex-shrink: 0;
   border: 2px solid var(--sh-gold);
-  position: relative;
+  border-radius: 3px;
   background: color-mix(in srgb, var(--sh-gold) 10%, var(--sh-card));
-  clip-path: polygon(
-    15% 0,
-    85% 0,
-    100% 15%,
-    100% 85%,
-    85% 100%,
-    15% 100%,
-    0 85%,
-    0 15%
-  );
-  transition: box-shadow 0.25s ease, background 0.25s ease;
+  display: grid;
+  place-items: center;
 }
 
 .glitch-check__mark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 58%;
-  height: 58%;
+  width: 55%;
+  height: 55%;
   background: var(--sh-gold);
-  transform: translate(-50%, -50%) scale(0);
   opacity: 0;
-  transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-  clip-path: inherit;
-}
-
-.glitch-check input:checked + .glitch-check__box {
-  background: rgba(245, 190, 66, 0.16);
-  box-shadow: 0 0 12px rgba(245, 190, 66, 0.35);
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .glitch-check input:checked + .glitch-check__box .glitch-check__mark {
-  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
+  transform: scale(1);
 }
 
 .glitch-check__label {
-  position: relative;
-  display: inline-block;
-  width: fit-content;
-  max-width: 100%;
   color: var(--sh-muted);
-  font-family: var(--sh-font);
+  font-family: var(--sh-font), sans-serif;
   font-weight: 600;
-  font-size: 1em;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  line-height: 1.25;
 }
 
 .glitch-check input:checked ~ .glitch-check__label {
   color: var(--sh-gold);
-}
-
-.glitch-check:hover .glitch-check__box {
-  box-shadow: 0 0 14px rgba(245, 190, 66, 0.55);
-}
-
-.glitch-check__label::before,
-.glitch-check__label::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-  white-space: inherit;
-  text-transform: inherit;
-  letter-spacing: inherit;
-  font: inherit;
-  line-height: inherit;
-}
-
-.glitch-check:hover .glitch-check__label::before {
-  color: #ff8a3d;
-  opacity: 1;
-  animation: sh-glitch-check-text 0.4s steps(2, end) forwards;
-}
-
-.glitch-check:hover .glitch-check__label::after {
-  color: var(--sh-gold);
-  opacity: 1;
-  animation: sh-glitch-check-text-alt 0.4s steps(2, end) forwards;
-}
-
-@keyframes sh-glitch-check-text {
-  0% { opacity: 1; transform: translate(0); clip-path: inset(0 0 0 0); }
-  20% { opacity: 1; transform: translate(-3px, 2px); clip-path: inset(50% 0 20% 0); }
-  40% { opacity: 1; transform: translate(2px, -1px); clip-path: inset(20% 0 60% 0); }
-  60% { opacity: 1; transform: translate(-2px, 1px); clip-path: inset(80% 0 5% 0); }
-  80% { opacity: 0.9; transform: translate(2px, -2px); clip-path: inset(30% 0 45% 0); }
-  100% { opacity: 0; transform: translate(0); clip-path: inset(0 0 0 0); }
-}
-
-@keyframes sh-glitch-check-text-alt {
-  0% { opacity: 1; transform: translate(0); clip-path: inset(0 0 0 0); }
-  20% { opacity: 1; transform: translate(3px, -2px); clip-path: inset(30% 0 45% 0); }
-  40% { opacity: 1; transform: translate(-2px, 1px); clip-path: inset(80% 0 5% 0); }
-  60% { opacity: 1; transform: translate(2px, 1px); clip-path: inset(20% 0 60% 0); }
-  80% { opacity: 0.9; transform: translate(-2px, 2px); clip-path: inset(50% 0 20% 0); }
-  100% { opacity: 0; transform: translate(0); clip-path: inset(0 0 0 0); }
 }
 
 .sh-field--terms.sh-field--invalid .glitch-check__label,
@@ -1484,7 +1158,7 @@ body:has(#kc-register-form) .sh-field input:focus {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: var(--sh-font-display);
+  font-family: var(--sh-font-display), sans-serif;
   font-weight: 700;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
@@ -1492,11 +1166,6 @@ body:has(#kc-register-form) .sh-field input:focus {
   color: inherit !important;
   text-decoration: none !important;
   border: none !important;
-}
-
-.sh-enroll__footer-link:hover {
-  color: var(--sh-gold) !important;
-  text-decoration: underline !important;
 }
 
 .sh-enroll__status {
@@ -1516,17 +1185,18 @@ body:has(#kc-register-form) .sh-field input:focus {
   align-items: flex-end;
 }
 
-.sh-enroll__status-label {
-  font-size: 0.625rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--sh-on-variant);
-}
-
+.sh-enroll__status-label,
 .sh-enroll__status-value {
   font-size: 0.625rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
+}
+
+.sh-enroll__status-label {
+  color: var(--sh-on-variant);
+}
+
+.sh-enroll__status-value {
   color: var(--sh-on);
 }
 
@@ -1537,18 +1207,17 @@ body:has(#kc-register-form) .sh-field input:focus {
 .sh-enroll__status-divider {
   width: 1px;
   height: 32px;
-  margin: 0 0 0 1.5rem;
+  margin-inline-start: 1.5rem;
   background: rgba(79, 70, 53, 0.3);
 }
 
 .sh-enroll__status-block + .sh-enroll__status-block,
 .sh-enroll__status-divider + .sh-enroll__status-block {
-  margin-left: 1.5rem;
+  margin-inline-start: 1.5rem;
 }
 
 @media (max-width: 900px) {
-  body.sh-register-page .login-pf-page,
-  body:has(#kc-register-form) .login-pf-page {
+  :is(body.sh-register-page, body:has(#kc-register-form)) .login-pf-page {
     padding: 2rem 1.25rem 4rem !important;
     justify-content: flex-start !important;
   }
@@ -1625,11 +1294,6 @@ body:has(#kc-register-form) .sh-field input:focus {
   border-bottom: none !important;
   padding-bottom: 0.15rem;
   align-self: center;
-}
-
-.sh-info__secondary:hover {
-  color: var(--sh-gold) !important;
-  text-decoration: underline !important;
 }
 
 .sh-info__hint {

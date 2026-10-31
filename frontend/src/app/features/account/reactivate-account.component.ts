@@ -53,7 +53,7 @@ import { TranslateService } from '../../core/i18n/translate.service';
     }
     .reactivate__title {
       margin: 0;
-      font-family: var(--font-headline);
+      font-family: var(--font-headline, sans-serif);
       font-size: 1.5rem;
       color: var(--color-primary, #f5be42);
     }

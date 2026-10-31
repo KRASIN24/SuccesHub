@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd" logicalFilePath="db/changelog/2026-10-04-02-task-reminder.xml">
+
+    <changeSet id="2026-10-04-02-task-reminder" author="krasin">
+        <addColumn tableName="task" schemaName="successhub">
+            <column name="reminder_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="reminder_notified" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <createIndex tableName="task" schemaName="successhub" indexName="idx_task_reminder_due">
+            <column name="reminder_at"/>
+            <column name="reminder_notified"/>
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

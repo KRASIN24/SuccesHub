@@ -1,7 +1,7 @@
 <div class="vl-page">
   <header class="vl-top">
     <div class="vl-top__intro">
-      <p class="eyebrow">Temporary · W14</p>
+      <p class="eyebrow">Temporary</p>
       <h1>Visual Lab</h1>
       <p class="vl-top__lede">
         Same-role styles side by side. Pick one winner per group, then we align the app in W15.
@@ -150,25 +150,19 @@
                     }
                     @case ('pair-notch-outline') {
                       <div class="vl-pair">
-                        <button type="button" class="vl-ghost-notch vl-ghost-notch--outline">
-                          <span class="vl-ghost-notch__face">Cancel</span>
-                        </button>
+                        <button type="button" class="ghost-btn">Cancel</button>
                         <app-glitch-button label="Save" />
                       </div>
                     }
                     @case ('pair-notch-stripe') {
                       <div class="vl-pair">
-                        <button type="button" class="vl-ghost-notch vl-ghost-notch--stripe">
-                          <span class="vl-ghost-notch__face">Cancel</span>
-                        </button>
+                        <button type="button" class="ghost-btn vl-ghost-stripe">Cancel</button>
                         <app-glitch-button label="Save" />
                       </div>
                     }
                     @case ('pair-notch-fill') {
                       <div class="vl-pair">
-                        <button type="button" class="vl-ghost-notch vl-ghost-notch--fill">
-                          <span class="vl-ghost-notch__face">Cancel</span>
-                        </button>
+                        <button type="button" class="ghost-btn vl-ghost-fill">Cancel</button>
                         <app-glitch-button label="Save" />
                       </div>
                     }
@@ -190,15 +184,11 @@
                     }
                     @case ('icon-chamfer') {
                       <div class="vl-icon-row">
-                        <button type="button" class="vl-icon-chamfer vl-icon-chamfer--outline" aria-label="Edit">
-                          <span class="vl-icon-chamfer__face">
-                            <span class="material-icons">edit</span>
-                          </span>
+                        <button type="button" class="icon-btn" aria-label="Edit">
+                          <span class="material-icons">edit</span>
                         </button>
-                        <button type="button" class="vl-icon-chamfer vl-icon-chamfer--fill" aria-label="Add">
-                          <span class="vl-icon-chamfer__face">
-                            <span class="material-icons">add</span>
-                          </span>
+                        <button type="button" class="icon-btn icon-btn--fill" aria-label="Add">
+                          <span class="material-icons">add</span>
                         </button>
                       </div>
                     }
@@ -254,7 +244,7 @@
 
       <section class="vl-export surface-card">
         <h2>Export</h2>
-        <p>Paste this into the W15 handoff (or keep Copy picks JSON above).</p>
+        <p>Paste this into the handoff (or keep Copy picks JSON above).</p>
         <pre class="vl-export__json">{{ picks.exportJson() }}</pre>
       </section>
     </main>

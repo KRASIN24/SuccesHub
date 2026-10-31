@@ -1,0 +1,78 @@
+package com.successhub.appdomain.service.impl;
+
+import com.successhub.appdomain.entity.AchievementDefinition;
+import com.successhub.appdomain.repository.AchievementDefinitionRepository;
+import com.successhub.appdomain.repository.GoalRepository;
+import com.successhub.appdomain.repository.UserAchievementRepository;
+import com.successhub.appdomain.entity.UserProfile;
+import com.successhub.appdomain.config.GamificationProperties;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class AchievementEvaluatorImplTest {
+
+    @Mock
+    private AchievementDefinitionRepository definitionRepository;
+    @Mock
+    private UserAchievementRepository userAchievementRepository;
+    @Mock
+    private GoalRepository goalRepository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+    private GamificationProperties properties;
+
+    private AchievementEvaluatorImpl evaluator;
+
+    @BeforeEach
+    void setUp() {
+        properties = new GamificationProperties();
+        properties.setSpeedsterTaskThreshold(10);
+        properties.setMinTasksForQualifyingDay(1);
+        evaluator = new AchievementEvaluatorImpl(
+                definitionRepository, userAchievementRepository, goalRepository, properties, eventPublisher);
+    }
+
+    @Test
+    void speedster_requiresThreshold_notMinTasksForQualifyingDay() {
+        // Arrange
+        AchievementDefinition speedster = def("SPEEDSTER");
+        when(definitionRepository.findAll()).thenReturn(List.of(speedster));
+        when(userAchievementRepository.findByUserId("user")).thenReturn(List.of());
+        when(goalRepository.countByUserIdAndStatus(any(), any())).thenReturn(0L);
+
+        UserProfile profile = new UserProfile();
+        profile.setKeycloakId("user");
+
+        // Act & Assert — below threshold
+        assertEquals(0, evaluator.evaluateAndUnlock("user", profile, 9).size());
+        verify(userAchievementRepository, never()).save(any());
+
+        // Act & Assert — at threshold
+        assertEquals(1, evaluator.evaluateAndUnlock("user", profile, 10).size());
+    }
+
+    private AchievementDefinition def(String key) {
+        AchievementDefinition d = new AchievementDefinition();
+        d.setId(UUID.randomUUID());
+        d.setKey(key);
+        d.setLabel(key);
+        d.setIcon("star");
+        d.setDescription("test");
+        return d;
+    }
+}

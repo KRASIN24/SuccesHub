@@ -1,5 +1,5 @@
 # Local development defaults (activate explicitly or rely on spring.profiles.default in application.yaml).
-succeshub:
+successhub:
   loot:
     enable-dev-grants: true
 
