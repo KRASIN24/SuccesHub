@@ -2,9 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
 import {
+  BossDamage,
   BoxType,
   CloseDayResult,
   DailyStatus,
+  DevCampaign,
+  DevDiagnostics,
+  DevInventoryGrantResult,
+  DevRewardCatalog,
+  DevSubscribeAllResult,
   DevUnsealResult,
   Forecast,
   GamificationClientConfig,
@@ -16,6 +22,7 @@ import {
   WeeklyInsight,
   XpPreview,
 } from '../models/gamification.model';
+import { UserProfile } from '../models/profile.model';
 
 @Injectable({
   providedIn: 'root',
@@ -128,5 +135,62 @@ export class GamificationService {
   /** Clears today's celebrate seal (dev tools). */
   unsealToday(): Observable<DevUnsealResult> {
     return this.api.post<DevUnsealResult>('/gamification/dev/unseal', {});
+  }
+
+  /** Injects XP (dev tools). */
+  devAddXp(amount: number): Observable<UserProfile> {
+    return this.api.post<UserProfile>('/gamification/dev/xp', { amount });
+  }
+
+  /** Sets absolute level (dev tools). */
+  devSetLevel(level: number): Observable<UserProfile> {
+    return this.api.post<UserProfile>('/gamification/dev/level', { level });
+  }
+
+  /** Lists grantable reward catalog (dev tools). */
+  getDevRewards(): Observable<DevRewardCatalog[]> {
+    return this.api.get<DevRewardCatalog[]>('/gamification/dev/rewards');
+  }
+
+  /** Grants catalog items into inventory (dev tools). */
+  devGrantInventory(rewardKey: string, quantity: number): Observable<DevInventoryGrantResult> {
+    return this.api.post<DevInventoryGrantResult>('/gamification/dev/inventory', { rewardKey, quantity });
+  }
+
+  /** Sets shields / armed cards (dev tools). */
+  devSetCombatState(body: {
+    streakShields?: number | null;
+    pendingDoubleStrike?: boolean | null;
+    pendingSurgeToken?: boolean | null;
+  }): Observable<UserProfile> {
+    return this.api.post<UserProfile>('/gamification/dev/combat-state', body);
+  }
+
+  /** Lists active campaigns for Dev Campaigns (dev tools). */
+  getDevCampaigns(): Observable<DevCampaign[]> {
+    return this.api.get<DevCampaign[]>('/gamification/dev/campaigns');
+  }
+
+  /** Sets campaign progress / pending damage (dev tools). */
+  devSetCampaignState(
+    goalId: string,
+    body: { currentProgress?: number | null; pendingDamage?: number | null }
+  ): Observable<DevCampaign> {
+    return this.api.post<DevCampaign>(`/gamification/dev/campaigns/${goalId}/state`, body);
+  }
+
+  /** Force Strike on a campaign (dev tools). */
+  devStrikeCampaign(goalId: string): Observable<BossDamage> {
+    return this.api.post<BossDamage>(`/gamification/dev/campaigns/${goalId}/strike`, {});
+  }
+
+  /** Subscribe all categories to a campaign (dev tools). */
+  devSubscribeAllCategories(goalId: string): Observable<DevSubscribeAllResult> {
+    return this.api.post<DevSubscribeAllResult>(`/gamification/dev/campaigns/${goalId}/subscribe`, {});
+  }
+
+  /** Diagnostics snapshot for the Dev Bubble strip. */
+  getDevDiagnostics(): Observable<DevDiagnostics> {
+    return this.api.get<DevDiagnostics>('/gamification/dev/diagnostics');
   }
 }

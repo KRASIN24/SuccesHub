@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { EquippedCosmeticsService } from '../../core/services/equipped-cosmetics.service';
 import { AchievementService } from '../../core/services/achievement.service';
 import { TaskService } from '../../core/services/task.service';
+import { DevToolsService } from '../../core/services/dev-tools.service';
 import { InventoryItem, RewardItem } from '../../core/models/gamification.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
@@ -52,9 +53,22 @@ export class ProfileComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly achievementsApi = inject(AchievementService);
   private readonly tasksApi = inject(TaskService);
+  private readonly devTools = inject(DevToolsService);
   protected readonly i18n = inject(TranslateService);
   /** Shared equipped TITLE / FRAME — also drives navbar + dashboard chrome. */
   protected readonly cosmetics = inject(EquippedCosmeticsService);
+
+  constructor() {
+    effect(() => {
+      const rev = this.devTools.dataRevision();
+      untracked(() => {
+        if (rev === 0 || this.loading()) {
+          return;
+        }
+        this.onStreakChanged();
+      });
+    });
+  }
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
