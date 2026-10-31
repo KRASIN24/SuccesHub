@@ -12,8 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,5 +58,20 @@ class UserProfileServiceImplDisplayNameTest {
         var dto = service.getOrCreateProfile("kc-1", "Keycloak Name");
 
         assertEquals("Custom Name", dto.displayName());
+    }
+
+    @Test
+    void requireProfile_reloadsProfileAfterProvisioning() {
+        UserProfile persisted = new UserProfile();
+        persisted.setKeycloakId("kc-new");
+
+        when(repository.findByKeycloakId("kc-new"))
+                .thenReturn(Optional.empty(), Optional.of(persisted));
+
+        UserProfile result = service.requireProfile("kc-new");
+
+        assertSame(persisted, result);
+        verify(repository).insertIfAbsent(any(), eq("kc-new"), isNull());
+        verify(repository, times(2)).findByKeycloakId("kc-new");
     }
 }

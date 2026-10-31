@@ -56,6 +56,7 @@ export class StreakPanelComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly busy = signal(false);
   readonly feedback = signal<string | null>(null);
+  readonly enableDevGrants = signal(false);
 
   readonly viewDate = signal<Date>(new Date());
   readonly selectedDate = signal<Date | null>(null);
@@ -88,6 +89,10 @@ export class StreakPanelComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.gamification.getClientConfig().subscribe({
+      next: (config) => this.enableDevGrants.set(config.enableLootDevGrants),
+      error: () => this.enableDevGrants.set(false),
+    });
     this.load(this.curYear(), this.curMonth());
   }
 
