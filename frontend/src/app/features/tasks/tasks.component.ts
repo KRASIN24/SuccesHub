@@ -460,7 +460,9 @@ export class TasksComponent implements OnInit {
 
   deleteCategory(columnId: string): void {
     this.categorySaveError.set(null);
-    const tasksInCategory = this.allTasks().filter((t) => t.categoryId === columnId);
+    const rootTasksInCategory = this.allTasks().filter(
+      (t) => t.categoryId === columnId && !t.parentTaskId
+    );
     const finish = (): void => {
       this.taskService.deleteCategory(columnId).subscribe({
         next: () => {
@@ -484,12 +486,12 @@ export class TasksComponent implements OnInit {
       });
     };
 
-    if (tasksInCategory.length === 0) {
+    if (rootTasksInCategory.length === 0) {
       finish();
       return;
     }
 
-    forkJoin(tasksInCategory.map((t) => this.taskService.deleteTask(t.id))).subscribe({
+    forkJoin(rootTasksInCategory.map((t) => this.taskService.deleteTask(t.id))).subscribe({
       next: () => finish(),
       error: (err: { error?: { message?: string } }) => {
         console.error('Failed to delete category tasks', err);
