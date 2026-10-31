@@ -78,14 +78,25 @@
             <span class="field-label">{{ 'goals.bossName' | translate }}</span>
             <input type="text" [(ngModel)]="editName" name="editName" required />
           </label>
-          <label class="form-field">
+          <div class="form-field span-2">
             <span class="field-label">{{ 'goals.tier' | translate }}</span>
-            <select [(ngModel)]="editTier" name="editTier">
-              <option value="Standard Beast">{{ 'goals.tierStandard' | translate }}</option>
-              <option value="Elite Threat">{{ 'goals.tierElite' | translate }}</option>
-              <option value="Legendary Leviathan">{{ 'goals.tierLegendary' | translate }}</option>
-            </select>
-          </label>
+            <p class="field-hint field-hint--lead">{{ 'goals.tierHelp' | translate }}</p>
+            <div class="tier-picker" role="radiogroup" [attr.aria-label]="'goals.tier' | translate">
+              @for (opt of tierOptions; track opt.value) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="tier-option"
+                  [class.tier-option--active]="editTier === opt.value"
+                  [attr.aria-checked]="editTier === opt.value"
+                  (click)="editTier = opt.value"
+                >
+                  <span class="tier-option__name">{{ opt.labelKey | translate }}</span>
+                  <span class="tier-option__desc">{{ opt.descKey | translate }}</span>
+                </button>
+              }
+            </div>
+          </div>
           <label class="form-field">
             <span class="field-label">{{ 'goals.icon' | translate }}</span>
             <select [(ngModel)]="editIcon" name="editIcon">
