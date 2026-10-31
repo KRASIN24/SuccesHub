@@ -10,12 +10,13 @@ import {
   DragDropModule,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { TaskService } from '../../core/services/task.service';
 import { GoalService } from '../../core/services/goal.service';
 import { GamificationCelebrationService } from '../../core/services/gamification-celebration.service';
 import { Task, TaskCategory, TaskSortMode } from '../../core/models/task.model';
-import { Goal } from '../../core/models/goal.model';
+import { Goal, GoalSubscription } from '../../core/models/goal.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
@@ -26,6 +27,7 @@ import {
   TaskEditorMode,
   TaskEditorSheetComponent,
 } from './task-editor-sheet/task-editor-sheet.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 const SORT_BY_CATEGORY_KEY = 'successhub.tasks.sortModeByCategory';
 
@@ -41,6 +43,14 @@ interface QuestColumn {
   childrenByParentId: Record<string, Task[]>;
 }
 
+type BoardMode = 'category' | 'campaign';
+
+interface CampaignSection {
+  id: string;
+  name: string;
+  tasks: Task[];
+}
+
 @Component({
   selector: 'app-tasks',
   standalone: true,
@@ -54,6 +64,7 @@ interface QuestColumn {
     GlitchCheckboxComponent,
     TranslatePipe,
     TaskEditorSheetComponent,
+    PageHeaderComponent,
   ],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.scss',
@@ -71,6 +82,12 @@ export class TasksComponent implements OnInit {
   readonly goals = signal<Goal[]>([]);
   readonly focusTaskId = signal<string | null>(null);
   readonly allTasks = signal<Task[]>([]);
+  readonly boardMode = signal<BoardMode>('category');
+  readonly campaignSections = signal<CampaignSection[]>([]);
+  /** goalId → subscribed category IDs */
+  readonly subscriptionsByGoal = signal<Record<string, string[]>>({});
+  readonly mismatchPickerTaskId = signal<string | null>(null);
+  mismatchPickCategoryId = '';
 
   /** categoryId → sort mode */
   readonly sortModes = signal<Record<string, TaskSortMode>>(this.readSortModes());
@@ -114,41 +131,133 @@ export class TasksComponent implements OnInit {
       categories: this.taskService.getCategories(),
       tasks: this.taskService.getTasks(),
       goals: this.goalService.getGoals('ACTIVE'),
-    }).subscribe({
-      next: (data) => {
-        this.goals.set(data.goals);
-        this.allTasks.set(data.tasks);
-        this.columns.set(
-          data.categories.map((cat) => this.buildColumn(cat, data.tasks))
-        );
-        this.refreshTaskDropListIds();
-        this.loading.set(false);
-
-        const openId = this.editorTask()?.id;
-        if (openId && this.editorOpen()) {
-          const refreshed = data.tasks.find((t) => t.id === openId) ?? null;
-          this.editorTask.set(refreshed);
-          if (refreshed?.categoryId) {
-            this.editorCategoryId.set(refreshed.categoryId);
+    })
+      .pipe(
+        switchMap((data) => {
+          if (data.goals.length === 0) {
+            return of({ ...data, subs: [] as GoalSubscription[][] });
           }
-        }
+          return forkJoin(data.goals.map((g) => this.goalService.listSubscriptions(g.id))).pipe(
+            map((subs) => ({ ...data, subs }))
+          );
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.goals.set(data.goals);
+          this.allTasks.set(data.tasks);
+          this.columns.set(
+            data.categories.map((cat) => this.buildColumn(cat, data.tasks))
+          );
+          const byGoal: Record<string, string[]> = {};
+          data.goals.forEach((g, i) => {
+            byGoal[g.id] = (data.subs[i] ?? []).map((s) => s.categoryId);
+          });
+          this.subscriptionsByGoal.set(byGoal);
+          this.campaignSections.set(this.buildCampaignSections(data.goals, data.tasks));
+          this.refreshTaskDropListIds();
+          this.loading.set(false);
 
-        const focusId = this.focusTaskId();
-        if (focusId) {
-          setTimeout(() => {
-            document.getElementById('task-' + focusId)?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-          }, 50);
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load tasks data', err);
-        this.error.set('Could not synchronize task strategy canvas.');
-        this.loading.set(false);
-      },
+          const openId = this.editorTask()?.id;
+          if (openId && this.editorOpen()) {
+            const refreshed = data.tasks.find((t) => t.id === openId) ?? null;
+            this.editorTask.set(refreshed);
+            if (refreshed?.categoryId) {
+              this.editorCategoryId.set(refreshed.categoryId);
+            }
+          }
+
+          const focusId = this.focusTaskId();
+          if (focusId) {
+            setTimeout(() => {
+              document.getElementById('task-' + focusId)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+            }, 50);
+          }
+        },
+        error: (err) => {
+          console.error('Failed to load tasks data', err);
+          this.error.set('Could not synchronize task strategy canvas.');
+          this.loading.set(false);
+        },
+      });
+  }
+
+  setBoardMode(mode: BoardMode): void {
+    this.boardMode.set(mode);
+    this.mismatchPickerTaskId.set(null);
+  }
+
+  private buildCampaignSections(goals: Goal[], tasks: Task[]): CampaignSection[] {
+    const sections: CampaignSection[] = goals.map((g) => ({
+      id: g.id,
+      name: g.name,
+      tasks: tasks.filter((t) => t.goalId === g.id && t.status !== 'DONE'),
+    }));
+    sections.push({
+      id: 'unlinked',
+      name: this.i18n.t('tasks.unlinkedCampaign'),
+      tasks: tasks.filter((t) => !t.goalId && t.status !== 'DONE'),
     });
+    return sections;
+  }
+
+  isMismatch(task: Task): boolean {
+    if (!task.goalId) return false;
+    const subCats = this.subscriptionsByGoal()[task.goalId] ?? [];
+    if (subCats.length === 0) return false;
+    return !task.categoryId || !subCats.includes(task.categoryId);
+  }
+
+  subscribedCategoriesFor(task: Task): TaskCategory[] {
+    if (!task.goalId) return [];
+    const ids = new Set(this.subscriptionsByGoal()[task.goalId] ?? []);
+    return this.columns()
+      .filter((c) => ids.has(c.id))
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        tag: c.tag,
+        grantXp: c.grantXp,
+        sortOrder: c.sortOrder,
+      }));
+  }
+
+  moveToCampaignCategory(task: Task): void {
+    if (!task.goalId) return;
+    const cats = this.subscriptionsByGoal()[task.goalId] ?? [];
+    if (cats.length === 1) {
+      this.applyCategoryMove(task, cats[0]);
+      return;
+    }
+    if (cats.length > 1) {
+      this.mismatchPickCategoryId = '';
+      this.mismatchPickerTaskId.set(task.id);
+    }
+  }
+
+  confirmMismatchMove(task: Task): void {
+    if (!this.mismatchPickCategoryId) return;
+    this.applyCategoryMove(task, this.mismatchPickCategoryId);
+    this.mismatchPickerTaskId.set(null);
+  }
+
+  cancelMismatchMove(): void {
+    this.mismatchPickerTaskId.set(null);
+  }
+
+  private applyCategoryMove(task: Task, categoryId: string): void {
+    this.taskService
+      .updateTask(task.id, {
+        ...this.taskUpdatePayload(task),
+        categoryId,
+      })
+      .subscribe({
+        next: () => this.loadTasksData(true),
+        error: (err) => console.error('Failed to move task to campaign category', err),
+      });
   }
 
   private buildColumn(cat: TaskCategory, tasks: Task[]): QuestColumn {
