@@ -8,6 +8,7 @@
   </div>
 } @else if (selectedBox()) {
   <div class="page">
+    <app-page-header titleKey="loot.eyebrow" subtitleKey="loot.subtitle" />
     <main class="main">
       <section class="hero">
         <div class="hero__orb">
@@ -37,11 +38,20 @@
             </div>
           </div>
 
-          <div class="hero__accent">
-            <div class="hero__accent-inner">
-              <span class="material-symbols-outlined hero__accent-icon" aria-hidden="true">{{ accentIcon }}</span>
-            </div>
-          </div>
+          <button
+            type="button"
+            class="hero__accent"
+            (click)="onInspectTier()"
+            [disabled]="phase() !== 'idle'"
+            [attr.aria-label]="'loot.inspectTier' | translate"
+          >
+            <span class="hero__accent-shell" aria-hidden="true">
+              <span class="hero__accent-inner">
+                <span class="material-symbols-outlined hero__accent-icon">{{ accentIcon }}</span>
+              </span>
+            </span>
+            <span class="hero__accent-tooltip">{{ 'loot.inspectTier' | translate }}</span>
+          </button>
 
           <button
             type="button"
@@ -58,8 +68,7 @@
         <div class="hero__copy">
           <div class="hero__copy-row">
             <div>
-              <p class="hero__eyebrow">{{ 'loot.eyebrow' | translate }}</p>
-              <h1 class="hero__title">{{ boxLabel(selectedBox()!) }}</h1>
+              <h2 class="hero__title">{{ boxLabel(selectedBox()!) }}</h2>
             </div>
             <app-dev-tools-chip tool="cache"></app-dev-tools-chip>
           </div>
@@ -116,7 +125,9 @@
           <article
             class="tier-card"
             *ngFor="let tier of rewardTiers; let i = index"
+            [attr.data-tier-index]="i"
             [class.tier-card--selected]="i === selectedIndex()"
+            [class.tier-card--pulse]="inspectPulseIndex() === i"
             [style.border-color]="tier.cardBorder"
             (click)="select(i)"
           >
@@ -171,17 +182,6 @@
         </div>
       </section>
 
-      <footer class="footer">
-        <p class="footer__version">{{ 'loot.version' | translate }}</p>
-        <nav class="footer__links">
-          <a
-            href="javascript:void(0)"
-            class="app-link"
-            *ngFor="let link of footerLinks"
-            >{{ link.labelKey | translate }}</a
-          >
-        </nav>
-      </footer>
     </main>
   </div>
 }
