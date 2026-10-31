@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = {
 		"spring.autoconfigure.exclude=" +
-				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration," +
-				"org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration," +
-				"org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration",
+				"org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration," +
+				"org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
+				"org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration",
 		"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:9999/fake-jwks"
 })
 @ActiveProfiles("test")
