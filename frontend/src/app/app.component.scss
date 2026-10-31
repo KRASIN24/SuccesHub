@@ -1,3 +1,19 @@
+:host {
+  /* Desktop open sidenav: shift fixed overlays into the main column. */
+  --overlay-inline-offset: var(--sidenav-width);
+}
+
+:host(.nav-closed) {
+  --overlay-inline-offset: 0px;
+}
+
+@media (max-width: 960px) {
+  /* Drawer overlays content — main column is full width. */
+  :host {
+    --overlay-inline-offset: 0px;
+  }
+}
+
 .app-shell {
   display: flex;
   min-height: 100vh;

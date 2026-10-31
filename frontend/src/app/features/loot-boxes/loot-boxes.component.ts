@@ -1,9 +1,10 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { GamificationService } from '../../core/services/gamification.service';
 import { LootAudioService } from '../../core/services/loot-audio.service';
 import { LootPendingService } from '../../core/services/loot-pending.service';
+import { DevToolsService } from '../../core/services/dev-tools.service';
 import { BoxType, LootBox, RewardItem } from '../../core/models/gamification.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
@@ -129,7 +130,20 @@ export class LootBoxesComponent implements OnInit {
   private readonly gamification = inject(GamificationService);
   private readonly lootAudio = inject(LootAudioService);
   private readonly lootPending = inject(LootPendingService);
+  private readonly devTools = inject(DevToolsService);
   protected readonly i18n = inject(TranslateService);
+
+  constructor() {
+    effect(() => {
+      const rev = this.devTools.dataRevision();
+      untracked(() => {
+        if (rev === 0 || this.loading() || this.phase() !== 'idle') {
+          return;
+        }
+        this.softRefreshPending();
+      });
+    });
+  }
 
   readonly navPrevIcon = 'chevron_left';
   readonly navNextIcon = 'chevron_right';
@@ -270,6 +284,20 @@ export class LootBoxesComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+  }
+
+  /** Quiet refresh after Dev Bubble summon / grant without resetting the hero. */
+  private softRefreshPending(): void {
+    forkJoin({
+      pending: this.gamification.getPendingLootBoxes(),
+      history: this.gamification.getLootBoxHistory(HISTORY_BOX_LIMIT),
+    }).subscribe({
+      next: ({ pending, history }) => {
+        this.lootPending.pendingBoxes.set(pending);
+        this.recentHistory.set(this.mapHistoryFromApi(history, this.boxTypes()));
+      },
+      error: () => undefined,
+    });
   }
 
   load(): void {

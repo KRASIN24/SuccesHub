@@ -4,7 +4,7 @@ import { AppPreferencesService } from './app-preferences.service';
 type RevealTier = 'default' | 'silver' | 'gold';
 
 /**
- * Lightweight procedural SFX for loot box open / reveal.
+ * Lightweight procedural SFX (loot + gamification).
  * Uses Web Audio API so no asset files are required.
  * Respects Settings → Sound effects via {@link AppPreferencesService}.
  */
@@ -12,6 +12,108 @@ type RevealTier = 'default' | 'silver' | 'gold';
 export class LootAudioService {
   private readonly prefs = inject(AppPreferencesService);
   private ctx: AudioContext | null = null;
+
+  /** Soft ascending blip when XP is awarded. */
+  playXpGain(): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
+    const ctx = this.context();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const notes = [
+      { freq: 523.25, start: 0, gain: 0.055 }, // C5
+      { freq: 659.25, start: 0.05, gain: 0.045 }, // E5
+    ];
+    notes.forEach(({ freq, start, gain }) => {
+      this.tone(ctx, {
+        type: 'sine',
+        freq,
+        start: now + start,
+        dur: 0.18,
+        peak: gain,
+        attack: 0.01,
+      });
+    });
+  }
+
+  /** Short fanfare for level-up overlay. */
+  playLevelUp(): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
+    const ctx = this.context();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const chord = [392.0, 493.88, 587.33, 784.0]; // G4 B4 D5 G5
+    chord.forEach((freq, i) => {
+      this.tone(ctx, {
+        type: i === 3 ? 'triangle' : 'sine',
+        freq,
+        start: now + i * 0.09,
+        dur: 0.42,
+        peak: 0.09 - i * 0.01,
+        attack: 0.015,
+      });
+    });
+  }
+
+  /** Impact tick when a campaign takes damage. */
+  playBossHit(): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
+    const ctx = this.context();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    this.tone(ctx, {
+      type: 'triangle',
+      freq: 160,
+      endFreq: 70,
+      start: now,
+      dur: 0.2,
+      peak: 0.14,
+      attack: 0.008,
+      freqRamp: 'exp',
+    });
+    this.tone(ctx, {
+      type: 'square',
+      freq: 420,
+      endFreq: 180,
+      start: now + 0.02,
+      dur: 0.1,
+      peak: 0.035,
+      attack: 0.005,
+      freqRamp: 'exp',
+    });
+  }
+
+  /** Heavier slam + rising sting when a campaign is defeated. */
+  playBossKill(): void {
+    if (!this.prefs.soundEffectsEnabled()) return;
+    const ctx = this.context();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    this.tone(ctx, {
+      type: 'sawtooth',
+      freq: 110,
+      endFreq: 45,
+      start: now,
+      dur: 0.35,
+      peak: 0.16,
+      attack: 0.01,
+      freqRamp: 'exp',
+    });
+    const rise = [329.63, 415.3, 523.25]; // E4 Ab4 C5
+    rise.forEach((freq, i) => {
+      this.tone(ctx, {
+        type: 'triangle',
+        freq,
+        start: now + 0.12 + i * 0.08,
+        dur: 0.38,
+        peak: 0.08,
+        attack: 0.02,
+      });
+    });
+  }
 
   playChestOpen(): void {
     if (!this.prefs.soundEffectsEnabled()) return;
@@ -113,6 +215,42 @@ export class LootAudioService {
       osc.start(now + start);
       osc.stop(now + start + dur + 0.02);
     });
+  }
+
+  private tone(
+    ctx: AudioContext,
+    opts: {
+      type: OscillatorType;
+      freq: number;
+      endFreq?: number;
+      start: number;
+      dur: number;
+      peak: number;
+      attack: number;
+      freqRamp?: 'exp' | 'lin';
+    }
+  ): void {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = opts.type;
+    osc.frequency.setValueAtTime(opts.freq, opts.start);
+    if (opts.endFreq != null) {
+      if (opts.freqRamp === 'lin') {
+        osc.frequency.linearRampToValueAtTime(opts.endFreq, opts.start + opts.dur);
+      } else {
+        osc.frequency.exponentialRampToValueAtTime(
+          Math.max(opts.endFreq, 0.01),
+          opts.start + opts.dur
+        );
+      }
+    }
+    gain.gain.setValueAtTime(0.0001, opts.start);
+    gain.gain.exponentialRampToValueAtTime(Math.max(opts.peak, 0.0001), opts.start + opts.attack);
+    gain.gain.exponentialRampToValueAtTime(0.0001, opts.start + opts.dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(opts.start);
+    osc.stop(opts.start + opts.dur + 0.02);
   }
 
   private context(): AudioContext | null {

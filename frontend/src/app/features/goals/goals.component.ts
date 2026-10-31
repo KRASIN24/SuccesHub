@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -7,6 +7,7 @@ import { GoalService } from '../../core/services/goal.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { GamificationService } from '../../core/services/gamification.service';
 import { GamificationCelebrationService } from '../../core/services/gamification-celebration.service';
+import { DevToolsService } from '../../core/services/dev-tools.service';
 import { Goal, GoalSummary } from '../../core/models/goal.model';
 import { UserProfile } from '../../core/models/profile.model';
 import { WeeklyInsight } from '../../core/models/gamification.model';
@@ -41,6 +42,7 @@ export class GoalsComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly gamificationService = inject(GamificationService);
   private readonly celebrations = inject(GamificationCelebrationService);
+  private readonly devTools = inject(DevToolsService);
   private readonly router = inject(Router);
 
   readonly loading = signal(true);
@@ -64,12 +66,32 @@ export class GoalsComponent implements OnInit {
   newGoalIcon = 'savings';
   newGoalFeatured = false;
 
+  /** Campaign type choices — stored values stay stable; labels/descriptions come from i18n. */
+  readonly tierOptions = [
+    { value: 'Standard Beast', labelKey: 'goals.tierStandard', descKey: 'goals.tierStandardDesc' },
+    { value: 'Elite Threat', labelKey: 'goals.tierElite', descKey: 'goals.tierEliteDesc' },
+    { value: 'Legendary Leviathan', labelKey: 'goals.tierLegendary', descKey: 'goals.tierLegendaryDesc' },
+  ] as const;
+
   constructor() {
     effect(() => {
       const tick = this.celebrations.goalsRefreshTick();
       if (tick > 0 && !this.loading()) {
         this.softRefreshGoals();
       }
+    });
+    effect(() => {
+      const rev = this.devTools.dataRevision();
+      untracked(() => {
+        if (rev === 0 || this.loading()) {
+          return;
+        }
+        this.softRefreshGoals();
+        this.profileService.getProfile().subscribe({
+          next: (p) => this.profile.set(p),
+          error: () => undefined,
+        });
+      });
     });
   }
 
@@ -184,17 +206,6 @@ export class GoalsComponent implements OnInit {
       case 'Standard Beast':
       default:
         return this.i18n.t('goals.tierStandard');
-    }
-  }
-
-  tierDescKey(): string {
-    switch (this.newGoalTier) {
-      case 'Elite Threat':
-        return 'goals.tierEliteDesc';
-      case 'Legendary Leviathan':
-        return 'goals.tierLegendaryDesc';
-      default:
-        return 'goals.tierStandardDesc';
     }
   }
 

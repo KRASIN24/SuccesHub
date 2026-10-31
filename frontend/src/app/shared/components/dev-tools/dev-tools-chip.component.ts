@@ -7,6 +7,10 @@ const LABELS: Record<DevToolId, { label: string; icon: string }> = {
   cache: { label: 'Cache', icon: 'inventory_2' },
   time: { label: 'Time', icon: 'schedule' },
   ritual: { label: 'Ritual', icon: 'auto_awesome' },
+  progress: { label: 'Progress', icon: 'trending_up' },
+  inventory: { label: 'Items', icon: 'backpack' },
+  combat: { label: 'Combat', icon: 'swords' },
+  campaigns: { label: 'Campaigns', icon: 'flag' },
 };
 
 /**

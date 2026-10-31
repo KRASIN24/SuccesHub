@@ -1,7 +1,19 @@
 @if (tools.enabled()) {
-  <div class="dev-dock" aria-live="polite">
+  <div
+    class="dev-dock"
+    [class.dev-dock--below]="panelBelow()"
+    [class.dev-dock--start]="panelAlignStart()"
+    [style.left.px]="fabPos().left"
+    [style.top.px]="fabPos().top"
+    aria-live="polite"
+  >
     @if (tools.openTool(); as openId) {
-      <div class="dev-panel" role="dialog" [attr.aria-label]="toolMeta[openId].title">
+      <div
+        class="dev-panel"
+        role="dialog"
+        [attr.aria-label]="toolMeta[openId].title"
+        [style.max-height]="panelMaxHeightStyle()"
+      >
         <header class="dev-panel__head">
           <div class="dev-panel__tabs">
             @for (id of toolIds; track id) {
@@ -16,10 +28,37 @@
               </button>
             }
           </div>
+          @if (isDockMoved()) {
+            <button
+              type="button"
+              class="dev-panel__close"
+              (click)="resetDockPosition($event)"
+              aria-label="Reset bubble position"
+              title="Reset bubble position"
+            >
+              <span class="material-symbols-outlined">filter_center_focus</span>
+            </button>
+          }
           <button type="button" class="dev-panel__close" (click)="closePanel()" aria-label="Close tools">
             <span class="material-symbols-outlined">close</span>
           </button>
         </header>
+
+        @if (tools.diagnostics(); as diag) {
+          <div class="dev-diag">
+            <span>L{{ diag.level }} · {{ diag.currentXp }}/{{ diag.nextLevelXp }} XP</span>
+            <span>Streak {{ diag.currentStreak }}</span>
+            <span>Shields {{ diag.streakShields }}</span>
+            <span>Loot {{ diag.pendingLootCount }}</span>
+            <span>Pending Σ {{ diag.activeCampaignPending | number: '1.0-1' }}</span>
+            @if (diag.pendingDoubleStrike) {
+              <span class="dev-diag__flag">2×</span>
+            }
+            @if (diag.pendingSurgeToken) {
+              <span class="dev-diag__flag">Surge</span>
+            }
+          </div>
+        }
 
         <p class="dev-panel__clock">
           Effective today <strong>{{ tools.effectiveToday() || '—' }}</strong>
@@ -106,6 +145,164 @@
               Unseal today
             </button>
           </div>
+        } @else if (openId === 'progress') {
+          <p class="dev-panel__hint">Inject XP or jump to an absolute level (clears XP into that level).</p>
+          <div class="dev-actions">
+            <input
+              type="number"
+              min="1"
+              class="dev-input"
+              [ngModel]="tools.xpAmount()"
+              (ngModelChange)="tools.xpAmount.set(+$event)"
+              [disabled]="tools.busy()"
+            />
+            <button type="button" class="dev-btn dev-btn--primary" [disabled]="tools.busy()" (click)="addXp()">
+              Add XP
+            </button>
+          </div>
+          <div class="dev-actions">
+            <input
+              type="number"
+              min="1"
+              class="dev-input"
+              [ngModel]="tools.levelValue()"
+              (ngModelChange)="tools.levelValue.set(+$event)"
+              [disabled]="tools.busy()"
+            />
+            <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="setLevel()">
+              Set level
+            </button>
+          </div>
+        } @else if (openId === 'inventory') {
+          <p class="dev-panel__hint">Grant any catalog reward into inventory stacks.</p>
+          <div class="dev-actions">
+            <input
+              type="search"
+              class="dev-input"
+              placeholder="Filter rewards…"
+              [ngModel]="tools.rewardFilter()"
+              (ngModelChange)="tools.rewardFilter.set($event)"
+              [disabled]="tools.busy()"
+            />
+          </div>
+          <div class="dev-pick-list" role="listbox" aria-label="Reward catalog">
+            @for (r of tools.filteredRewards(); track r.key) {
+              <button
+                type="button"
+                role="option"
+                class="dev-pick"
+                [class.dev-pick--active]="tools.selectedRewardKey() === r.key"
+                [attr.aria-selected]="tools.selectedRewardKey() === r.key"
+                [disabled]="tools.busy()"
+                (click)="tools.selectedRewardKey.set(r.key)"
+              >
+                <span class="dev-pick__label">{{ r.label }}</span>
+                <span class="dev-pick__meta">{{ r.type }} · {{ r.rarity }}</span>
+              </button>
+            } @empty {
+              <p class="dev-panel__hint">No rewards match the filter.</p>
+            }
+          </div>
+          <div class="dev-actions">
+            <input
+              type="number"
+              min="1"
+              class="dev-input"
+              [ngModel]="tools.grantQuantity()"
+              (ngModelChange)="tools.grantQuantity.set(+$event)"
+              [disabled]="tools.busy()"
+            />
+            <button type="button" class="dev-btn dev-btn--primary" [disabled]="tools.busy()" (click)="grantInventory()">
+              Grant
+            </button>
+          </div>
+        } @else if (openId === 'combat') {
+          <p class="dev-panel__hint">Bank shields and arm Double Strike / Surge for the next task.</p>
+          <div class="dev-actions">
+            <input
+              type="number"
+              min="0"
+              class="dev-input"
+              [ngModel]="tools.shieldsValue()"
+              (ngModelChange)="tools.shieldsValue.set(+$event)"
+              [disabled]="tools.busy()"
+            />
+            <span class="dev-panel__hint" style="margin: 0; align-self: center">shields</span>
+          </div>
+          <div class="dev-actions dev-actions--wrap">
+            <label class="dev-check">
+              <input
+                type="checkbox"
+                [ngModel]="tools.doubleStrike()"
+                (ngModelChange)="tools.doubleStrike.set($event)"
+                [disabled]="tools.busy()"
+              />
+              Double Strike
+            </label>
+            <label class="dev-check">
+              <input
+                type="checkbox"
+                [ngModel]="tools.surgeToken()"
+                (ngModelChange)="tools.surgeToken.set($event)"
+                [disabled]="tools.busy()"
+              />
+              Surge Token
+            </label>
+          </div>
+          <div class="dev-actions">
+            <button type="button" class="dev-btn dev-btn--primary" [disabled]="tools.busy()" (click)="applyCombatState()">
+              Apply combat state
+            </button>
+          </div>
+        } @else if (openId === 'campaigns') {
+          <p class="dev-panel__hint">Bank pending Strike damage, near-kill, force Strike, or subscribe all categories.</p>
+          @if (!tools.campaigns().length) {
+            <p class="dev-panel__hint">No active campaigns.</p>
+          } @else {
+            <div class="dev-pick-list" role="listbox" aria-label="Active campaigns">
+              @for (c of tools.campaigns(); track c.id) {
+                <button
+                  type="button"
+                  role="option"
+                  class="dev-pick"
+                  [class.dev-pick--active]="tools.selectedCampaignId() === c.id"
+                  [attr.aria-selected]="tools.selectedCampaignId() === c.id"
+                  [disabled]="tools.busy()"
+                  (click)="onCampaignPicked(c.id)"
+                >
+                  <span class="dev-pick__label">{{ c.name }}</span>
+                  <span class="dev-pick__meta">
+                    {{ c.healthRemaining }}% HP · pend {{ c.pendingDamage | number: '1.0-1' }}
+                  </span>
+                </button>
+              }
+            </div>
+            <div class="dev-actions">
+              <input
+                type="number"
+                min="0"
+                step="1"
+                class="dev-input"
+                [ngModel]="tools.campaignPending()"
+                (ngModelChange)="tools.campaignPending.set(+$event)"
+                [disabled]="tools.busy()"
+              />
+              <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="setCampaignPending()">
+                Set pending
+              </button>
+            </div>
+            <div class="dev-actions dev-actions--wrap">
+              <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="setCampaignNearDead()">
+                Near-dead +1 pend
+              </button>
+              <button type="button" class="dev-btn dev-btn--primary" [disabled]="tools.busy()" (click)="forceStrike()">
+                Force Strike
+              </button>
+              <button type="button" class="dev-btn" [disabled]="tools.busy()" (click)="subscribeAll()">
+                Subscribe all cats
+              </button>
+            </div>
+          }
         }
       </div>
     }
@@ -114,8 +311,15 @@
       type="button"
       class="dev-fab"
       [class.dev-fab--open]="!!tools.openTool()"
+      [class.dev-fab--dragging]="dragging()"
+      (pointerdown)="onFabPointerDown($event)"
+      (pointermove)="onFabPointerMove($event)"
+      (pointerup)="onFabPointerUp($event)"
+      (pointercancel)="onFabPointerUp($event)"
+      (dblclick)="resetDockPosition($event)"
       (click)="toggleDock()"
-      aria-label="Toggle dev tools"
+      aria-label="Toggle dev tools. Drag to move, double-click to reset."
+      title="Drag to move · double-click to reset"
     >
       <span class="material-symbols-outlined">{{ tools.openTool() ? 'close' : 'construction' }}</span>
       <span class="dev-fab__label">Dev</span>

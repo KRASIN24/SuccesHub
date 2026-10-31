@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { GoalService } from '../../core/services/goal.service';
 import { TaskService } from '../../core/services/task.service';
 import { GamificationCelebrationService } from '../../core/services/gamification-celebration.service';
+import { DevToolsService } from '../../core/services/dev-tools.service';
 import { Goal, GoalSubscription } from '../../core/models/goal.model';
 import { Task, TaskCategory } from '../../core/models/task.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
@@ -45,6 +46,7 @@ export class GoalDetailComponent implements OnInit {
   private readonly goalService = inject(GoalService);
   private readonly taskService = inject(TaskService);
   private readonly celebrations = inject(GamificationCelebrationService);
+  private readonly devTools = inject(DevToolsService);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -66,6 +68,28 @@ export class GoalDetailComponent implements OnInit {
   editIcon = 'savings';
   editFeatured = false;
 
+  /** Campaign type choices — stored values stay stable; labels/descriptions come from i18n. */
+  readonly tierOptions = [
+    { value: 'Standard Beast', labelKey: 'goals.tierStandard', descKey: 'goals.tierStandardDesc' },
+    { value: 'Elite Threat', labelKey: 'goals.tierElite', descKey: 'goals.tierEliteDesc' },
+    { value: 'Legendary Leviathan', labelKey: 'goals.tierLegendary', descKey: 'goals.tierLegendaryDesc' },
+  ] as const;
+
+  constructor() {
+    effect(() => {
+      const rev = this.devTools.dataRevision();
+      untracked(() => {
+        if (rev === 0 || this.loading()) {
+          return;
+        }
+        const id = this.goal()?.id ?? this.route.snapshot.paramMap.get('id');
+        if (id) {
+          this.load(id, true);
+        }
+      });
+    });
+  }
+
   ngOnInit(): void {
     this.reload();
   }
@@ -79,8 +103,10 @@ export class GoalDetailComponent implements OnInit {
     this.load(id);
   }
 
-  load(id: string): void {
-    this.loading.set(true);
+  load(id: string, silent = false): void {
+    if (!silent) {
+      this.loading.set(true);
+    }
     this.error.set(null);
     forkJoin({
       goal: this.goalService.getGoal(id),
@@ -95,7 +121,9 @@ export class GoalDetailComponent implements OnInit {
         this.subscriptions.set(data.subs);
         this.categories.set(data.categories);
         this.allTasks.set(data.allTasks);
-        this.syncEditForm(data.goal);
+        if (!this.editing()) {
+          this.syncEditForm(data.goal);
+        }
         this.loading.set(false);
       },
       error: (err) => {

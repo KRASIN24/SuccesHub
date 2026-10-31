@@ -144,6 +144,63 @@ export interface DevUnsealResult {
   message: string;
 }
 
+/** Catalog row from GET /gamification/dev/rewards. */
+export interface DevRewardCatalog {
+  key: string;
+  label: string;
+  type: string;
+  rarity: string;
+  icon: string;
+}
+
+/** Result of POST /gamification/dev/inventory. */
+export interface DevInventoryGrantResult {
+  rewardKey: string;
+  quantityGranted: number;
+  quantityTotal: number;
+  message: string;
+}
+
+/** Active campaign row from GET /gamification/dev/campaigns. */
+export interface DevCampaign {
+  id: string;
+  name: string;
+  targetValue: number;
+  currentProgress: number;
+  pendingDamage: number;
+  healthRemaining: number;
+  subscriptionCount: number;
+}
+
+/** Result of POST /gamification/dev/campaigns/{id}/subscribe. */
+export interface DevSubscribeAllResult {
+  subscribed: number;
+  alreadyLinked: number;
+  moved: number;
+  message: string;
+}
+
+/** Snapshot from GET /gamification/dev/diagnostics. */
+export interface DevDiagnostics {
+  effectiveToday: string;
+  dayOffset: number;
+  lastProcessedDay: string | null;
+  lastCelebratedDay: string | null;
+  lastWeeklyLootWeek: string | null;
+  level: number;
+  currentXp: number;
+  nextLevelXp: number;
+  lifetimeXp: number;
+  dailyXpEarned: number;
+  dailyXpRemaining: number;
+  currentStreak: number;
+  streakShields: number;
+  pendingDoubleStrike: boolean;
+  pendingSurgeToken: boolean;
+  pendingLootCount: number;
+  activeCampaignPending: number;
+}
+
 export type StreakDayStatus = 'COMPLETED' | 'MISSED' | 'SHIELDED' | 'TODAY' | 'FUTURE' | 'EMPTY';
 
 export interface StreakDay {

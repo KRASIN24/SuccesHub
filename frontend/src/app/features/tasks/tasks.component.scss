@@ -598,7 +598,7 @@
 .sort-sheet {
   position: fixed;
   z-index: 66;
-  left: 50%;
+  left: calc(50% + var(--overlay-inline-offset, 0px) / 2);
   bottom: 1.25rem;
   transform: translateX(-50%);
   width: min(22rem, calc(100vw - 2rem));
