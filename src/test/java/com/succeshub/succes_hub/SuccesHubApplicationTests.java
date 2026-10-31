@@ -1,6 +1,7 @@
 package com.succeshub.succes_hub;
 
 import com.succeshub.appdomain.repository.AchievementDefinitionRepository;
+import com.succeshub.appdomain.repository.GoalCategorySubscriptionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
 import com.succeshub.appdomain.repository.LootBoxContentRepository;
 import com.succeshub.appdomain.repository.RewardDefinitionRepository;
@@ -48,6 +49,8 @@ class SuccesHubApplicationTests {
 	private TaskRepository taskRepository;
 	@MockitoBean
 	private GoalRepository goalRepository;
+	@MockitoBean
+	private GoalCategorySubscriptionRepository goalCategorySubscriptionRepository;
 	@MockitoBean
 	private AchievementDefinitionRepository achievementDefinitionRepository;
 	@MockitoBean
