@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST API for the Sovereign Index widget: proxied cryptocurrency prices.
+ * REST API for the Market Index widget: proxied cryptocurrency prices.
  */
 @Tag(name = "Market", description = "Cryptocurrency market prices (CoinGecko proxy)")
 @RestController

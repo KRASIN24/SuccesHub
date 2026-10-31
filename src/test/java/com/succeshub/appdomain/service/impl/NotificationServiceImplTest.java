@@ -46,7 +46,7 @@ class NotificationServiceImplTest {
                 "user-1",
                 NotificationType.LOOT_EARNED,
                 "Loot earned",
-                "A Glowing Orb awaits.",
+                "A Arcane Orb awaits.",
                 "/loot-boxes",
                 UUID.randomUUID());
         when(notificationRepository.save(any(Notification.class))).thenAnswer(inv -> {

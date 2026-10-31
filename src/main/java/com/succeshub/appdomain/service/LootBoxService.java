@@ -95,7 +95,7 @@ public interface LootBoxService {
     UUID checkStreakMilestone(String userId, int streak);
 
     /**
-     * Grants a WEEKLY_RESET Sovereign Vault when the week ending on the Sunday of
+     * Grants a WEEKLY_RESET Onyx Vault when the week ending on the Sunday of
      * {@code weekMonday}'s week has enough qualifying days and has not already been rewarded.
      *
      * @param userId     Keycloak subject ID
