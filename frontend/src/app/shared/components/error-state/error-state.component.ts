@@ -1,16 +1,18 @@
 import { Component, input, output } from '@angular/core';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-error-state',
   standalone: true,
+  imports: [TranslatePipe],
   template: `
     <div class="error-container">
       <span class="material-icons error-icon">error_outline</span>
-      <p class="error-message">{{ message() }}</p>
+      <p class="error-message">{{ message() || ('errors.syncFailed' | translate) }}</p>
       @if (showRetry()) {
         <button class="retry-btn" (click)="retry.emit()">
           <span class="material-icons btn-icon">replay</span>
-          Retry
+          {{ 'common.retry' | translate }}
         </button>
       }
     </div>
@@ -64,7 +66,7 @@ import { Component, input, output } from '@angular/core';
   `]
 })
 export class ErrorStateComponent {
-  readonly message = input<string>('Failed to synchronize status with the sovereign registry.');
+  readonly message = input<string>('');
   readonly showRetry = input<boolean>(true);
   readonly retry = output<void>();
 }

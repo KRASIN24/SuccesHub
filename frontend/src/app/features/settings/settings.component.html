@@ -1,11 +1,6 @@
 <div class="settings-page">
 
-  <header class="settings-topbar">
-    <div>
-      <h1 class="settings-topbar__title">{{ 'settings.title' | translate }}</h1>
-      <p class="settings-topbar__subtitle">{{ 'settings.subtitle' | translate }}</p>
-    </div>
-  </header>
+  <app-page-header titleKey="settings.title" subtitleKey="settings.subtitle" />
 
   @if (saveSuccess()) {
     <div class="toast toast--success" role="status" aria-live="polite">

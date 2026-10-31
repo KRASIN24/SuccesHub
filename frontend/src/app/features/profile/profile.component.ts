@@ -16,6 +16,7 @@ import { StreakPanelComponent } from './streak-panel/streak-panel.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
 import { RewardLabelPipe, RarityLabelPipe } from '../../core/i18n/reward-label.pipe';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 type Category = 'UTILITY' | 'TITLE' | 'AVATAR_FRAME';
 
@@ -40,6 +41,7 @@ interface OverviewStat {
     TranslatePipe,
     RewardLabelPipe,
     RarityLabelPipe,
+    PageHeaderComponent,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',

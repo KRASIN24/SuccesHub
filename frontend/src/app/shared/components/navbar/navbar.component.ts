@@ -23,8 +23,11 @@ import { CountBadgeComponent } from '../count-badge/count-badge.component';
 
 const BOX_NAME_BY_EN: Record<string, string> = {
   'Glowing Orb': 'ARCANE_ORB',
+  'Arcane Orb': 'ARCANE_ORB',
   'Treasure Chest': 'IRON_CHEST',
+  'Iron Chest': 'IRON_CHEST',
   'Divine Vault': 'SOVEREIGN_VAULT',
+  'Onyx Vault': 'SOVEREIGN_VAULT',
 };
 
 const LOOT_REASON_BY_EN: Record<string, string> = {
@@ -41,6 +44,7 @@ const ACHIEVEMENT_KEY_BY_EN_LABEL: Record<string, string> = {
   Archivist: 'ARCHIVIST',
   Consistent: 'CONSISTENT',
   Sovereign: 'SOVEREIGN',
+  Apex: 'SOVEREIGN',
 };
 
 @Component({

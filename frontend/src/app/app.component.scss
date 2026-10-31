@@ -16,7 +16,8 @@
 
 .app-content {
   flex: 1;
-  padding: 2rem;
+  /* Single source of page inset — feature pages should not re-pad the outer shell. */
+  padding: 1.25rem 1.5rem 2.5rem;
 }
 
 .app-backdrop {
@@ -24,6 +25,10 @@
 }
 
 @media (max-width: 960px) {
+  .app-content {
+    padding: 1rem 1rem 2rem;
+  }
+
   .app-shell:not(.nav-closed) .app-backdrop {
     display: block;
     position: fixed;

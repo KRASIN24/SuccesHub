@@ -10,6 +10,7 @@ import {
   AchievementLabelPipe,
   AchievementDescPipe,
 } from '../../core/i18n/achievement-label.pipe';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-achievements',
@@ -21,6 +22,7 @@ import {
     TranslatePipe,
     AchievementLabelPipe,
     AchievementDescPipe,
+    PageHeaderComponent,
   ],
   template: `
     @if (loading()) {
@@ -29,7 +31,10 @@ import {
       <app-error-state [message]="error() || ''" (retry)="load()"></app-error-state>
     } @else {
       <div class="achievements-page">
-        <h1>{{ 'achievementsPage.title' | translate }}</h1>
+        <app-page-header
+          titleKey="achievementsPage.title"
+          subtitleKey="achievementsPage.subtitle"
+        />
         <div class="merits-grid">
           @for (a of achievements(); track a.id) {
             <article class="merit-card surface-card" [class.locked]="a.locked">
@@ -44,17 +49,15 @@ import {
   `,
   styles: `
     .achievements-page {
-      padding: 24px;
-    }
-    .achievements-page h1 {
-      margin: 0;
-      color: var(--color-text);
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0;
     }
     .merits-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
       gap: 16px;
-      margin-top: 24px;
+      margin-top: 0;
     }
     .merit-card {
       min-width: 0;

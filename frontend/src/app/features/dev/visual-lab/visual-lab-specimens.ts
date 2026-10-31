@@ -46,7 +46,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
       },
       {
         id: 'brand-login-portal',
-        label: 'Keycloak Sovereign Portal',
+        label: 'Keycloak SuccessHub Portal',
         sampleClass: 'vl-brand-login-portal',
         provenance: {
           file: 'docker/themes/successhub/login/resources/css/successhub.css',
@@ -78,7 +78,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/tasks/tasks.component.scss',
           selector: '.btn-primary',
-          surface: 'Quest Log',
+          surface: 'Tasks',
         },
       },
       {
@@ -88,7 +88,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/goals/goals.component.scss',
           selector: '.btn-primary',
-          surface: 'Boss Battle',
+          surface: 'Campaigns',
         },
       },
       {
@@ -118,7 +118,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/loot-boxes/loot-boxes.component.scss',
           selector: '.hero__cta',
-          surface: 'Celestial Cache',
+          surface: 'The Vault',
         },
       },
       {
@@ -175,7 +175,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/tasks/tasks.component.scss',
           selector: '.btn-secondary',
-          surface: 'Quest Log',
+          surface: 'Tasks',
         },
       },
       {
@@ -185,7 +185,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/goals/goals.component.scss',
           selector: '.summon-btn',
-          surface: 'Boss Battle',
+          surface: 'Campaigns',
         },
       },
       {
@@ -195,7 +195,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/loot-boxes/loot-boxes.component.scss',
           selector: '.hero__cta-secondary',
-          surface: 'Celestial Cache',
+          surface: 'The Vault',
         },
       },
       {
@@ -336,7 +336,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/tasks/tasks.component.scss',
           selector: '.column',
-          surface: 'Quest Log',
+          surface: 'Tasks',
         },
       },
       {
@@ -393,7 +393,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/goals/goals.component.scss',
           selector: '.form-field input',
-          surface: 'Boss Battle',
+          surface: 'Campaigns',
         },
       },
       {
@@ -403,7 +403,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'frontend/src/app/features/tasks/tasks.component.scss',
           selector: '.add-form__input',
-          surface: 'Quest Log',
+          surface: 'Tasks',
         },
       },
       {
@@ -509,7 +509,7 @@ export const VISUAL_LAB_GROUPS: VisualGroup[] = [
         provenance: {
           file: 'tasks.component.scss',
           selector: '.icon-btn + .hex-add',
-          surface: 'Quest Log (today)',
+          surface: 'Tasks (today)',
         },
       },
       {

@@ -1,5 +1,6 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
 import { Achievement } from '../../../core/models/achievement.model';
+import { TranslateService } from '../../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-achievement-slam',
@@ -8,7 +9,7 @@ import { Achievement } from '../../../core/models/achievement.model';
     @if (visible() && achievement(); as a) {
       <div class="achievement-slam">
         <span class="material-icons">{{ a.icon }}</span>
-        <span>{{ a.label }} unlocked!</span>
+        <span>{{ unlockedLabel(a) }}</span>
       </div>
     }
   `,
@@ -35,8 +36,20 @@ import { Achievement } from '../../../core/models/achievement.model';
   `],
 })
 export class AchievementSlamComponent {
+  private readonly i18n = inject(TranslateService);
+
   readonly visible = signal(false);
   readonly achievement = signal<Achievement | null>(null);
+
+  unlockedLabel(a: Achievement): string {
+    const name = this.i18n.catalogEntry(
+      'achievements',
+      a.key,
+      'label',
+      a.label
+    );
+    return this.i18n.t('gamification.achievementUnlocked', { name });
+  }
 
   @Input() set trigger(value: { achievement: Achievement; tick: number } | null) {
     if (!value) return;
