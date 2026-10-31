@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject, signal, untracked } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -9,14 +9,14 @@ import { GamificationService } from '../../core/services/gamification.service';
 import { GamificationCelebrationService } from '../../core/services/gamification-celebration.service';
 import { EquippedCosmeticsService } from '../../core/services/equipped-cosmetics.service';
 import { QuoteService } from '../../core/services/quote.service';
-import { MarketService } from '../../core/services/market.service';
-import { AstronomyService } from '../../core/services/astronomy.service';
+import { GoalService } from '../../core/services/goal.service';
+import { LootPendingService } from '../../core/services/loot-pending.service';
 import { DevToolsService } from '../../core/services/dev-tools.service';
 import { Task } from '../../core/models/task.model';
 import { Achievement } from '../../core/models/achievement.model';
 import { DailyStatus, Forecast } from '../../core/models/gamification.model';
-import { MarketData } from '../../core/models/market.model';
-import { DailyQuote, LunarData } from '../../core/models/lunar.model';
+import { Goal } from '../../core/models/goal.model';
+import { DailyQuote } from '../../core/models/lunar.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';
@@ -29,6 +29,7 @@ import {
   AchievementLabelPipe,
   AchievementDescPipe,
 } from '../../core/i18n/achievement-label.pipe';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-home',
@@ -45,6 +46,7 @@ import {
     RewardLabelPipe,
     AchievementLabelPipe,
     AchievementDescPipe,
+    PageHeaderComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -53,13 +55,13 @@ export class HomeComponent implements OnInit {
   protected readonly profileService = inject(ProfileService);
   protected readonly cosmetics = inject(EquippedCosmeticsService);
   protected readonly i18n = inject(TranslateService);
+  protected readonly lootPending = inject(LootPendingService);
   private readonly taskService = inject(TaskService);
   private readonly achievementService = inject(AchievementService);
   private readonly gamificationService = inject(GamificationService);
   private readonly celebrations = inject(GamificationCelebrationService);
   private readonly quoteService = inject(QuoteService);
-  private readonly marketService = inject(MarketService);
-  private readonly astronomyService = inject(AstronomyService);
+  private readonly goalService = inject(GoalService);
   private readonly devTools = inject(DevToolsService);
 
   readonly loading = signal(true);
@@ -70,9 +72,20 @@ export class HomeComponent implements OnInit {
   readonly forecast = signal<Forecast | null>(null);
   readonly unscheduled = signal<Task[]>([]);
   readonly merits = signal<Achievement[]>([]);
-  readonly marketData = signal<MarketData | null>(null);
-  readonly lunarData = signal<LunarData | null>(null);
+  readonly activeCampaigns = signal<Goal[]>([]);
   readonly quote = signal<DailyQuote | null>(null);
+
+  /** Campaigns that need a glance: pending Strike first, then lowest HP. */
+  readonly campaignPulse = computed(() => {
+    const goals = [...this.activeCampaigns()];
+    goals.sort((a, b) => {
+      const aPending = (a.pendingDamage ?? 0) > 0 ? 1 : 0;
+      const bPending = (b.pendingDamage ?? 0) > 0 ? 1 : 0;
+      if (aPending !== bPending) return bPending - aPending;
+      return this.healthRemaining(a) - this.healthRemaining(b);
+    });
+    return goals.slice(0, 3);
+  });
 
   constructor() {
     effect(() => {
@@ -87,6 +100,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.lootPending.refresh();
     this.loadDashboardData();
   }
 
@@ -102,8 +116,7 @@ export class HomeComponent implements OnInit {
       forecast: this.gamificationService.getForecast(),
       allTasks: this.taskService.getTasks('TODO'),
       merits: this.achievementService.getAchievements(),
-      market: this.marketService.getPrices(),
-      lunar: this.astronomyService.getLunarPhase(),
+      goals: this.goalService.getGoals('ACTIVE'),
       quote: this.quoteService.getDailyQuote(),
     }).subscribe({
       next: (data) => {
@@ -112,9 +125,9 @@ export class HomeComponent implements OnInit {
         const scheduledIds = new Set(data.daily.scheduledToday.map((t) => t.id));
         this.unscheduled.set(data.allTasks.filter((t) => !scheduledIds.has(t.id) && !t.scheduledDate));
         this.merits.set(data.merits);
-        this.marketData.set(data.market);
-        this.lunarData.set(data.lunar);
+        this.activeCampaigns.set(data.goals);
         this.quote.set(data.quote);
+        this.lootPending.refresh();
         this.loading.set(false);
       },
       error: (err) => {
@@ -123,6 +136,20 @@ export class HomeComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  healthRemaining(goal: Goal): number {
+    if (goal.targetValue <= 0) return 100;
+    const pct = Math.round((goal.currentProgress / goal.targetValue) * 100);
+    return Math.max(0, 100 - pct);
+  }
+
+  pendingDamage(goal: Goal): number {
+    return Math.round(goal.pendingDamage ?? 0);
+  }
+
+  isLowHp(goal: Goal): boolean {
+    return this.healthRemaining(goal) <= 15;
   }
 
   get xpPercent(): number {
