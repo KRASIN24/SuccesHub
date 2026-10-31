@@ -16,28 +16,35 @@ export const routes: Routes = [
       import('./features/account/reactivate-account.component').then(
         (m) => m.ReactivateAccountComponent
       ),
-    title: 'Reactivate account — SuccesHub',
+    title: 'Reactivate account — SuccessHub',
   },
   {
     path: 'dashboard',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/home/home.component').then((m) => m.HomeComponent),
-    title: 'Dashboard — SuccesHub',
+    title: 'Dashboard — SuccessHub',
   },
   {
     path: 'tasks',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/tasks/tasks.component').then((m) => m.TasksComponent),
-    title: 'Quest Log — SuccesHub',
+    title: 'Tasks — SuccessHub',
   },
   {
     path: 'goals',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/goals/goals.component').then((m) => m.GoalsComponent),
-    title: 'Boss Battle — SuccesHub',
+    title: 'Campaigns — SuccessHub',
+  },
+  {
+    path: 'goals/:id',
+    canActivate: [authGuard, activeAccountGuard],
+    loadComponent: () =>
+      import('./features/goals/goal-detail.component').then((m) => m.GoalDetailComponent),
+    title: 'Campaign — SuccessHub',
   },
   {
     path: 'achievements',
@@ -46,14 +53,14 @@ export const routes: Routes = [
       import('./features/achievements/achievements.component').then(
         (m) => m.AchievementsComponent
       ),
-    title: 'Achievements — SuccesHub',
+    title: 'Achievements — SuccessHub',
   },
   {
     path: 'loot-boxes',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/loot-boxes/loot-boxes.component').then((m) => m.LootBoxesComponent),
-    title: 'The Celestial Cache — SuccesHub',
+    title: 'The Vault — SuccessHub',
   },
   {
     path: 'cache',
@@ -65,7 +72,7 @@ export const routes: Routes = [
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/profile/profile.component').then((m) => m.ProfileComponent),
-    title: 'Profile — SuccesHub',
+    title: 'Profile — SuccessHub',
     data: { title: 'Profile', icon: 'person' },
   },
   {
@@ -75,7 +82,7 @@ export const routes: Routes = [
       import('./features/settings/settings.component').then(
         (m) => m.SettingsComponent
       ),
-    title: 'Settings — SuccesHub',
+    title: 'Settings — SuccessHub',
   },
   {
     path: 'dev/visual-lab',
@@ -84,7 +91,7 @@ export const routes: Routes = [
       import('./features/dev/visual-lab/visual-lab.component').then(
         (m) => m.VisualLabComponent
       ),
-    title: 'Visual Lab — SuccesHub',
+    title: 'Visual Lab — SuccessHub',
   },
   {
     path: '**',

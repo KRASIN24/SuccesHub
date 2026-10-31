@@ -1,0 +1,183 @@
+﻿@if (loading()) {
+  <div class="goal-detail" style="padding: 24px;">
+    <app-loading-skeleton height="120px" width="100%"></app-loading-skeleton>
+    <div style="margin-top: 24px;">
+      <app-loading-skeleton height="240px" width="100%"></app-loading-skeleton>
+    </div>
+  </div>
+} @else if (error()) {
+  <div class="goal-detail" style="padding: 24px;">
+    <app-error-state [message]="error() || ''" (retry)="reload()"></app-error-state>
+  </div>
+} @else {
+  @if (goal(); as boss) {
+  <div class="goal-detail">
+    <a routerLink="/goals" class="back-link">{{ 'goals.backToCampaigns' | translate }}</a>
+    <app-page-header titleKey="goals.title" subtitleKey="goals.subtitle" />
+
+    <section class="detail-card surface-card" [class.low-hp]="isLowHp(boss)" [class.final-ready]="isFinalStrike(boss)">
+      <div class="boss-card-top">
+        <div>
+          <p class="boss-tier">{{ tierLabel(boss.tier) }}</p>
+          <p class="boss-name">{{ boss.name }}</p>
+        </div>
+        <span class="xp-pill">XP +{{ boss.xpReward }}</span>
+      </div>
+
+      <div class="boss-health" [class.health--critical]="isLowHp(boss)">
+        <div class="health-labels">
+          <span class="health-key">{{ 'goals.healthProgress' | translate }}</span>
+          <span class="health-val">{{ i18n.t('goals.remaining', { pct: healthRemaining(boss) }) }}</span>
+        </div>
+        <div class="health-track">
+          <div class="health-fill" [style.width.%]="healthRemaining(boss)"></div>
+        </div>
+        @if (pendingDamage(boss) > 0) {
+          <p class="pending-line">{{ i18n.t('goals.pendingReady', { n: pendingDamage(boss) }) }}</p>
+        }
+      </div>
+
+      <div class="detail-actions">
+        <div class="detail-actions__combat">
+          <app-glitch-button
+            [label]="
+              striking()
+                ? ('goals.striking' | translate)
+                : isFinalStrike(boss)
+                  ? ('goals.finalStrike' | translate)
+                  : ('goals.strike' | translate)
+            "
+            [variant]="isFinalStrike(boss) ? 'danger' : 'primary'"
+            [disabled]="!canStrike(boss)"
+            (pressed)="strike()"
+          />
+          @if (pendingDamage(boss) === 0 && !striking()) {
+            <p class="strike-hint">{{ 'goals.bossHint' | translate }}</p>
+          }
+        </div>
+        @if (!editing()) {
+          <div class="detail-actions__manage">
+            <button type="button" class="ghost-btn" (click)="startEdit()">
+              {{ 'goals.editCampaign' | translate }}
+            </button>
+            <button type="button" class="ghost-btn ghost-btn--danger" (click)="deleteGoal()">
+              {{ 'goals.deleteCampaign' | translate }}
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+
+    @if (editing()) {
+      <form class="edit-form surface-card" (ngSubmit)="saveEdit()">
+        @if (saveError()) {
+          <p class="form-error">{{ saveError() }}</p>
+        }
+        <div class="form-grid">
+          <label class="form-field span-2">
+            <span class="field-label">{{ 'goals.bossName' | translate }}</span>
+            <input type="text" [(ngModel)]="editName" name="editName" required />
+          </label>
+          <label class="form-field">
+            <span class="field-label">{{ 'goals.tier' | translate }}</span>
+            <select [(ngModel)]="editTier" name="editTier">
+              <option value="Standard Beast">{{ 'goals.tierStandard' | translate }}</option>
+              <option value="Elite Threat">{{ 'goals.tierElite' | translate }}</option>
+              <option value="Legendary Leviathan">{{ 'goals.tierLegendary' | translate }}</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span class="field-label">{{ 'goals.icon' | translate }}</span>
+            <select [(ngModel)]="editIcon" name="editIcon">
+              <option value="savings">{{ 'goals.iconSavings' | translate }}</option>
+              <option value="fitness_center">{{ 'goals.iconFitness' | translate }}</option>
+              <option value="school">{{ 'goals.iconLearning' | translate }}</option>
+              <option value="work">{{ 'goals.iconCareer' | translate }}</option>
+              <option value="self_improvement">{{ 'goals.iconGrowth' | translate }}</option>
+              <option value="menu_book">{{ 'goals.iconReading' | translate }}</option>
+              <option value="rocket_launch">{{ 'goals.iconLaunch' | translate }}</option>
+            </select>
+          </label>
+          <label class="form-field span-2">
+            <span class="field-label">{{ 'goals.targetDescription' | translate }}</span>
+            <input type="text" [(ngModel)]="editTargetDescription" name="editTargetDescription" />
+          </label>
+          <label class="form-field">
+            <span class="field-label">{{ 'goals.targetValue' | translate }}</span>
+            <input type="number" min="1" [(ngModel)]="editTargetValue" name="editTargetValue" required />
+          </label>
+          <label class="form-field">
+            <span class="field-label">{{ 'goals.xpReward' | translate }}</span>
+            <input type="number" min="0" [(ngModel)]="editXpReward" name="editXpReward" />
+          </label>
+          <div class="form-field">
+            <app-glitch-checkbox
+              [label]="'goals.featuredBoss' | translate"
+              [checked]="editFeatured"
+              (checkedChange)="editFeatured = $event"
+            />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="ghost-btn" (click)="cancelEdit()" [disabled]="saving()">{{ 'common.cancel' | translate }}</button>
+          <app-glitch-button
+            type="submit"
+            [label]="saving() ? ('goals.saving' | translate) : ('goals.saveChanges' | translate)"
+            [disabled]="saving() || !editName.trim()"
+          />
+        </div>
+      </form>
+    }
+
+    <section class="section">
+      <h2 class="section-title">{{ 'goals.linkedTasks' | translate }}</h2>
+      <ul class="item-list">
+        @for (t of linkedTasks(); track t.id) {
+          <li>
+            <span class="item-label">{{ t.title }}</span>
+            <button type="button" class="ghost-btn tiny" (click)="detachTask(t.id)">{{ 'goals.detachTask' | translate }}</button>
+          </li>
+        } @empty {
+          <li class="empty">{{ 'goals.noLinkedTasks' | translate }}</li>
+        }
+      </ul>
+      <h3 class="subsection-title">{{ 'goals.attachTask' | translate }}</h3>
+      <app-search-picker
+        [options]="taskPickerOptions()"
+        [placeholder]="'goals.searchTasks' | translate"
+        [emptyLabel]="'goals.noTasksToAttach' | translate"
+        (picked)="attachTask($event)"
+      />
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">{{ 'goals.subscribedCategories' | translate }}</h2>
+      @if (saveError() && !editing()) {
+        <p class="form-error">{{ saveError() }}</p>
+      }
+      <ul class="item-list">
+        @for (s of subscriptions(); track s.id) {
+          <li>
+            <span class="item-label">{{ s.categoryName }}</span>
+            <button type="button" class="ghost-btn tiny ghost-btn--danger" (click)="unsubscribeCategory(s.categoryId)">
+              {{ 'goals.unsubscribe' | translate }}
+            </button>
+          </li>
+        } @empty {
+          <li class="empty">{{ 'goals.noSubscriptions' | translate }}</li>
+        }
+      </ul>
+      <h3 class="subsection-title">{{ 'goals.subscribeCategory' | translate }}</h3>
+      <app-search-picker
+        [multiple]="true"
+        [options]="categoryPickerOptions()"
+        [placeholder]="'goals.searchCategories' | translate"
+        [emptyLabel]="'goals.noCategoriesToSubscribe' | translate"
+        [confirmLabel]="'goals.subscribeSelected' | translate"
+        (confirmed)="subscribeCategories($event)"
+      />
+    </section>
+  </div>
+  }
+}
+
