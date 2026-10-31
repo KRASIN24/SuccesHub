@@ -71,7 +71,7 @@
     @if (editing()) {
       <form class="edit-form surface-card" (ngSubmit)="saveEdit()">
         @if (saveError()) {
-          <p class="form-error">{{ saveError() }}</p>
+          <p class="form-error-box">{{ saveError() }}</p>
         }
         <div class="form-grid">
           <label class="form-field span-2">
@@ -164,7 +164,7 @@
     <section class="section">
       <h2 class="section-title">{{ 'goals.subscribedCategories' | translate }}</h2>
       @if (saveError() && !editing()) {
-        <p class="form-error">{{ saveError() }}</p>
+        <p class="form-error-box">{{ saveError() }}</p>
       }
       <ul class="item-list">
         @for (s of subscriptions(); track s.id) {

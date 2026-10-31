@@ -22,7 +22,7 @@ function karmaConfig(config) {
       suppressAll: true,
     },
     coverageReporter: {
-      dir: path.join(__dirname, './coverage/succes-hub-frontend'),
+      dir: path.join(__dirname, './coverage/successhub-frontend'),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },

@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Spring Boot (SuccessHub)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="Local back">
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.successhub.SuccessHubApplication" />
+    <module name="successhub" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_type="ShConfigurationType" />
+    </method>
+  </configuration>
+</component>

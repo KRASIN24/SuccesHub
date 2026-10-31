@@ -1,22 +1,22 @@
-# Auth / deploy URLs — defaults = local Docker + Angular; override via env (see docs/deploy.md).
-succeshub:
+# Auth / deploy URLs — defaults = local Docker + Angular; override via env (root README).
+successhub:
   auth:
     frontend-url: ${SUCCESSHUB_FRONTEND_URL:http://localhost:4200/}
     cors-allowed-origins: "${SUCCESSHUB_CORS_ORIGINS:http://localhost:4200,http://localhost:8080}"
-    keycloak-logout-uri: ${SUCCESSHUB_KEYCLOAK_LOGOUT_URI:http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/logout}
+    keycloak-logout-uri: ${SUCCESSHUB_KEYCLOAK_LOGOUT_URI:http://localhost:8080/realms/successhub-realm/protocol/openid-connect/logout}
   keycloak:
     server-url: ${SUCCESSHUB_KEYCLOAK_SERVER_URL:http://localhost:8080}
-    realm: ${SUCCESSHUB_KEYCLOAK_REALM:succeshub-realm}
-    admin-client-id: ${SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_ID:succeshub-admin}
+    realm: ${SUCCESSHUB_KEYCLOAK_REALM:successhub-realm}
+    admin-client-id: ${SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_ID:successhub-admin}
     admin-client-secret: ${SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_SECRET:admin-changeme}
 
 spring:
   application:
-    name: SuccesHub
+    name: SuccessHub
   profiles:
     default: dev
   datasource:
-    url: ${SUCCESSHUB_DB_URL:jdbc:postgresql://localhost:5432/succeshub}
+    url: ${SUCCESSHUB_DB_URL:jdbc:postgresql://localhost:5432/successhub}
     username: ${SUCCESSHUB_DB_USER:postgres}
     password: ${SUCCESSHUB_DB_PASSWORD:postgres}
   jackson:
@@ -25,11 +25,11 @@ spring:
   jpa:
     properties:
       hibernate:
-        default_schema: succeshub
+        default_schema: successhub
     hibernate:
       ddl-auto: validate
   liquibase:
-    default-schema: succeshub
+    default-schema: successhub
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
   mail:
@@ -47,17 +47,17 @@ spring:
       client:
         registration:
           keycloak:
-            client-id: ${SUCCESSHUB_OAUTH_CLIENT_ID:succeshub-backend}
+            client-id: ${SUCCESSHUB_OAUTH_CLIENT_ID:successhub-backend}
             client-secret: ${SUCCESSHUB_OAUTH_CLIENT_SECRET:changeme}
             authorization-grant-type: authorization_code
             scope: openid,profile,email
             redirect-uri: "${SUCCESSHUB_OAUTH_REDIRECT_URI:http://localhost:4200/login/oauth2/code/keycloak}"
         provider:
           keycloak:
-            authorization-uri: ${SUCCESSHUB_KEYCLOAK_AUTH_URI:http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/auth}
-            token-uri: ${SUCCESSHUB_KEYCLOAK_TOKEN_URI:http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/token}
-            jwk-set-uri: ${SUCCESSHUB_KEYCLOAK_JWK_URI:http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/certs}
-            user-info-uri: ${SUCCESSHUB_KEYCLOAK_USERINFO_URI:http://localhost:8080/realms/succeshub-realm/protocol/openid-connect/userinfo}
+            authorization-uri: ${SUCCESSHUB_KEYCLOAK_AUTH_URI:http://localhost:8080/realms/successhub-realm/protocol/openid-connect/auth}
+            token-uri: ${SUCCESSHUB_KEYCLOAK_TOKEN_URI:http://localhost:8080/realms/successhub-realm/protocol/openid-connect/token}
+            jwk-set-uri: ${SUCCESSHUB_KEYCLOAK_JWK_URI:http://localhost:8080/realms/successhub-realm/protocol/openid-connect/certs}
+            user-info-uri: ${SUCCESSHUB_KEYCLOAK_USERINFO_URI:http://localhost:8080/realms/successhub-realm/protocol/openid-connect/userinfo}
             user-name-attribute: preferred_username
 
 springdoc:

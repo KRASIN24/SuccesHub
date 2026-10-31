@@ -16,7 +16,7 @@ import { Task } from '../../core/models/task.model';
 import { Achievement } from '../../core/models/achievement.model';
 import { DailyStatus, Forecast } from '../../core/models/gamification.model';
 import { Goal } from '../../core/models/goal.model';
-import { DailyQuote } from '../../core/models/lunar.model';
+import { DailyQuote } from '../../core/models/quote.model';
 import { LoadingSkeletonComponent } from '../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
 import { FrameOrnamentsComponent } from '../../shared/components/frame-ornaments/frame-ornaments.component';

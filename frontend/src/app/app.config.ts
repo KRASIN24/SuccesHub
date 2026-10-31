@@ -18,7 +18,7 @@ import { LocaleService } from './core/services/locale.service';
 import { ThemeService } from './core/services/theme.service';
 
 /** Aura retinted to SuccessHub gold so PrimeNG widgets match the app palette. */
-const SuccesHubAura = definePreset(Aura, {
+const SuccessHubAura = definePreset(Aura, {
   semantic: {
     primary: {
       50: '#fbf6e8',
@@ -50,7 +50,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: SuccesHubAura,
+        preset: SuccessHubAura,
         options: {
           darkModeSelector: '.app-dark',
           cssLayer: {

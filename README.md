@@ -157,7 +157,7 @@ npm start
 
 ### IntelliJ (preferred day-to-day)
 
-Shared Run/Debug configs live in [`.run/`](.run/) (`Full Stack` on host, **Start Full Stack (Docker)**, infra start/stop, Spring `dev`/`prod`, Angular). Full guide: [docs/local-dev.md](docs/local-dev.md).
+Shared Run/Debug configs live in [`.run/`](.run/) (`Full Stack` on host, **Start Full Stack (Docker)**, infra start/stop, Spring `dev`/`prod`, Angular). Deeper DX notes: [IntelliJ run configs](https://app.notion.com/p/383b2614a9c0817a9666dbf3c5d35d19) (Notion).
 
 ### Useful commands
 
@@ -175,9 +175,7 @@ npm run build
 npm run test:ci
 ```
 
-Spring profiles: **`dev`** (default — Swagger on, loot dev grants on) · **`prod`** (quieter, no grants, Swagger off). Details in [docs/local-dev.md](docs/local-dev.md).
-
-Non-local hosts: override SPA / CORS / Keycloak / DB via `SUCCESSHUB_*` env vars — see [docs/deploy.md](docs/deploy.md).
+Spring profiles: **`dev`** (default — Swagger on, loot dev grants on) · **`prod`** (quieter, no grants, Swagger off).
 
 ### Optional: everything in Docker
 
@@ -188,13 +186,27 @@ cd docker
 docker compose --profile app up -d --build
 ```
 
-Then open http://localhost:4200 (nginx SPA + proxied API). Details: [docs/deploy.md](docs/deploy.md).
+Then open http://localhost:4200 (nginx SPA + proxied API). Do not run host `ng serve` / Spring and Compose `frontend` / `backend` at the same time (port clash).
+
+### Non-local hosts (env overrides)
+
+No code edits — set `SUCCESSHUB_*` (and usually `SPRING_PROFILES_ACTIVE=prod`). Important ones:
+
+| Variable | Local default | Purpose |
+|----------|---------------|---------|
+| `SUCCESSHUB_FRONTEND_URL` | `http://localhost:4200/` | Post-login / logout SPA URL |
+| `SUCCESSHUB_CORS_ORIGINS` | `http://localhost:4200,…` | Allowed CORS origins |
+| `SUCCESSHUB_OAUTH_REDIRECT_URI` | `http://localhost:4200/login/oauth2/code/keycloak` | Must match Keycloak client |
+| `SUCCESSHUB_OAUTH_CLIENT_SECRET` | `changeme` | Replace outside local demo |
+| `SUCCESSHUB_DB_*` | localhost Postgres | JDBC URL / user / password |
+
+Full table + Keycloak checklist: [Auth env (W9)](https://app.notion.com/p/3e5b2614a9c081279dc8f754ef1a355e) · [Docker apps (W10)](https://app.notion.com/p/3e8b2614a9c08105adc0e6d135b0dc3c) (Notion).
 
 ---
 
 ## What’s intentionally out of scope
 
-- Hosted public demo / CD pipeline ([docs/ci.md](docs/ci.md))  
+- Hosted public demo / CD pipeline (CI is PR-only: [`.github/workflows/ci.yml`](.github/workflows/ci.yml); notes in [GitHub Actions CI](https://app.notion.com/p/383b2614a9c081bfb59ffea5b0e7621a))  
 - Boss V2 (crusades, henchmen), email/push notifications, real-money store  
 - User timezone (day boundaries use **server TZ** in V1)
 
@@ -209,8 +221,8 @@ Those live on the project’s Post-MVP backlog in Notion — not half-implemente
 | `src/main/java/...` | Spring Boot API, gamification domain, BFF security |
 | `src/main/resources/db/changelog/` | Liquibase migrations |
 | `frontend/` | Angular SPA |
-| `docker/` | Compose for Postgres / Keycloak / Adminer |
-| `docs/` | Local-dev, CI, README media |
+| `docker/` | Compose for Postgres / Keycloak / Adminer (+ optional `app` profile) |
+| `docs/images/` | README demo GIFs |
 | `.run/` | IntelliJ shared run configurations |
 | `.github/workflows/` | PR CI |
 

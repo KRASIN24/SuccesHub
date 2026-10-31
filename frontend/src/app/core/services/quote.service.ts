@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
-import { DailyQuote } from '../models/lunar.model';
+import { DailyQuote } from '../models/quote.model';
 
 @Injectable({
   providedIn: 'root',

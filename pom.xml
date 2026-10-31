@@ -5,14 +5,16 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.11</version>
+		<!-- 3.5.x is OSS-EOL; Framework 6.2 / Security 6.5 CVE fixes are enterprise-only.
+		     Boot 4.0.9 manages Framework 7.0.10 + Security 7.0.8 (public fixes). -->
+		<version>4.0.9</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.succeshub</groupId>
-	<artifactId>succes-hub</artifactId>
+	<groupId>com.successhub</groupId>
+	<artifactId>successhub</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>SuccesHub</name>
-	<description>Professional foundation project for SuccesHub platform</description>
+	<name>SuccessHub</name>
+	<description>Professional foundation project for SuccessHub platform</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -28,8 +30,36 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<!-- Past Boot 4.0.9 BOM for public CVE fixes -->
+		<logback.version>1.6.6</logback.version>
+		<jackson-bom.version>3.1.8</jackson-bom.version>
+		<jackson-2-bom.version>2.21.8</jackson-2-bom.version>
+		<asm.version>9.11.1</asm.version>
+		<!-- 2.6.0 = CVE-2026-113602; no Central fix yet — local patch from upstream PR #305 -->
+		<json-smart.version>2.6.1-cve113602</json-smart.version>
 	</properties>
+	<repositories>
+		<!-- Serves lib/repo patched jars (json-smart CVE-2026-113602) until Central ships a fix -->
+		<repository>
+			<id>successhub-patches</id>
+			<url>file://${project.basedir}/lib/repo</url>
+		</repository>
+	</repositories>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
+		<!-- Softens Boot 4 modular classpath while we finish the 3.5→4 migration -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-classic</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -85,6 +115,23 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<!-- Exclude unused Vaadin android-json pulled by JSONAssert (Mend-flagged). -->
+			<exclusions>
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test-classic</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -95,10 +142,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		<!-- Boot 4.x line -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.8.17</version>
+			<version>3.0.3</version>
 		</dependency>
 	</dependencies>
 

@@ -83,14 +83,14 @@
 .loot-card__lines {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(
-    115deg,
-    transparent 40%,
-    var(--rc-line, rgba(210, 212, 224, 0.85)) 50%,
-    transparent 60%
-  );
-  background-size: 250% 250%;
-  background-repeat: no-repeat;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 40%,
+      var(--rc-line, rgba(210, 212, 224, 0.85)) 50%,
+      transparent 60%
+    )
+    150% 150% / 250% 250% no-repeat;
   opacity: 0.8;
   transition: opacity 250ms ease;
   animation: loot-card-sweep 3s linear infinite;

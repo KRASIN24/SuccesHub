@@ -37,7 +37,7 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
     .page-title {
       margin: 0;
-      font-family: var(--font-display, var(--font-headline, inherit));
+      font-family: var(--font-display, var(--font-headline, sans-serif));
       font-size: clamp(1.5rem, 2.5vw, 1.9rem);
       font-weight: 700;
       letter-spacing: 0.04em;
