@@ -42,6 +42,19 @@ public interface LootBoxService {
     LootBoxDto grantBox(String userId, LootBoxType boxType);
 
     /**
+     * Adds {@code quantity} stacks of a catalog reward to the user's inventory.
+     * Used by gated Dev tools; stacks merge with existing rows for the same definition.
+     *
+     * @param userId    Keycloak subject ID
+     * @param rewardKey catalog {@code RewardDefinition.key}
+     * @param quantity  positive stack count to add
+     * @return updated inventory row for that reward
+     * @throws jakarta.persistence.EntityNotFoundException when the key is unknown
+     * @throws IllegalArgumentException when quantity is not positive
+     */
+    InventoryItemDto grantInventoryItem(String userId, String rewardKey, int quantity);
+
+    /**
      * Toggles the equipped state of a cosmetic inventory item (TITLE or FRAME).
      * Equipping one item unequips any other equipped item of the same type.
      *

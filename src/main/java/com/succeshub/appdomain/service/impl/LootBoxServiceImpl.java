@@ -294,7 +294,23 @@ public class LootBoxServiceImpl implements LootBoxService {
         return RewardDefinition.Rarity.LEGENDARY;
     }
 
+    @Override
+    @Transactional
+    public InventoryItemDto grantInventoryItem(String userId, String rewardKey, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("quantity must be positive");
+        }
+        RewardDefinition reward = rewardDefinitionRepository.findByKey(rewardKey)
+                .orElseThrow(() -> new EntityNotFoundException("Reward not found: " + rewardKey));
+        UserInventory stack = addToInventory(userId, reward, quantity);
+        return new InventoryItemDto(stack.getId(), toRewardItem(reward), stack.getQuantity(), stack.isEquipped());
+    }
+
     private void addToInventory(String userId, RewardDefinition reward) {
+        addToInventory(userId, reward, 1);
+    }
+
+    private UserInventory addToInventory(String userId, RewardDefinition reward, int quantity) {
         UserInventory stack = inventoryRepository.findByUserIdAndRewardDefinitionId(userId, reward.getId())
                 .orElseGet(() -> {
                     UserInventory inv = new UserInventory();
@@ -302,8 +318,8 @@ public class LootBoxServiceImpl implements LootBoxService {
                     inv.setRewardDefinition(reward);
                     return inv;
                 });
-        stack.setQuantity(stack.getQuantity() + 1);
-        inventoryRepository.save(stack);
+        stack.setQuantity(stack.getQuantity() + quantity);
+        return inventoryRepository.save(stack);
     }
 
     private RewardItemDto toRewardItem(RewardDefinition r) {
