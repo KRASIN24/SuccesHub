@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Persistence access for user-owned {@link Goal} entities used on the Boss Battle page.
+ * Persistence access for user-owned {@link Goal} entities used on the Campaigns page.
  */
 public interface GoalRepository extends JpaRepository<Goal, UUID> {
 

@@ -1,4 +1,5 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
+import { TranslateService } from '../../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-level-up-overlay',
@@ -8,8 +9,8 @@ import { Component, Input, signal } from '@angular/core';
       <div class="level-up-overlay" (click)="dismiss()">
         <div class="level-up-card">
           <span class="material-icons">emoji_events</span>
-          <h2>Level Up!</h2>
-          <p>Level {{ level() }}</p>
+          <h2>{{ title() }}</h2>
+          <p>{{ subtitle() }}</p>
         </div>
       </div>
     }
@@ -38,12 +39,16 @@ import { Component, Input, signal } from '@angular/core';
   `],
 })
 export class LevelUpOverlayComponent {
+  private readonly i18n = inject(TranslateService);
+
   readonly visible = signal(false);
-  readonly level = signal(1);
+  readonly title = signal('');
+  readonly subtitle = signal('');
 
   @Input() set trigger(value: { level: number; tick: number } | null) {
     if (!value) return;
-    this.level.set(value.level);
+    this.title.set(this.i18n.t('gamification.levelUp'));
+    this.subtitle.set(this.i18n.t('gamification.levelN', { level: value.level }));
     this.visible.set(true);
     setTimeout(() => this.visible.set(false), 2000);
   }

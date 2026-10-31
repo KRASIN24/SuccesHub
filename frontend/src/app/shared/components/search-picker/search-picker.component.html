@@ -1,0 +1,74 @@
+<div class="search-picker" [class.is-open]="open()" [class.is-disabled]="disabled() || options().length === 0">
+  <button
+    type="button"
+    class="search-picker__trigger"
+    [disabled]="disabled() || options().length === 0"
+    (click)="toggleOpen()"
+    [attr.aria-expanded]="open()"
+  >
+    <span class="search-picker__trigger-label">
+      @if (options().length === 0) {
+        {{ emptyLabel() }}
+      } @else {
+        {{ placeholder() }}
+      }
+    </span>
+    <span class="material-icons search-picker__chevron" aria-hidden="true">
+      {{ open() ? 'expand_less' : 'expand_more' }}
+    </span>
+  </button>
+
+  @if (open()) {
+    <div class="search-picker__panel" role="listbox">
+      <div class="search-picker__search">
+        <span class="material-icons" aria-hidden="true">search</span>
+        <input
+          type="search"
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)"
+          [placeholder]="'common.search' | translate"
+          autocomplete="off"
+        />
+      </div>
+
+      <ul class="search-picker__list">
+        @for (opt of filtered(); track opt.id) {
+          <li>
+            @if (multiple()) {
+              <label class="search-picker__row search-picker__row--check">
+                <app-glitch-checkbox
+                  [ariaLabel]="opt.label"
+                  [checked]="isChecked(opt.id)"
+                  (checkedChange)="toggleCheck(opt.id, $event)"
+                />
+                <span class="search-picker__row-label">{{ opt.label }}</span>
+              </label>
+            } @else {
+              <button type="button" class="search-picker__row" (click)="selectOne(opt.id)">
+                <span class="search-picker__row-label">{{ opt.label }}</span>
+              </button>
+            }
+          </li>
+        } @empty {
+          <li class="search-picker__empty">{{ emptyLabel() }}</li>
+        }
+      </ul>
+
+      @if (multiple()) {
+        <div class="search-picker__footer">
+          <button
+            type="button"
+            class="ghost-btn tiny"
+            [disabled]="checkedCount() === 0"
+            (click)="confirm()"
+          >
+            {{ confirmLabel() }}
+            @if (checkedCount() > 0) {
+              <span>({{ checkedCount() }})</span>
+            }
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

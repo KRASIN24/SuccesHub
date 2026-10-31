@@ -71,6 +71,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException ex) {
+        log.warn("Illegal state: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .errorCode("BAD_REQUEST")
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.badRequest().body(body);
+    }
+
     // ── 3. Spring: @Valid / @Validated failures ───────────────────────────────
 
     @ExceptionHandler(EntityNotFoundException.class)

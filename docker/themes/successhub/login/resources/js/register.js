@@ -159,7 +159,7 @@
   }
 
   function validateTerms() {
-    if (!terms.checked) return setError("terms", "You must accept the Celestial Protocol"), false;
+    if (!terms.checked) return setError("terms", "You must accept the terms"), false;
     setError("terms", "");
     return true;
   }

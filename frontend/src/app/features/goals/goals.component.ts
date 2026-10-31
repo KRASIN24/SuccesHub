@@ -1,6 +1,7 @@
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { GoalService } from '../../core/services/goal.service';
 import { ProfileService } from '../../core/services/profile.service';
@@ -15,6 +16,7 @@ import { GlitchButtonComponent } from '../../shared/components/glitch-button/gli
 import { GlitchCheckboxComponent } from '../../shared/components/glitch-checkbox/glitch-checkbox.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-goals',
@@ -22,11 +24,13 @@ import { TranslateService } from '../../core/i18n/translate.service';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     LoadingSkeletonComponent,
     ErrorStateComponent,
     GlitchButtonComponent,
     GlitchCheckboxComponent,
     TranslatePipe,
+    PageHeaderComponent,
   ],
   templateUrl: './goals.component.html',
   styleUrl: './goals.component.scss',
@@ -37,6 +41,7 @@ export class GoalsComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly gamificationService = inject(GamificationService);
   private readonly celebrations = inject(GamificationCelebrationService);
+  private readonly router = inject(Router);
 
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
@@ -49,6 +54,7 @@ export class GoalsComponent implements OnInit {
   readonly showAddForm = signal(false);
   readonly saveError = signal<string | null>(null);
   readonly saving = signal(false);
+  readonly strikingId = signal<string | null>(null);
 
   newGoalName = '';
   newGoalTier = 'Standard Beast';
@@ -123,6 +129,75 @@ export class GoalsComponent implements OnInit {
     return Math.max(0, 100 - this.progress(goal));
   }
 
+  pendingDamage(goal: Goal): number {
+    return Math.round(goal.pendingDamage ?? 0);
+  }
+
+  absoluteRemaining(goal: Goal): number {
+    return Math.max(0, goal.targetValue - goal.currentProgress);
+  }
+
+  isFinalStrike(goal: Goal): boolean {
+    const pending = goal.pendingDamage ?? 0;
+    return pending > 0 && pending >= this.absoluteRemaining(goal);
+  }
+
+  isLowHp(goal: Goal): boolean {
+    if (goal.targetValue <= 0) return false;
+    return this.healthRemaining(goal) <= 15;
+  }
+
+  canStrike(goal: Goal): boolean {
+    return (goal.pendingDamage ?? 0) > 0 && this.strikingId() !== goal.id;
+  }
+
+  openDetail(goal: Goal, event?: Event): void {
+    event?.stopPropagation();
+    void this.router.navigate(['/goals', goal.id]);
+  }
+
+  strike(goal: Goal, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    if (!this.canStrike(goal)) return;
+    this.strikingId.set(goal.id);
+    this.goalService.strike(goal.id).subscribe({
+      next: (damage) => {
+        this.strikingId.set(null);
+        this.celebrations.handleStrike(damage);
+        this.softRefreshGoals();
+      },
+      error: (err) => {
+        console.error('Strike failed', err);
+        this.strikingId.set(null);
+      },
+    });
+  }
+
+  /** Maps stored tier values (stable) to display labels from i18n. */
+  tierLabel(tier: string | null | undefined): string {
+    switch (tier) {
+      case 'Elite Threat':
+        return this.i18n.t('goals.tierElite');
+      case 'Legendary Leviathan':
+        return this.i18n.t('goals.tierLegendary');
+      case 'Standard Beast':
+      default:
+        return this.i18n.t('goals.tierStandard');
+    }
+  }
+
+  tierDescKey(): string {
+    switch (this.newGoalTier) {
+      case 'Elite Threat':
+        return 'goals.tierEliteDesc';
+      case 'Legendary Leviathan':
+        return 'goals.tierLegendaryDesc';
+      default:
+        return 'goals.tierStandardDesc';
+    }
+  }
+
   openAddForm(): void {
     this.showAddForm.set(true);
     this.saveError.set(null);
@@ -176,7 +251,7 @@ export class GoalsComponent implements OnInit {
           const message =
             err?.error?.message ??
             err?.error?.fieldErrors?.name ??
-            'Could not summon boss. Check you are logged in and try again.';
+            'Could not create campaign. Check you are logged in and try again.';
           this.saveError.set(message);
         },
       });

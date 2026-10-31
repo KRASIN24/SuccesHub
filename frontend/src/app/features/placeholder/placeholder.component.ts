@@ -3,11 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-placeholder',
   standalone: true,
-  imports: [GlitchButtonComponent],
+  imports: [GlitchButtonComponent, TranslatePipe],
   template: `
     <div class="placeholder-page">
       <div class="placeholder-content">
@@ -16,9 +17,8 @@ import { GlitchButtonComponent } from '../../shared/components/glitch-button/gli
         </div>
         <h2 class="placeholder-title">{{ title() }}</h2>
         <p class="placeholder-desc">
-          This protocol is under construction. The Sovereign Interface will unlock it soon.
+          {{ 'common.placeholderBody' | translate }}
         </p>
-        <app-glitch-button label="Notify Me When Ready" />
       </div>
     </div>
   `,

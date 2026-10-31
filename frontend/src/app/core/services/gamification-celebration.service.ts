@@ -9,7 +9,7 @@ import { AppPreferencesService } from './app-preferences.service';
 /**
  * Global celebration overlays (XP tick, level-up, achievements, boss damage).
  * Loot boxes are NOT opened here — earned caches stay pending until the user
- * opens them on the Celestial Cache page.
+ * opens them on The Vault page.
  *
  * Achievement / loot / boss-slain overlays respect Settings → Notifications.
  */
@@ -70,6 +70,24 @@ export class GamificationCelebrationService {
       result.lootBoxesEarned.length > 0
     ) {
       this.notifications.refresh();
+    }
+  }
+
+  /** Plays strike / Final Strike result (damage toast + optional kill cinematic). */
+  handleStrike(damage: BossDamage): void {
+    setTimeout(() => {
+      if (this.shouldShowBossToast(damage)) {
+        this.bossDamageTrigger.set({ damage, tick: ++this.sequence });
+      }
+      this.goalsRefreshTick.update((n) => n + 1);
+    }, 50);
+    if (damage.goalCompleted) {
+      this.notifications.refresh();
+      if (damage.goalXpReward > 0) {
+        this.profileService.refreshProfile().subscribe({
+          error: (err) => console.error('Failed to refresh profile after strike', err),
+        });
+      }
     }
   }
 

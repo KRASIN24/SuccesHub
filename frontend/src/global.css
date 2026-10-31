@@ -3,6 +3,13 @@
 @source "./app/**/*.{html,ts}";
 @source not "./**/*.spec.ts";
 
+/* Shared content column — outer inset comes from .app-content */
+.page-shell {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
 @theme {
   /* Light defaults — clean white shell; dark overrides live under .app-dark */
   --color-app-bg: #ffffff;
@@ -347,6 +354,23 @@
   .app-dark .btn-secondary:hover:not(:disabled) {
     --ghost-stroke: var(--color-gold-bright, #f5be42);
     color: var(--color-gold-bright, #f5be42);
+  }
+
+  /* Delete / destructive outline — coral rest, red hover (not gold). */
+  .ghost-btn--danger {
+    --ghost-stroke: color-mix(in srgb, var(--color-danger) 72%, #8a847a);
+    color: #c94a35;
+  }
+
+  .app-dark .ghost-btn--danger {
+    --ghost-stroke: color-mix(in srgb, #ff8a80 55%, var(--color-text-muted, #9a9aa2));
+    color: #ff8a80;
+  }
+
+  .ghost-btn.ghost-btn--danger:hover:not(:disabled),
+  .app-dark .ghost-btn.ghost-btn--danger:hover:not(:disabled) {
+    --ghost-stroke: #e53935;
+    color: #ff5252;
   }
 
   .ghost-btn:disabled,

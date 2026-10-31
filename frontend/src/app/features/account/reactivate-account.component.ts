@@ -4,31 +4,32 @@ import { DatePipe } from '@angular/common';
 import { AccountService } from '../../core/services/account.service';
 import { AuthService } from '../../core/services/auth.service';
 import { GlitchButtonComponent } from '../../shared/components/glitch-button/glitch-button.component';
+import { TranslatePipe } from '../../core/i18n/translate.pipe';
+import { TranslateService } from '../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-reactivate-account',
   standalone: true,
-  imports: [DatePipe, GlitchButtonComponent],
+  imports: [DatePipe, GlitchButtonComponent, TranslatePipe],
   template: `
     <section class="reactivate" aria-labelledby="reactivate-title">
-      <p class="reactivate__eyebrow">Account status</p>
-      <h1 id="reactivate-title" class="reactivate__title">Scheduled for deletion</h1>
+      <p class="reactivate__eyebrow">{{ 'account.reactivateEyebrow' | translate }}</p>
+      <h1 id="reactivate-title" class="reactivate__title">{{ 'account.reactivateTitle' | translate }}</h1>
       <p class="reactivate__body">
-        Your account is deactivated. Progress is kept until
-        <strong>{{ purgeAt() ? (purgeAt() | date: 'mediumDate') : 'the end of the grace period' }}</strong>,
-        then it will be permanently deleted.
+        {{ 'account.reactivateBodyBefore' | translate }}
+        <strong>{{ purgeAt() ? (purgeAt() | date: 'mediumDate') : ('account.reactivateBodyGrace' | translate) }}</strong>{{ 'account.reactivateBodyAfter' | translate }}
       </p>
       @if (error()) {
         <p class="reactivate__error" role="alert">{{ error() }}</p>
       }
       <div class="reactivate__actions">
         <app-glitch-button
-          label="Reactivate account"
+          [label]="'account.reactivateCta' | translate"
           [disabled]="busy()"
           (pressed)="reactivate()"
         />
         <button type="button" class="ghost-btn" [disabled]="busy()" (click)="logout()">
-          Log out
+          {{ 'account.logOut' | translate }}
         </button>
       </div>
     </section>
@@ -86,6 +87,7 @@ export class ReactivateAccountComponent implements OnInit {
   private readonly account = inject(AccountService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly i18n = inject(TranslateService);
 
   readonly purgeAt = signal<string | null>(null);
   readonly busy = signal(false);
@@ -99,7 +101,7 @@ export class ReactivateAccountComponent implements OnInit {
           void this.router.navigateByUrl('/dashboard');
         }
       },
-      error: () => this.error.set('Could not load account status.'),
+      error: () => this.error.set(this.i18n.t('errors.syncFailed')),
     });
   }
 
@@ -113,7 +115,7 @@ export class ReactivateAccountComponent implements OnInit {
       },
       error: (err) => {
         this.busy.set(false);
-        this.error.set(err?.error?.message ?? 'Failed to reactivate account.');
+        this.error.set(err?.error?.message ?? this.i18n.t('errors.syncFailed'));
       },
     });
   }

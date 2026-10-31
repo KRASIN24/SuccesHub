@@ -16,6 +16,7 @@ public class GoalDto {
             String targetDescription,
             double targetValue,
             double currentProgress,
+            double pendingDamage,
             int healthRemaining,
             int xpReward,
             String icon,

@@ -3,6 +3,7 @@ package com.succeshub.appdomain.service.impl;
 import com.succeshub.appdomain.dto.TaskDto;
 import com.succeshub.appdomain.model.Task;
 import com.succeshub.appdomain.model.TaskCategory;
+import com.succeshub.appdomain.repository.GoalCategorySubscriptionRepository;
 import com.succeshub.appdomain.repository.GoalRepository;
 import com.succeshub.appdomain.repository.TaskCategoryRepository;
 import com.succeshub.appdomain.repository.TaskRepository;
@@ -37,6 +38,7 @@ class TaskServiceImplGoogleUxTest {
     @Mock XpEventRepository xpEventRepository;
     @Mock TaskCategoryRepository categoryRepository;
     @Mock GoalRepository goalRepository;
+    @Mock GoalCategorySubscriptionRepository subscriptionRepository;
     @Mock UserProfileService profileService;
     @Mock GamificationEngine gamificationEngine;
     @Mock GamificationTimeUtil timeUtil;
@@ -91,6 +93,8 @@ class TaskServiceImplGoogleUxTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
         when(taskRepository.findByIdAndUserId(rootId, "user-1")).thenReturn(Optional.of(root));
         when(taskRepository.countByParentTask_Id(rootId)).thenReturn(1L);
+        when(subscriptionRepository.findByCategory_IdAndUserId(categoryId, "user-1"))
+                .thenReturn(Optional.empty());
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> {
             Task t = inv.getArgument(0);
             t.setId(UUID.randomUUID());

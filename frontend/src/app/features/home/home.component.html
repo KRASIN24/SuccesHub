@@ -22,6 +22,8 @@
   </div>
 } @else {
   <div class="dashboard">
+    <app-page-header titleKey="home.title" subtitleKey="home.subtitle" />
+
     @if (profileService.profile(); as prof) {
       <section class="hero">
         <div
@@ -137,7 +139,7 @@
                   </p>
                   <p class="task-detail">{{ task.description }}</p>
                 </div>
-                <span class="xp-pill">D{{ task.difficulty }} · {{ task.durationMinutes }}m</span>
+                <span class="xp-pill">{{ i18n.t('home.taskXp', { xp: estimatedXp(task) }) }}</span>
               </li>
             } @empty {
               <li class="task-item empty-tasks">
@@ -201,6 +203,35 @@
         }
 
         <section class="panel-block">
+          <div class="block-head">
+            <h2 class="block-title">{{ 'home.campaignPulse' | translate }}</h2>
+            <a routerLink="/goals" class="task-deep-link app-link">{{ 'home.campaignsLink' | translate }}</a>
+          </div>
+          @if (campaignPulse().length > 0) {
+            <ul class="aside-campaigns campaign-panel">
+              @for (boss of campaignPulse(); track boss.id) {
+                <li>
+                  <a [routerLink]="['/goals', boss.id]" class="aside-campaign" [class.low-hp]="isLowHp(boss)">
+                    <div class="aside-campaign__top">
+                      <span class="aside-campaign__name">{{ boss.name }}</span>
+                      <span class="aside-campaign__hp">{{ healthRemaining(boss) }}%</span>
+                    </div>
+                    <div class="aside-hp-track" aria-hidden="true">
+                      <div class="aside-hp-fill" [style.width.%]="healthRemaining(boss)"></div>
+                    </div>
+                    @if (pendingDamage(boss) > 0) {
+                      <p class="aside-pending">{{ i18n.t('home.pendingStrike', { n: pendingDamage(boss) }) }}</p>
+                    }
+                  </a>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="aside-empty">{{ 'home.noActiveCampaigns' | translate }}</p>
+          }
+        </section>
+
+        <section class="panel-block">
           <h3 class="merits-title">{{ 'home.earnedMerits' | translate }}</h3>
           <div class="merits">
             @for (merit of merits(); track merit.id) {
@@ -221,41 +252,43 @@
         @if (forecast(); as fc) {
           <div class="widget surface-card">
             <div class="widget-head">
-              <span class="eyebrow">{{ 'home.forecast' | translate }}</span>
-              <span class="material-icons widget-icon">trending_up</span>
+              <span class="eyebrow">{{ 'home.streakOutlook' | translate }}</span>
+              <span class="material-icons widget-icon">local_fire_department</span>
             </div>
-            <p class="forecast-line">Next streak bonus at <strong>{{ fc.nextStreakMilestone }}</strong> (+{{ fc.nextStreakBonusRate * 100 | number:'1.0-0' }}%)</p>
-            <p class="forecast-meta">Up to {{ fc.weeklyChallengeCount }} weekly challenges (difficulty ≥ {{ fc.weeklyChallengeMinDifficulty }})</p>
+            <p class="forecast-line">
+              {{ 'home.forecastStreakBonus' | translate }}
+              <strong>{{ fc.nextStreakMilestone }}</strong>
+              (+{{ fc.nextStreakBonusRate * 100 | number:'1.0-0' }}%)
+            </p>
+            @if (fc.streakShields > 0) {
+              <p class="forecast-meta">{{ i18n.t('home.streakShields', { count: fc.streakShields }) }}</p>
+            } @else {
+              <p class="forecast-meta">
+                {{ i18n.t('home.weeklyChallengeHint', {
+                  count: fc.weeklyChallengeCount,
+                  min: fc.weeklyChallengeMinDifficulty
+                }) }}
+              </p>
+            }
           </div>
         }
 
-        @if (lunarData(); as lunar) {
-          <div class="widget surface-card">
-            <div class="widget-head">
-              <span class="eyebrow">{{ 'home.lunarPhase' | translate }}</span>
-              <span class="material-icons widget-icon">nightlight</span>
-            </div>
-            <p class="lunar-name">{{ lunar.phaseName }}</p>
-            <p class="lunar-meta">Illumination: {{ lunar.illumination }}% · Rise: {{ lunar.riseTime }}</p>
+        <div class="widget surface-card">
+          <div class="widget-head">
+            <span class="eyebrow">{{ 'nav.cache' | translate }}</span>
+            <span class="material-icons widget-icon">inventory_2</span>
           </div>
-        }
-
-        @if (marketData(); as market) {
-          <div class="widget surface-card">
-            <span class="eyebrow">{{ 'home.sovereignIndex' | translate }}</span>
-            <div class="index-rows">
-              @for (row of market.prices; track row.pair) {
-                <div class="index-row">
-                  <span class="index-pair">{{ row.pair }}</span>
-                  <div class="index-vals">
-                    <span class="index-price">{{ row.price }}</span>
-                    <span class="index-change">{{ row.change }}</span>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
+          @if (lootPending.totalPendingCount() > 0) {
+            <p class="aside-stat">
+              <strong>{{ lootPending.totalPendingCount() }}</strong>
+              <span class="muted">{{ 'home.vaultPending' | translate }}</span>
+            </p>
+            <a routerLink="/loot-boxes" class="app-link aside-cta">{{ 'home.openVault' | translate }}</a>
+          } @else {
+            <p class="aside-empty">{{ 'home.vaultEmpty' | translate }}</p>
+            <a routerLink="/loot-boxes" class="app-link aside-cta">{{ 'home.openVault' | translate }}</a>
+          }
+        </div>
 
         @if (quote(); as qt) {
           <div class="widget surface-card quote-card">
@@ -267,13 +300,5 @@
       </aside>
     </div>
 
-    <footer class="dash-footer">
-      <p class="foot-line">{{ 'home.footer' | translate }}</p>
-      <div class="foot-links">
-        <a href="#" class="task-deep-link app-link">Privacy</a>
-        <a href="#" class="task-deep-link app-link">Terms</a>
-        <a href="#" class="task-deep-link app-link">Protocol</a>
-      </div>
-    </footer>
   </div>
 }

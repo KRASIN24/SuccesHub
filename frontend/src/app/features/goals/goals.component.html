@@ -16,11 +16,7 @@
   </div>
 } @else {
   <div class="boss-battle">
-    <header class="page-head">
-      <span class="eyebrow">{{ 'goals.eyebrow' | translate }}</span>
-      <h1 class="page-title">{{ 'goals.title' | translate }} <span class="gold">{{ 'goals.titleGold' | translate }}</span></h1>
-      <p class="page-intro">{{ 'goals.intro' | translate }}</p>
-    </header>
+    <app-page-header titleKey="goals.title" subtitleKey="goals.subtitle" />
 
     <section class="section">
       <div class="section-head">
@@ -59,6 +55,7 @@
                 <option value="Elite Threat">{{ 'goals.tierElite' | translate }}</option>
                 <option value="Legendary Leviathan">{{ 'goals.tierLegendary' | translate }}</option>
               </select>
+              <span class="field-hint">{{ tierDescKey() | translate }}</span>
             </label>
             <label class="form-field">
               <span class="field-label">{{ 'goals.icon' | translate }}</span>
@@ -124,10 +121,19 @@
 
       <div class="boss-grid">
         @for (boss of activeGoals(); track boss.id) {
-          <article class="boss-card surface-card" [class.featured]="boss.featured">
+          <article
+            class="boss-card surface-card"
+            [class.featured]="boss.featured"
+            [class.low-hp]="isLowHp(boss)"
+            [class.final-ready]="isFinalStrike(boss)"
+            role="link"
+            tabindex="0"
+            (click)="openDetail(boss)"
+            (keydown.enter)="openDetail(boss)"
+          >
             <div class="boss-card-top">
               <div>
-                <p class="boss-tier">{{ boss.tier || 'Standard Beast' }}</p>
+                <p class="boss-tier">{{ tierLabel(boss.tier) }}</p>
                 <p class="boss-name">{{ boss.name }}</p>
               </div>
               <span class="xp-pill">XP +{{ boss.xpReward }}</span>
@@ -139,9 +145,12 @@
                   <span class="material-icons">{{ boss.icon || 'savings' }}</span>
                 </div>
               </div>
+              @if (isLowHp(boss)) {
+                <span class="low-hp-badge">{{ 'goals.lowHp' | translate }}</span>
+              }
             </div>
 
-            <div class="boss-health">
+            <div class="boss-health" [class.health--critical]="isLowHp(boss)">
               <div class="health-labels">
                 <span class="health-key">{{ 'goals.healthProgress' | translate }}</span>
                 <span class="health-val">{{ i18n.t('goals.remaining', { pct: healthRemaining(boss) }) }}</span>
@@ -149,11 +158,28 @@
               <div class="health-track">
                 <div class="health-fill" [style.width.%]="healthRemaining(boss)"></div>
               </div>
+              @if (pendingDamage(boss) > 0) {
+                <p class="pending-line">{{ i18n.t('goals.pendingReady', { n: pendingDamage(boss) }) }}</p>
+              }
             </div>
 
             <div class="boss-foot">
               <span class="boss-target">{{ i18n.t('goals.target', { value: boss.targetDescription || boss.targetValue }) }}</span>
-              <span class="boss-hint">{{ 'goals.bossHint' | translate }}</span>
+              <button
+                type="button"
+                class="attack-btn"
+                [class.final]="isFinalStrike(boss)"
+                [disabled]="!canStrike(boss)"
+                (click)="strike(boss, $event)"
+              >
+                {{
+                  strikingId() === boss.id
+                    ? ('goals.striking' | translate)
+                    : isFinalStrike(boss)
+                      ? ('goals.finalStrike' | translate)
+                      : ('goals.strike' | translate)
+                }}
+              </button>
             </div>
           </article>
         } @empty {

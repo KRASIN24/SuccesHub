@@ -40,6 +40,10 @@ public class Goal {
     @Column(name = "current_progress", nullable = false)
     private double currentProgress = 0.0;
 
+    /** Banked damage from linked task completions; released by Strike. */
+    @Column(name = "pending_damage", nullable = false)
+    private double pendingDamage = 0.0;
+
     @Column(name = "xp_reward", nullable = false)
     private int xpReward = 0;
 
@@ -71,5 +75,10 @@ public class Goal {
         if (targetValue == 0) return 0;
         double done = currentProgress / targetValue;
         return Math.max(0, (int) Math.round((1.0 - done) * 100));
+    }
+
+    /** Absolute HP left before the campaign is defeated. */
+    public double getAbsoluteHealthRemaining() {
+        return Math.max(0.0, targetValue - currentProgress);
     }
 }

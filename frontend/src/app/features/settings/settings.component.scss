@@ -4,31 +4,12 @@
 }
 
 .settings-page {
-  max-width: 72rem;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-}
-
-/* ── Top bar ─────────────────────────────────────── */
-.settings-topbar__title {
-  margin: 0;
-  font-family: var(--font-headline);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
-
-.settings-topbar__subtitle {
-  margin: 0.35rem 0 0;
-  font-size: 0.8125rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-on-surface-variant);
 }
 
 /* ── Toast ───────────────────────────────────────── */
@@ -428,7 +409,6 @@
 
 @media (max-width: 640px) {
   .settings-page {
-    padding: 1.25rem 1rem 3rem;
     gap: 2rem;
   }
 

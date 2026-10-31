@@ -1,5 +1,6 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
 import { BossDamage } from '../../../core/models/gamification.model';
+import { TranslateService } from '../../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-boss-damage-toast',
@@ -41,6 +42,8 @@ import { BossDamage } from '../../../core/models/gamification.model';
   `,
 })
 export class BossDamageToastComponent {
+  private readonly i18n = inject(TranslateService);
+
   readonly visible = signal(false);
   readonly message = signal('');
 
@@ -49,13 +52,22 @@ export class BossDamageToastComponent {
     const d = value.damage;
     const delta = Math.round(d.progressDelta);
     if (d.goalCompleted) {
-      this.message.set(
-        `${d.goalName} defeated! +${d.goalXpReward} XP` +
-          (delta > 0 ? ` · ${delta} damage` : '')
-      );
+      let msg = this.i18n.t('gamification.bossDefeated', {
+        name: d.goalName,
+        xp: d.goalXpReward,
+      });
+      if (delta > 0) {
+        msg += this.i18n.t('gamification.bossDamageExtra', { delta });
+      }
+      this.message.set(msg);
     } else {
+      // Bank toast from task complete uses bossHit; Strike release can use bossStrike when pct dropped.
       this.message.set(
-        `${d.goalName}: −${delta || Math.round(d.progressDelta)} HP · ${d.healthRemaining}% remaining`
+        this.i18n.t('gamification.bossHit', {
+          name: d.goalName,
+          delta: delta || Math.round(d.progressDelta),
+          pct: d.healthRemaining,
+        })
       );
     }
     this.visible.set(true);

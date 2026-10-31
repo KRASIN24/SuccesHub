@@ -4,6 +4,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { LootPendingService } from '../../../core/services/loot-pending.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { TranslateService } from '../../../core/i18n/translate.service';
 import { CountBadgeComponent } from '../count-badge/count-badge.component';
 
 interface NavItem {
@@ -25,6 +26,7 @@ interface NavItem {
 })
 export class SidebarComponent implements OnInit {
   private readonly auth = inject(AuthService);
+  private readonly i18n = inject(TranslateService);
   protected readonly profileService = inject(ProfileService);
   protected readonly lootPending = inject(LootPendingService);
 
@@ -35,7 +37,7 @@ export class SidebarComponent implements OnInit {
     () =>
       this.profileService.profile()?.displayName ??
       this.auth.currentUser()?.name ??
-      'The Sovereign'
+      this.i18n.t('home.defaultDisplayName')
   );
 
   ngOnInit(): void {

@@ -207,4 +207,24 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
               AND t.status <> com.succeshub.appdomain.model.Task.Status.DONE
             """)
     List<Task> findDueReminders(@Param("now") Instant now);
+
+    /**
+     * Returns tasks linked to a campaign, newest first.
+     *
+     * @param userId Keycloak subject ID
+     * @param goalId campaign ID
+     * @return linked tasks
+     */
+    List<Task> findByUserIdAndGoal_IdOrderByCreatedAtDesc(String userId, UUID goalId);
+
+    /**
+     * Open (non-{@code status}) tasks in a category with no campaign link.
+     *
+     * @param userId     Keycloak subject ID
+     * @param categoryId category ID
+     * @param status     status to exclude (typically {@code DONE})
+     * @return unlinked open tasks
+     */
+    List<Task> findByUserIdAndCategory_IdAndGoalIsNullAndStatusNot(
+            String userId, UUID categoryId, Task.Status status);
 }

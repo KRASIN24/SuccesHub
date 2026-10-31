@@ -18,6 +18,7 @@ import { CountBadgeComponent } from '../../shared/components/count-badge/count-b
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
 import { RewardLabelPipe } from '../../core/i18n/reward-label.pipe';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 type Phase = 'idle' | 'charging' | 'revealing';
 type GlowTier = 'default' | 'silver' | 'gold';
@@ -29,10 +30,6 @@ interface RecentHistoryEntry {
   item: RewardItem;
   boxName: string;
   pulledAt: number;
-}
-
-interface FooterLink {
-  labelKey: string;
 }
 
 interface RewardTier {
@@ -123,6 +120,7 @@ const TIER_I18N = [
     CountBadgeComponent,
     TranslatePipe,
     RewardLabelPipe,
+    PageHeaderComponent,
   ],
   templateUrl: './loot-boxes.component.html',
   styleUrl: './loot-boxes.component.scss',
@@ -137,15 +135,12 @@ export class LootBoxesComponent implements OnInit {
   readonly navNextIcon = 'chevron_right';
   readonly accentIcon = 'auto_awesome';
 
-  readonly footerLinks: FooterLink[] = [
-    { labelKey: 'loot.manifestHistory' },
-    { labelKey: 'loot.dropRatesLink' },
-    { labelKey: 'loot.exchange' },
-  ];
-
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly busy = signal(false);
+  /** Index of the tier card currently playing the inspect pulse (null = none). */
+  readonly inspectPulseIndex = signal<number | null>(null);
+  private inspectPulseTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly boxTypes = signal<BoxType[]>([]);
 
@@ -380,6 +375,31 @@ export class LootBoxesComponent implements OnInit {
 
   onNextChest(): void {
     this.next();
+  }
+
+  /**
+   * Star hex: scroll to Contents / drop rates and pulse the selected tier card.
+   */
+  onInspectTier(): void {
+    if (this.phase() !== 'idle') return;
+    const index = this.selectedIndex();
+    if (typeof document === 'undefined') return;
+
+    const card = document.querySelector(
+      `.tier-card[data-tier-index="${index}"]`
+    ) as HTMLElement | null;
+    const target = card ?? (document.querySelector('.tiers') as HTMLElement | null);
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (this.inspectPulseTimer) {
+      clearTimeout(this.inspectPulseTimer);
+    }
+    this.inspectPulseIndex.set(index);
+    this.inspectPulseTimer = setTimeout(() => {
+      this.inspectPulseIndex.set(null);
+      this.inspectPulseTimer = null;
+    }, 1600);
   }
 
   onOpenCache(): void {

@@ -14,13 +14,69 @@
   </div>
 } @else {
   <div class="quest-log">
-    <header class="page-head">
-      <div class="page-head__text">
-        <h1 class="page-title">{{ 'tasks.title' | translate }}</h1>
-        <p class="page-subtitle">{{ 'tasks.subtitle' | translate }}</p>
-      </div>
-    </header>
+    <app-page-header titleKey="tasks.title" subtitleKey="tasks.subtitle" />
 
+    <div class="board-mode-toggle" role="group" [attr.aria-label]="'tasks.boardMode' | translate">
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="boardMode() === 'category'"
+        (click)="setBoardMode('category')"
+      >
+        {{ 'tasks.viewByCategory' | translate }}
+      </button>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="boardMode() === 'campaign'"
+        (click)="setBoardMode('campaign')"
+      >
+        {{ 'tasks.viewByCampaign' | translate }}
+      </button>
+    </div>
+
+    @if (boardMode() === 'campaign') {
+      <div class="campaign-board">
+        @for (section of campaignSections(); track section.id) {
+          <section class="campaign-section surface-card">
+            <h2 class="campaign-section-title">{{ section.name }}</h2>
+            <ul class="campaign-task-list">
+              @for (task of section.tasks; track task.id) {
+                <li class="campaign-task-row" [id]="'task-' + task.id">
+                  <button type="button" class="campaign-task-open" (click)="openEditSheet(task)">
+                    {{ task.title }}
+                  </button>
+                  @if (isMismatch(task)) {
+                    <div class="mismatch-actions">
+                      @if (mismatchPickerTaskId() === task.id) {
+                        <select [(ngModel)]="mismatchPickCategoryId" name="mismatchCat-{{ task.id }}">
+                          <option value="">{{ 'tasks.pickCampaignCategory' | translate }}</option>
+                          @for (c of subscribedCategoriesFor(task); track c.id) {
+                            <option [value]="c.id">{{ c.name }}</option>
+                          }
+                        </select>
+                        <button type="button" class="ghost-btn tiny" (click)="confirmMismatchMove(task)">
+                          {{ 'tasks.moveConfirm' | translate }}
+                        </button>
+                        <button type="button" class="ghost-btn tiny" (click)="cancelMismatchMove()">
+                          {{ 'common.cancel' | translate }}
+                        </button>
+                      } @else {
+                        <button type="button" class="ghost-btn tiny" (click)="moveToCampaignCategory(task)">
+                          {{ 'tasks.moveToCampaignCategory' | translate }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </li>
+              } @empty {
+                <li class="campaign-empty">{{ 'tasks.emptyCampaignSection' | translate }}</li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    } @else {
     <div class="board">
       <div
         class="board-columns"
@@ -257,6 +313,7 @@
         }
       </div>
     </div>
+    }
   </div>
 }
 

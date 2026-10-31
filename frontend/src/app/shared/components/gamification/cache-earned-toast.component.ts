@@ -1,4 +1,5 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
+import { TranslateService } from '../../../core/i18n/translate.service';
 
 @Component({
   selector: 'app-cache-earned-toast',
@@ -40,13 +41,18 @@ import { Component, Input, signal } from '@angular/core';
   `],
 })
 export class CacheEarnedToastComponent {
+  private readonly i18n = inject(TranslateService);
+
   readonly visible = signal(false);
   readonly message = signal('');
 
   @Input() set trigger(value: { count: number; tick: number } | null) {
     if (!value) return;
-    const label = value.count === 1 ? 'Cache earned' : `${value.count} caches earned`;
-    this.message.set(`${label} — open on Celestial Cache`);
+    const label =
+      value.count === 1
+        ? this.i18n.t('home.cacheEarnedOne')
+        : this.i18n.t('home.cacheEarnedMany', { count: value.count });
+    this.message.set(`${label} ${this.i18n.t('home.cacheEarnedHint')}`);
     this.visible.set(true);
     setTimeout(() => this.visible.set(false), 2500);
   }

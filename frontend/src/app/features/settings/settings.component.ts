@@ -17,6 +17,7 @@ import { GlitchButtonComponent } from '../../shared/components/glitch-button/gli
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { TranslateService } from '../../core/i18n/translate.service';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 type AccountDialog = 'email' | 'password' | 'delete' | null;
 
@@ -32,6 +33,7 @@ type AccountDialog = 'email' | 'password' | 'delete' | null;
     GlitchButtonComponent,
     ThemeToggleComponent,
     TranslatePipe,
+    PageHeaderComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
