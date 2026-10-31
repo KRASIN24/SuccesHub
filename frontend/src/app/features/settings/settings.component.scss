@@ -445,7 +445,7 @@
   position: fixed;
   z-index: 61;
   top: 50%;
-  left: 50%;
+  left: calc(50% + var(--overlay-inline-offset, 0px) / 2);
   transform: translate(-50%, -50%);
   width: min(28rem, calc(100vw - 2rem));
   display: flex;

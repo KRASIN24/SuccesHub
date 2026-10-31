@@ -16,7 +16,7 @@ import { TranslateService } from '../../../core/i18n/translate.service';
     .boss-damage-toast {
       position: fixed;
       top: 28%;
-      left: 50%;
+      left: calc(50% + var(--overlay-inline-offset, 0px) / 2);
       transform: translateX(-50%);
       max-width: min(90vw, 440px);
       padding: 0.85rem 1.25rem;

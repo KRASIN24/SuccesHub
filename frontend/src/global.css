@@ -59,6 +59,8 @@
   --radius-btn: 10px;
 
   --sidenav-width: 288px;
+  /* Horizontal shift so fixed overlays center in the main column, not the full viewport. */
+  --overlay-inline-offset: 0px;
   --toolbar-height: 80px;
 
   --font-sans: "Inter", "Helvetica Neue", sans-serif;

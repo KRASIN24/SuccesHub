@@ -5,6 +5,7 @@ import { ProfileService } from './profile.service';
 import { LootPendingService } from './loot-pending.service';
 import { NotificationService } from './notification.service';
 import { AppPreferencesService } from './app-preferences.service';
+import { LootAudioService } from './loot-audio.service';
 
 /**
  * Global celebration overlays (XP tick, level-up, achievements, boss damage).
@@ -12,6 +13,7 @@ import { AppPreferencesService } from './app-preferences.service';
  * opens them on The Vault page.
  *
  * Achievement / loot / boss-slain overlays respect Settings → Notifications.
+ * SFX respect Settings → Sound effects via {@link LootAudioService}.
  */
 @Injectable({
   providedIn: 'root',
@@ -21,6 +23,7 @@ export class GamificationCelebrationService {
   private readonly lootPending = inject(LootPendingService);
   private readonly notifications = inject(NotificationService);
   private readonly prefs = inject(AppPreferencesService);
+  private readonly audio = inject(LootAudioService);
   private sequence = 0;
 
   readonly xpTrigger = signal<{ xp: number; tick: number } | null>(null);
@@ -75,6 +78,7 @@ export class GamificationCelebrationService {
 
   /** Plays strike / Final Strike result (damage toast + optional kill cinematic). */
   handleStrike(damage: BossDamage): void {
+    this.playBossSfx(damage);
     setTimeout(() => {
       if (this.shouldShowBossToast(damage)) {
         this.bossDamageTrigger.set({ damage, tick: ++this.sequence });
@@ -84,6 +88,7 @@ export class GamificationCelebrationService {
     if (damage.goalCompleted) {
       this.notifications.refresh();
       if (damage.goalXpReward > 0) {
+        this.audio.playXpGain();
         this.profileService.refreshProfile().subscribe({
           error: (err) => console.error('Failed to refresh profile after strike', err),
         });
@@ -93,11 +98,13 @@ export class GamificationCelebrationService {
 
   private playReward(reward: RewardEvent): void {
     if (reward.xp.totalXp > 0) {
+      this.audio.playXpGain();
       this.xpTrigger.set({ xp: reward.xp.totalXp, tick: ++this.sequence });
     }
 
     if (reward.leveledUp) {
       setTimeout(() => {
+        this.audio.playLevelUp();
         this.levelUpTrigger.set({ level: reward.newLevel, tick: ++this.sequence });
       }, 400);
     }
@@ -105,6 +112,7 @@ export class GamificationCelebrationService {
     if (reward.bossDamage) {
       const damage = reward.bossDamage;
       setTimeout(() => {
+        this.playBossSfx(damage);
         if (this.shouldShowBossToast(damage)) {
           this.bossDamageTrigger.set({ damage, tick: ++this.sequence });
         }
@@ -150,5 +158,13 @@ export class GamificationCelebrationService {
       return true;
     }
     return this.prefs.preferences().notifyBossDefeated;
+  }
+
+  private playBossSfx(damage: BossDamage): void {
+    if (damage.goalCompleted) {
+      this.audio.playBossKill();
+    } else {
+      this.audio.playBossHit();
+    }
   }
 }

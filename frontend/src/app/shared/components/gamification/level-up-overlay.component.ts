@@ -18,7 +18,10 @@ import { TranslateService } from '../../../core/i18n/translate.service';
   styles: [`
     .level-up-overlay {
       position: fixed;
-      inset: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: var(--overlay-inline-offset, 0px);
       background: rgba(0,0,0,0.75);
       display: flex;
       align-items: center;

@@ -15,7 +15,7 @@ import { TranslateService } from '../../../core/i18n/translate.service';
     .cache-earned-toast {
       position: fixed;
       top: 18%;
-      left: 50%;
+      left: calc(50% + var(--overlay-inline-offset, 0px) / 2);
       transform: translateX(-50%);
       max-width: min(90vw, 420px);
       padding: 0.85rem 1.25rem;

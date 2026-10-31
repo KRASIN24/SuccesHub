@@ -31,6 +31,9 @@ import { DevToolsService } from './core/services/dev-tools.service';
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  host: {
+    '[class.nav-closed]': '!sidenavOpen()',
+  },
 })
 export class AppComponent implements OnInit {
   private readonly mobileBreakpoint = 960;

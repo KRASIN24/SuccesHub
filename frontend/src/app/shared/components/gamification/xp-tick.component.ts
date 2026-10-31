@@ -14,7 +14,7 @@ import { DecimalPipe } from '@angular/common';
     .xp-tick {
       position: fixed;
       top: 40%;
-      left: 50%;
+      left: calc(50% + var(--overlay-inline-offset, 0px) / 2);
       transform: translateX(-50%);
       font-size: 2rem;
       font-weight: 700;
