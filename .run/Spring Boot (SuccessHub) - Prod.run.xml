@@ -2,7 +2,7 @@
   <configuration default="false" name="Spring Boot (SuccessHub) - Prod" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="Local back">
     <option name="ACTIVE_PROFILES" value="prod" />
     <module name="successhub" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.successhub.success_hub.SuccessHubApplication" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.successhub.SuccessHubApplication" />
     <method v="2">
       <option name="Make" enabled="true" />
       <option name="RunConfigurationTask" enabled="true" run_configuration_type="ShConfigurationType" />
