@@ -65,23 +65,23 @@ export class GamificationService {
   }
 
   getBoxTypes(): Observable<BoxType[]> {
-    return this.api.get<BoxType[]>('/gamification/loot-boxes/types');
+    return this.api.get<BoxType[]>('/gamification/vault/types');
   }
 
   getPendingLootBoxes(): Observable<LootBox[]> {
-    return this.api.get<LootBox[]>('/gamification/loot-boxes');
+    return this.api.get<LootBox[]>('/gamification/vault');
   }
 
   getLootBoxHistory(limit = 3): Observable<LootBox[]> {
-    return this.api.get<LootBox[]>('/gamification/loot-boxes/history', { limit });
+    return this.api.get<LootBox[]>('/gamification/vault/history', { limit });
   }
 
   grantLootBox(boxType: string): Observable<LootBox> {
-    return this.api.post<LootBox>('/gamification/loot-boxes/grant', { boxType });
+    return this.api.post<LootBox>('/gamification/vault/grant', { boxType });
   }
 
   openLootBox(id: string): Observable<LootBox> {
-    return this.api.post<LootBox>(`/gamification/loot-boxes/${id}/open`, {});
+    return this.api.post<LootBox>(`/gamification/vault/${id}/open`, {});
   }
 
   getInventory(): Observable<InventoryItem[]> {

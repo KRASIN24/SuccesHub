@@ -55,9 +55,9 @@ export class SidebarComponent implements OnInit {
   readonly navItems: NavItem[] = [
     { labelKey: 'nav.dashboard', icon: 'grid_view', route: '/dashboard' },
     { labelKey: 'nav.tasks', icon: 'check_circle', route: '/tasks' },
-    { labelKey: 'nav.goals', icon: 'my_location', route: '/goals' },
+    { labelKey: 'nav.goals', icon: 'my_location', route: '/campaigns' },
     { labelKey: 'nav.achievements', icon: 'military_tech', route: '/achievements' },
-    { labelKey: 'nav.cache', icon: 'inventory_2', route: '/loot-boxes', showPendingBadge: true },
+    { labelKey: 'nav.cache', icon: 'inventory_2', route: '/vault', showPendingBadge: true },
     { labelKey: 'nav.profile', icon: 'person', route: '/profile' },
   ];
 

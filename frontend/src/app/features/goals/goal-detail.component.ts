@@ -97,7 +97,7 @@ export class GoalDetailComponent implements OnInit {
   reload(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      void this.router.navigate(['/goals']);
+      void this.router.navigate(['/campaigns']);
       return;
     }
     this.load(id);
@@ -208,7 +208,7 @@ export class GoalDetailComponent implements OnInit {
         this.striking.set(false);
         this.celebrations.handleStrike(damage);
         if (damage.goalCompleted) {
-          void this.router.navigate(['/goals']);
+          void this.router.navigate(['/campaigns']);
         } else {
           this.load(g.id);
         }
@@ -271,7 +271,7 @@ export class GoalDetailComponent implements OnInit {
     if (!g) return;
     if (!confirm(this.i18n.t('goals.deleteConfirm'))) return;
     this.goalService.deleteGoal(g.id).subscribe({
-      next: () => void this.router.navigate(['/goals']),
+      next: () => void this.router.navigate(['/campaigns']),
       error: (err) => console.error('Delete failed', err),
     });
   }

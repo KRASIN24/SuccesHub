@@ -93,7 +93,7 @@ public class BossDamageServiceImpl implements BossDamageService {
                     NotificationType.CAMPAIGN_DEFEATED,
                     "Campaign defeated",
                     goal.getName() + " has been slain.",
-                    "/goals",
+                    "/campaigns",
                     goal.getId()));
         }
 

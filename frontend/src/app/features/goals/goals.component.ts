@@ -175,7 +175,7 @@ export class GoalsComponent implements OnInit {
 
   openDetail(goal: Goal, event?: Event): void {
     event?.stopPropagation();
-    void this.router.navigate(['/goals', goal.id]);
+    void this.router.navigate(['/campaigns', goal.id]);
   }
 
   strike(goal: Goal, event: Event): void {

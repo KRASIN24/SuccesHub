@@ -149,7 +149,7 @@ public class GamificationController {
     @Operation(summary = "List box types", description = "Returns the three box types with their rarity weights.")
     @ApiResponse(responseCode = "200", description = "Box types returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @GetMapping("/loot-boxes/types")
+    @GetMapping("/vault/types")
     public ResponseEntity<List<BoxTypeDto>> getBoxTypes(@AuthenticationPrincipal OidcUser principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -158,12 +158,12 @@ public class GamificationController {
     }
 
     /**
-     * Lists pending loot boxes for the user.
+     * Lists pending loot boxes for the user (The Vault).
      */
-    @Operation(summary = "List loot boxes", description = "Returns the user's unopened loot boxes.")
-    @ApiResponse(responseCode = "200", description = "Loot boxes returned")
+    @Operation(summary = "List vault boxes", description = "Returns the user's unopened loot boxes in The Vault.")
+    @ApiResponse(responseCode = "200", description = "Vault boxes returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @GetMapping("/loot-boxes")
+    @GetMapping("/vault")
     public ResponseEntity<List<LootBoxDto>> getLootBoxes(@AuthenticationPrincipal OidcUser principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -174,11 +174,11 @@ public class GamificationController {
     /**
      * Lists recently opened loot boxes with their rolled contents.
      */
-    @Operation(summary = "Loot box history",
+    @Operation(summary = "Vault history",
             description = "Returns recently opened boxes and rewards, ordered by open time descending.")
     @ApiResponse(responseCode = "200", description = "History returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @GetMapping("/loot-boxes/history")
+    @GetMapping("/vault/history")
     public ResponseEntity<List<LootBoxDto>> getLootBoxHistory(
             @AuthenticationPrincipal OidcUser principal,
             @Parameter(description = "Maximum opened boxes to return (1–10, default 3)")
@@ -192,12 +192,12 @@ public class GamificationController {
     /**
      * Grants (summons) a pending loot box of the requested type to the user.
      */
-    @Operation(summary = "Grant loot box", description = "Creates a pending box of the requested type for the user.")
-    @ApiResponse(responseCode = "200", description = "Loot box granted")
+    @Operation(summary = "Grant vault box", description = "Creates a pending box of the requested type for the user.")
+    @ApiResponse(responseCode = "200", description = "Vault box granted")
     @ApiResponse(responseCode = "400", description = "Unknown box type")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @ApiResponse(responseCode = "403", description = "Manual grants disabled")
-    @PostMapping("/loot-boxes/grant")
+    @PostMapping("/vault/grant")
     public ResponseEntity<LootBoxDto> grantLootBox(
             @AuthenticationPrincipal OidcUser principal,
             @RequestBody GrantBoxRequest request) {
@@ -219,11 +219,11 @@ public class GamificationController {
     /**
      * Opens a loot box and rolls rewards into inventory.
      */
-    @Operation(summary = "Open loot box", description = "Reveals card-flip rewards and adds them to inventory.")
-    @ApiResponse(responseCode = "200", description = "Loot box opened")
+    @Operation(summary = "Open vault box", description = "Reveals card-flip rewards and adds them to inventory.")
+    @ApiResponse(responseCode = "200", description = "Vault box opened")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Loot box not found")
-    @PostMapping("/loot-boxes/{id}/open")
+    @ApiResponse(responseCode = "404", description = "Vault box not found")
+    @PostMapping("/vault/{id}/open")
     public ResponseEntity<LootBoxDto> openLootBox(
             @AuthenticationPrincipal OidcUser principal,
             @Parameter(description = "Loot box ID") @PathVariable UUID id) {

@@ -19,54 +19,54 @@ export class GoalService {
 
   getGoals(status?: 'ACTIVE' | 'COMPLETED'): Observable<Goal[]> {
     const params = status ? { status } : undefined;
-    return this.api.get<Goal[]>('/goals', params);
+    return this.api.get<Goal[]>('/campaigns', params);
   }
 
   getGoal(id: string): Observable<Goal> {
-    return this.api.get<Goal>(`/goals/${id}`);
+    return this.api.get<Goal>(`/campaigns/${id}`);
   }
 
   getSummary(): Observable<GoalSummary> {
-    return this.api.get<GoalSummary>('/goals/summary');
+    return this.api.get<GoalSummary>('/campaigns/summary');
   }
 
   createGoal(goal: GoalCreateRequest): Observable<Goal> {
-    return this.api.post<Goal>('/goals', goal);
+    return this.api.post<Goal>('/campaigns', goal);
   }
 
   updateGoal(id: string, goal: GoalUpdateRequest): Observable<Goal> {
-    return this.api.put<Goal>(`/goals/${id}`, goal);
+    return this.api.put<Goal>(`/campaigns/${id}`, goal);
   }
 
   deleteGoal(id: string): Observable<void> {
-    return this.api.delete<void>(`/goals/${id}`);
+    return this.api.delete<void>(`/campaigns/${id}`);
   }
 
   strike(id: string): Observable<BossDamage> {
-    return this.api.post<BossDamage>(`/goals/${id}/strike`, {});
+    return this.api.post<BossDamage>(`/campaigns/${id}/strike`, {});
   }
 
   getLinkedTasks(goalId: string): Observable<Task[]> {
-    return this.api.get<Task[]>(`/goals/${goalId}/tasks`);
+    return this.api.get<Task[]>(`/campaigns/${goalId}/tasks`);
   }
 
   attachTask(goalId: string, taskId: string): Observable<Task> {
-    return this.api.post<Task>(`/goals/${goalId}/tasks/${taskId}`, {});
+    return this.api.post<Task>(`/campaigns/${goalId}/tasks/${taskId}`, {});
   }
 
   detachTask(goalId: string, taskId: string): Observable<Task> {
-    return this.api.delete<Task>(`/goals/${goalId}/tasks/${taskId}`);
+    return this.api.delete<Task>(`/campaigns/${goalId}/tasks/${taskId}`);
   }
 
   listSubscriptions(goalId: string): Observable<GoalSubscription[]> {
-    return this.api.get<GoalSubscription[]>(`/goals/${goalId}/subscriptions`);
+    return this.api.get<GoalSubscription[]>(`/campaigns/${goalId}/subscriptions`);
   }
 
   subscribeCategory(goalId: string, categoryId: string): Observable<GoalSubscription> {
-    return this.api.post<GoalSubscription>(`/goals/${goalId}/subscriptions`, { categoryId });
+    return this.api.post<GoalSubscription>(`/campaigns/${goalId}/subscriptions`, { categoryId });
   }
 
   unsubscribeCategory(goalId: string, categoryId: string): Observable<void> {
-    return this.api.delete<void>(`/goals/${goalId}/subscriptions/${categoryId}`);
+    return this.api.delete<void>(`/campaigns/${goalId}/subscriptions/${categoryId}`);
   }
 }

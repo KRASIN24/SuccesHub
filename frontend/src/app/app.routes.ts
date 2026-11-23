@@ -33,18 +33,27 @@ export const routes: Routes = [
     title: 'Tasks — SuccessHub',
   },
   {
-    path: 'goals',
+    path: 'campaigns',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/goals/goals.component').then((m) => m.GoalsComponent),
     title: 'Campaigns — SuccessHub',
   },
   {
-    path: 'goals/:id',
+    path: 'campaigns/:id',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/goals/goal-detail.component').then((m) => m.GoalDetailComponent),
     title: 'Campaign — SuccessHub',
+  },
+  {
+    path: 'goals',
+    redirectTo: 'campaigns',
+    pathMatch: 'full',
+  },
+  {
+    path: 'goals/:id',
+    redirectTo: 'campaigns/:id',
   },
   {
     path: 'achievements',
@@ -56,15 +65,20 @@ export const routes: Routes = [
     title: 'Achievements — SuccessHub',
   },
   {
-    path: 'loot-boxes',
+    path: 'vault',
     canActivate: [authGuard, activeAccountGuard],
     loadComponent: () =>
       import('./features/loot-boxes/loot-boxes.component').then((m) => m.LootBoxesComponent),
     title: 'The Vault — SuccessHub',
   },
   {
+    path: 'loot-boxes',
+    redirectTo: 'vault',
+    pathMatch: 'full',
+  },
+  {
     path: 'cache',
-    redirectTo: 'loot-boxes',
+    redirectTo: 'vault',
     pathMatch: 'full',
   },
   {
