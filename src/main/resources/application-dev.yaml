@@ -2,10 +2,23 @@
 successhub:
   loot:
     enable-dev-grants: true
+  mail:
+    from: noreply@successhub.local
 
 spring:
   jpa:
     show-sql: true
+  # Host-run backend → Mailpit published on localhost (docker compose mailpit service).
+  mail:
+    host: localhost
+    port: 1025
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls.enable: false
 
 # Keep Spring Security quiet in local HTTP — TRACE floods the console with every probe
 # (e.g. Razer Synapse GET /wyvrn/Synapse) and "Not injecting HSTS … [Is Secure]" lines.

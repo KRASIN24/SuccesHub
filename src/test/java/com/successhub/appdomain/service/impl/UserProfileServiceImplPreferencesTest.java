@@ -2,6 +2,8 @@ package com.successhub.appdomain.service.impl;
 
 import com.successhub.appdomain.entity.UserProfile;
 import com.successhub.appdomain.repository.UserProfileRepository;
+import com.successhub.coreinfra.mail.MailService;
+import com.successhub.coreinfra.security.AuthProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +22,8 @@ import static org.mockito.Mockito.when;
 class UserProfileServiceImplPreferencesTest {
 
     @Mock UserProfileRepository repository;
+    @Mock MailService mailService;
+    @Mock AuthProperties authProperties;
 
     @InjectMocks UserProfileServiceImpl service;
 

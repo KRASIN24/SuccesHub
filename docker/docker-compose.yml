@@ -1,9 +1,18 @@
-# Default: infra only (Postgres + Keycloak + Adminer) — day-to-day local dev.
+# Default: infra only (Postgres + Keycloak + Adminer + Mailpit) — day-to-day local dev.
 # Full stack (infra + Spring + nginx SPA):
 #   docker compose --profile app up -d --build
 # Env / profile notes: root README + Notion Auth env / Docker apps.
+# Mailpit UI: http://localhost:8025  SMTP: localhost:1025
 
 services:
+
+  mailpit:
+    image: axllent/mailpit:v1.21
+    container_name: successhub-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
 
   postgres:
     image: postgres:16
@@ -59,6 +68,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     restart: unless-stopped
 
   adminer:
@@ -97,12 +108,20 @@ services:
       SUCCESSHUB_KEYCLOAK_SERVER_URL: http://keycloak:8080
       SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_ID: successhub-admin
       SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_SECRET: admin-changeme
+      # Compose network hostname (host-run API uses localhost:1025 via application defaults)
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: "1025"
+      SPRING_MAIL_USERNAME: ""
+      SPRING_MAIL_PASSWORD: ""
+      SUCCESSHUB_MAIL_FROM: noreply@successhub.local
     ports:
       - "8082:8082"
     depends_on:
       postgres:
         condition: service_healthy
       keycloak:
+        condition: service_started
+      mailpit:
         condition: service_started
     restart: unless-stopped
     healthcheck:

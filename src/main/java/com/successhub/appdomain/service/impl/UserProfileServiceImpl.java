@@ -4,10 +4,14 @@ import com.successhub.appdomain.dto.ProfileDto;
 import com.successhub.appdomain.entity.UserProfile;
 import com.successhub.appdomain.repository.UserProfileRepository;
 import com.successhub.appdomain.service.UserProfileService;
+import com.successhub.coreinfra.mail.MailService;
+import com.successhub.coreinfra.security.AuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -17,23 +21,38 @@ public class UserProfileServiceImpl implements UserProfileService {
     private static final Set<String> SUPPORTED_LOCALES = Set.of("en-US", "pl-PL");
 
     private final UserProfileRepository repository;
+    private final MailService mailService;
+    private final AuthProperties authProperties;
 
     @Override
     @Transactional
-    public ProfileDto getOrCreateProfile(String keycloakId, String displayName) {
-        UserProfile profile = repository.findByKeycloakId(keycloakId)
-                .orElseGet(() -> {
-                    UserProfile p = new UserProfile();
-                    p.setKeycloakId(keycloakId);
-                    p.setDisplayName(displayName);
-                    return repository.save(p);
-                });
+    public ProfileDto getOrCreateProfile(String keycloakId, String displayName, String email) {
+        var existing = repository.findByKeycloakId(keycloakId);
+        boolean created = existing.isEmpty();
+
+        UserProfile profile = existing.orElseGet(() -> {
+            UserProfile p = new UserProfile();
+            p.setKeycloakId(keycloakId);
+            p.setDisplayName(displayName);
+            return repository.save(p);
+        });
 
         if (displayName != null
                 && !displayName.equals(profile.getDisplayName())
                 && !profile.isDisplayNameCustomized()) {
             profile.setDisplayName(displayName);
             profile = repository.save(profile);
+        }
+
+        if (created) {
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("displayName", displayName != null ? displayName : "commander");
+            vars.put("frontendBaseUrl", authProperties.frontendOrigin());
+            mailService.sendTemplateMail(
+                    email,
+                    "Welcome to SuccessHub",
+                    "mail/welcome",
+                    vars);
         }
 
         return toDto(profile);

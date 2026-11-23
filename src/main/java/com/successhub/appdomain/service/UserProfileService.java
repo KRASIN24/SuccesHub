@@ -10,13 +10,15 @@ public interface UserProfileService {
 
     /**
      * Returns the profile for the given Keycloak subject ID.
-     * Creates a new profile row on first access.
+     * Creates a new profile row on first access and sends a best-effort welcome email
+     * when {@code email} is present.
      *
      * @param keycloakId  OIDC subject ({@code sub}) from the authenticated session
      * @param displayName human-readable name synced from Keycloak; may be {@code null}
+     * @param email       OIDC email for welcome mail on create; may be {@code null} or blank
      * @return current profile state exposed to the dashboard
      */
-    ProfileDto getOrCreateProfile(String keycloakId, String displayName);
+    ProfileDto getOrCreateProfile(String keycloakId, String displayName, String email);
 
     /**
      * Sets a user-chosen display name from Settings. Marks the profile so Keycloak

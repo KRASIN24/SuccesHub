@@ -47,7 +47,8 @@ public class ProfileController {
         if (displayName == null) {
             displayName = "User";
         }
-        ProfileDto dto = userProfileService.getOrCreateProfile(principal.getSubject(), displayName);
+        ProfileDto dto = userProfileService.getOrCreateProfile(
+                principal.getSubject(), displayName, principal.getEmail());
         return ResponseEntity.ok(dto);
     }
 
