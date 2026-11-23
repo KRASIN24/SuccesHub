@@ -53,7 +53,7 @@ class NotificationServiceImplTest {
                 NotificationType.LOOT_EARNED,
                 "Loot earned",
                 "A Arcane Orb awaits.",
-                "/loot-boxes",
+                "/vault",
                 UUID.randomUUID());
         UserProfile profile = new UserProfile();
         when(userProfileRepository.findByKeycloakId("user-1")).thenReturn(Optional.of(profile));
@@ -71,7 +71,7 @@ class NotificationServiceImplTest {
         Notification saved = captor.getValue();
         assertEquals("user-1", saved.getUserId());
         assertEquals(NotificationType.LOOT_EARNED, saved.getType());
-        assertEquals("/loot-boxes", saved.getActionUrl());
+        assertEquals("/vault", saved.getActionUrl());
         assertTrue(!saved.isRead());
     }
 
@@ -124,7 +124,7 @@ class NotificationServiceImplTest {
         row.setType(NotificationType.CAMPAIGN_DEFEATED);
         row.setTitle("Campaign defeated");
         row.setBody("Hydra");
-        row.setActionUrl("/goals");
+        row.setActionUrl("/campaigns");
         row.setRead(false);
         row.setCreatedAt(Instant.now());
         when(notificationRepository.findByIdAndUserId(id, "user-1")).thenReturn(Optional.of(row));

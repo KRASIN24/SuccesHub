@@ -228,7 +228,7 @@ public class LootBoxServiceImpl implements LootBoxService {
                     NotificationType.STREAK_MILESTONE,
                     "Streak milestone",
                     "You earned a " + boxType.getDisplayName() + " for your streak.",
-                    "/loot-boxes",
+                    "/vault",
                     boxId));
             return;
         }
@@ -243,7 +243,7 @@ public class LootBoxServiceImpl implements LootBoxService {
                 NotificationType.LOOT_EARNED,
                 "Loot earned",
                 "A " + boxType.getDisplayName() + " awaits from " + reason + ".",
-                "/loot-boxes",
+                "/vault",
                 boxId));
     }
 

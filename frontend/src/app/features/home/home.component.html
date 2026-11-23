@@ -205,13 +205,13 @@
         <section class="panel-block">
           <div class="block-head">
             <h2 class="block-title">{{ 'home.campaignPulse' | translate }}</h2>
-            <a routerLink="/goals" class="task-deep-link app-link">{{ 'home.campaignsLink' | translate }}</a>
+            <a routerLink="/campaigns" class="task-deep-link app-link">{{ 'home.campaignsLink' | translate }}</a>
           </div>
           @if (campaignPulse().length > 0) {
             <ul class="aside-campaigns campaign-panel">
               @for (boss of campaignPulse(); track boss.id) {
                 <li>
-                  <a [routerLink]="['/goals', boss.id]" class="aside-campaign" [class.low-hp]="isLowHp(boss)">
+                  <a [routerLink]="['/campaigns', boss.id]" class="aside-campaign" [class.low-hp]="isLowHp(boss)">
                     <div class="aside-campaign__top">
                       <span class="aside-campaign__name">{{ boss.name }}</span>
                       <span class="aside-campaign__hp">{{ healthRemaining(boss) }}%</span>
@@ -283,10 +283,10 @@
               <strong>{{ lootPending.totalPendingCount() }}</strong>
               <span class="muted">{{ 'home.vaultPending' | translate }}</span>
             </p>
-            <a routerLink="/loot-boxes" class="app-link aside-cta">{{ 'home.openVault' | translate }}</a>
+            <a routerLink="/vault" class="app-link aside-cta">{{ 'home.openVault' | translate }}</a>
           } @else {
             <p class="aside-empty">{{ 'home.vaultEmpty' | translate }}</p>
-            <a routerLink="/loot-boxes" class="app-link aside-cta">{{ 'home.openVault' | translate }}</a>
+            <a routerLink="/vault" class="app-link aside-cta">{{ 'home.openVault' | translate }}</a>
           }
         </div>
 

@@ -130,7 +130,7 @@ class GameEmailListenerTest {
                 NotificationType.STREAK_MILESTONE,
                 "Streak milestone",
                 "You earned a Iron Chest for your streak.",
-                "/loot-boxes",
+                "/vault",
                 null));
 
         @SuppressWarnings("unchecked")
@@ -173,7 +173,7 @@ class GameEmailListenerTest {
                 NotificationType.LOOT_EARNED,
                 "Loot",
                 "box",
-                "/loot-boxes",
+                "/vault",
                 null));
 
         verify(mailService, never()).sendTemplateMail(
@@ -194,7 +194,7 @@ class GameEmailListenerTest {
                 NotificationType.CAMPAIGN_DEFEATED,
                 "Campaign defeated",
                 "fallen",
-                "/goals",
+                "/campaigns",
                 null));
 
         verify(mailService, never()).sendTemplateMail(

@@ -106,9 +106,9 @@ Portfolio strategy (Notion): [SuccessHub hub](https://app.notion.com/p/SuccessHu
 |------|---------------|----------|
 | Dashboard | `/dashboard` | Daily ritual, missions, forecast, Seal the day |
 | Quest log | `/tasks` | Categories, XP preview, boss link, complete for rewards |
-| Boss battle | `/goals` | Goals as bosses; progress from linked task damage |
+| Campaigns | `/campaigns` | Campaigns as bosses; progress from linked task damage |
 | Achievements | `/achievements` | Merit unlocks from engine rules |
-| Celestial Cache | `/loot-boxes` | Pending boxes → open → inventory |
+| The Vault | `/vault` | Pending boxes → open → inventory |
 | Profile vault | `/profile` | Equip cosmetics; streak calendar; shields / utility cards |
 | Login | Keycloak | Seed user for local demo |
 

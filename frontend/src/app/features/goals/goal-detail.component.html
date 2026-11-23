@@ -12,7 +12,7 @@
 } @else {
   @if (goal(); as boss) {
   <div class="goal-detail">
-    <a routerLink="/goals" class="back-link">{{ 'goals.backToCampaigns' | translate }}</a>
+    <a routerLink="/campaigns" class="back-link">{{ 'goals.backToCampaigns' | translate }}</a>
     <app-page-header titleKey="goals.title" subtitleKey="goals.subtitle" />
 
     <section class="detail-card surface-card" [class.low-hp]="isLowHp(boss)" [class.final-ready]="isFinalStrike(boss)">

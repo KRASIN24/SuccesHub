@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * REST API for Campaign goals: active campaigns, completed campaigns, links, and Strike.
+ * REST API for Campaigns: active campaigns, completed campaigns, links, and Strike.
  */
-@Tag(name = "Goals", description = "Campaign goals, progress, category subscriptions, and Strike")
+@Tag(name = "Campaigns", description = "Campaigns, progress, category subscriptions, and Strike")
 @RestController
-@RequestMapping("/api/goals")
+@RequestMapping("/api/campaigns")
 @RequiredArgsConstructor
 public class GoalController {
 
@@ -36,8 +36,8 @@ public class GoalController {
     /**
      * Lists goals for the authenticated user, optionally filtered by status.
      */
-    @Operation(summary = "List goals", description = "Returns active and completed goals, or only those matching the optional status filter.")
-    @ApiResponse(responseCode = "200", description = "Goals returned")
+    @Operation(summary = "List campaigns", description = "Returns active and completed campaigns, or only those matching the optional status filter.")
+    @ApiResponse(responseCode = "200", description = "Campaigns returned")
     @ApiResponse(responseCode = "400", description = "Invalid status value")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @GetMapping
@@ -67,7 +67,7 @@ public class GoalController {
     /**
      * Returns aggregate goal statistics for the grand campaign progress bar.
      */
-    @Operation(summary = "Get goals summary", description = "Returns total goals, completed count, and overall completion percentage.")
+    @Operation(summary = "Get campaigns summary", description = "Returns total campaigns, completed count, and overall completion percentage.")
     @ApiResponse(responseCode = "200", description = "Summary returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @GetMapping("/summary")
@@ -81,14 +81,14 @@ public class GoalController {
     /**
      * Returns a single campaign owned by the authenticated user.
      */
-    @Operation(summary = "Get goal by ID")
-    @ApiResponse(responseCode = "200", description = "Goal returned")
+    @Operation(summary = "Get campaign by ID")
+    @ApiResponse(responseCode = "200", description = "Campaign returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal not found")
+    @ApiResponse(responseCode = "404", description = "Campaign not found")
     @GetMapping("/{id}")
     public ResponseEntity<GoalDto.Response> getGoal(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id) {
+            @Parameter(description = "Campaign ID") @PathVariable UUID id) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -98,8 +98,8 @@ public class GoalController {
     /**
      * Creates a new goal for the authenticated user.
      */
-    @Operation(summary = "Create goal")
-    @ApiResponse(responseCode = "200", description = "Goal created")
+    @Operation(summary = "Create campaign")
+    @ApiResponse(responseCode = "200", description = "Campaign created")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @PostMapping
     public ResponseEntity<GoalDto.Response> createGoal(
@@ -114,14 +114,14 @@ public class GoalController {
     /**
      * Updates an existing goal. Awards XP on first transition to COMPLETED.
      */
-    @Operation(summary = "Update goal")
-    @ApiResponse(responseCode = "200", description = "Goal updated")
+    @Operation(summary = "Update campaign")
+    @ApiResponse(responseCode = "200", description = "Campaign updated")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal not found")
+    @ApiResponse(responseCode = "404", description = "Campaign not found")
     @PutMapping("/{id}")
     public ResponseEntity<GoalDto.Response> updateGoal(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id,
+            @Parameter(description = "Campaign ID") @PathVariable UUID id,
             @Valid @RequestBody GoalDto.UpdateRequest req) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -132,14 +132,14 @@ public class GoalController {
     /**
      * Deletes a goal owned by the authenticated user.
      */
-    @Operation(summary = "Delete goal")
-    @ApiResponse(responseCode = "204", description = "Goal deleted")
+    @Operation(summary = "Delete campaign")
+    @ApiResponse(responseCode = "204", description = "Campaign deleted")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal not found")
+    @ApiResponse(responseCode = "404", description = "Campaign not found")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGoal(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id) {
+            @Parameter(description = "Campaign ID") @PathVariable UUID id) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -157,11 +157,11 @@ public class GoalController {
     @ApiResponse(responseCode = "200", description = "Strike applied")
     @ApiResponse(responseCode = "400", description = "No pending damage or campaign not active")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal not found")
+    @ApiResponse(responseCode = "404", description = "Campaign not found")
     @PostMapping("/{id}/strike")
     public ResponseEntity<BossDamageDto> strikeGoal(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id) {
+            @Parameter(description = "Campaign ID") @PathVariable UUID id) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -174,11 +174,11 @@ public class GoalController {
     @Operation(summary = "List linked tasks")
     @ApiResponse(responseCode = "200", description = "Tasks returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal not found")
+    @ApiResponse(responseCode = "404", description = "Campaign not found")
     @GetMapping("/{id}/tasks")
     public ResponseEntity<List<TaskDto.Response>> getLinkedTasks(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id) {
+            @Parameter(description = "Campaign ID") @PathVariable UUID id) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -191,11 +191,11 @@ public class GoalController {
     @Operation(summary = "Attach task to campaign")
     @ApiResponse(responseCode = "200", description = "Task attached")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal or task not found")
+    @ApiResponse(responseCode = "404", description = "Campaign or task not found")
     @PostMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<TaskDto.Response> attachTask(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id,
+            @Parameter(description = "Campaign ID") @PathVariable UUID id,
             @Parameter(description = "Task ID") @PathVariable UUID taskId) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -210,11 +210,11 @@ public class GoalController {
     @ApiResponse(responseCode = "200", description = "Task detached")
     @ApiResponse(responseCode = "400", description = "Task not linked to this campaign")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal or task not found")
+    @ApiResponse(responseCode = "404", description = "Campaign or task not found")
     @DeleteMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<TaskDto.Response> detachTask(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id,
+            @Parameter(description = "Campaign ID") @PathVariable UUID id,
             @Parameter(description = "Task ID") @PathVariable UUID taskId) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -228,11 +228,11 @@ public class GoalController {
     @Operation(summary = "List category subscriptions")
     @ApiResponse(responseCode = "200", description = "Subscriptions returned")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal not found")
+    @ApiResponse(responseCode = "404", description = "Campaign not found")
     @GetMapping("/{id}/subscriptions")
     public ResponseEntity<List<GoalSubscriptionDto.Response>> listSubscriptions(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id) {
+            @Parameter(description = "Campaign ID") @PathVariable UUID id) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -245,12 +245,12 @@ public class GoalController {
     @Operation(summary = "Subscribe category to campaign")
     @ApiResponse(responseCode = "200", description = "Subscribed")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "404", description = "Goal or category not found")
+    @ApiResponse(responseCode = "404", description = "Campaign or category not found")
     @ApiResponse(responseCode = "409", description = "Category already subscribed elsewhere")
     @PostMapping("/{id}/subscriptions")
     public ResponseEntity<GoalSubscriptionDto.Response> subscribeCategory(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id,
+            @Parameter(description = "Campaign ID") @PathVariable UUID id,
             @Valid @RequestBody GoalSubscriptionDto.SubscribeRequest req) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
@@ -268,7 +268,7 @@ public class GoalController {
     @DeleteMapping("/{id}/subscriptions/{categoryId}")
     public ResponseEntity<Void> unsubscribeCategory(
             @AuthenticationPrincipal OidcUser principal,
-            @Parameter(description = "Goal ID") @PathVariable UUID id,
+            @Parameter(description = "Campaign ID") @PathVariable UUID id,
             @Parameter(description = "Category ID") @PathVariable UUID categoryId) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
