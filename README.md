@@ -62,7 +62,7 @@ After a qualifying day → click **Seal the day** → UI flips to **Day sealed**
 | Auth | **Keycloak** OIDC + Spring Security **BFF** | Tokens stay server-side; browser gets `HttpOnly` session + CSRF |
 | UI | Angular 18 (standalone) · Tailwind | Lazy routes, shared profile signals, celebration overlays |
 | DB | PostgreSQL 16 | Real persistence for streak days, loot, XP events |
-| Infra | Docker Compose | Postgres + Keycloak + Adminer with one command |
+| Infra | Docker Compose | Postgres + Keycloak + Adminer + Mailpit with one command |
 | CI | GitHub Actions on PRs to `master` | Backend tests + frontend build/test — no CD yet |
 
 ```text
@@ -128,7 +128,7 @@ Swagger (dev profile): http://localhost:8082/swagger-ui/index.html
 **Prerequisites:** Docker Desktop · JDK 21 · Node.js 20+
 
 ```powershell
-# 1) Infrastructure (Postgres + Keycloak + Adminer)
+# 1) Infrastructure (Postgres + Keycloak + Adminer + Mailpit)
 cd docker
 docker compose up -d --wait
 cd ..
@@ -153,7 +153,21 @@ npm start
 | Swagger (`dev` only) | http://localhost:8082/swagger-ui/index.html |
 | Keycloak | http://localhost:8080 |
 | Adminer | http://localhost:8081 |
+| Mailpit (SMTP catcher UI) | http://localhost:8025 |
+| Mailpit SMTP | `localhost:1025` |
 | Postgres | `localhost:5432` |
+
+**Mail (local):** Spring and Keycloak send to Mailpit (no real inbox). Open http://localhost:8025 to inspect branded HTML:
+
+| Source | When | Template / theme |
+|--------|------|------------------|
+| Spring | First profile create | `mail/welcome` |
+| Spring | Achievement unlocked | `mail/achievement` |
+| Spring | Boss defeated | `mail/boss-defeated` |
+| Spring | Streak milestone | `mail/streak-milestone` |
+| Keycloak | Forgot password | `successhub` email theme |
+
+Dark shell + gold accent matches the login theme. Milestone mails reuse `GameNotificationEvent` (skip loot / task reminders). If the realm already existed before Mailpit or the email theme, set Realm Settings → Email (host `mailpit`, port `1025`, from `noreply@successhub.local`, auth/SSL off) and Themes → Email theme = `successhub`, or re-import with `docker compose down -v`.
 
 ### IntelliJ (preferred day-to-day)
 
