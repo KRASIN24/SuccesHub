@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        logicalFilePath="db/changelog/2026-11-23-04-collapse-notification-preferences.xml">
+
+    <!-- Collapse per-type flags into two master toggles (in-app + email). -->
+    <changeSet id="2026-11-23-04-collapse-notification-preferences" author="krasin">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="user_profile" schemaName="successhub" columnName="notify_loot_earned"/>
+        </preConditions>
+
+        <addColumn tableName="user_profile" schemaName="successhub">
+            <column name="notify_in_app" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_notifications" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="notify_loot_earned"/>
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="notify_achievement_unlocked"/>
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="notify_streak_milestone"/>
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="notify_campaign_defeated"/>
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="email_achievement_unlocked"/>
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="email_streak_milestone"/>
+        <dropColumn tableName="user_profile" schemaName="successhub" columnName="email_campaign_defeated"/>
+    </changeSet>
+
+    <!-- Fresh DBs that never had per-type columns still need the two masters. -->
+    <changeSet id="2026-11-23-04b-notify-email-masters-if-missing" author="krasin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="user_profile" schemaName="successhub" columnName="notify_in_app"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="user_profile" schemaName="successhub">
+            <column name="notify_in_app" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_notifications" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

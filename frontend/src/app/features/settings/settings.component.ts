@@ -124,20 +124,10 @@ export class SettingsComponent implements OnInit {
     value: boolean
   ): Parameters<ProfileService['updatePreferences']>[0] | null {
     switch (key) {
-      case 'notifyLootEarned':
-        return { notifyLootEarned: value };
-      case 'notifyAchievementUnlocked':
-        return { notifyAchievementUnlocked: value };
-      case 'notifyStreakMilestone':
-        return { notifyStreakMilestone: value };
-      case 'notifyBossDefeated':
-        return { notifyCampaignDefeated: value };
-      case 'emailAchievementUnlocked':
-        return { emailAchievementUnlocked: value };
-      case 'emailStreakMilestone':
-        return { emailStreakMilestone: value };
-      case 'emailCampaignDefeated':
-        return { emailCampaignDefeated: value };
+      case 'notifyInApp':
+        return { notifyInApp: value };
+      case 'emailNotifications':
+        return { emailNotifications: value };
       default:
         return null;
     }

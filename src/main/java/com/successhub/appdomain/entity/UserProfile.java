@@ -39,26 +39,13 @@ public class UserProfile {
     @Column(name = "locale", nullable = false, length = 16)
     private String locale = "en-US";
 
-    @Column(name = "notify_loot_earned", nullable = false)
-    private boolean notifyLootEarned = true;
+    /** Master switch for in-app game notifications (bell / toasts). */
+    @Column(name = "notify_in_app", nullable = false)
+    private boolean notifyInApp = true;
 
-    @Column(name = "notify_achievement_unlocked", nullable = false)
-    private boolean notifyAchievementUnlocked = true;
-
-    @Column(name = "notify_streak_milestone", nullable = false)
-    private boolean notifyStreakMilestone = true;
-
-    @Column(name = "notify_campaign_defeated", nullable = false)
-    private boolean notifyCampaignDefeated = true;
-
-    @Column(name = "email_achievement_unlocked", nullable = false)
-    private boolean emailAchievementUnlocked = true;
-
-    @Column(name = "email_streak_milestone", nullable = false)
-    private boolean emailStreakMilestone = true;
-
-    @Column(name = "email_campaign_defeated", nullable = false)
-    private boolean emailCampaignDefeated = true;
+    /** Master switch for transactional game emails (not Keycloak account mail). */
+    @Column(name = "email_notifications", nullable = false)
+    private boolean emailNotifications = true;
 
     @Column(name = "level", nullable = false)
     private int level = 1;

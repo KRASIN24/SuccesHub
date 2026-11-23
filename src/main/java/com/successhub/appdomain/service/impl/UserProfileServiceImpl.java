@@ -95,7 +95,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Transactional
     public ProfileDto updatePreferences(String keycloakId, UpdatePreferencesRequest request) {
         if (request == null) {
-            request = new UpdatePreferencesRequest(null, null, null, null, null, null, null, null, null);
+            request = new UpdatePreferencesRequest(null, null, null, null);
         }
         String locale = request.locale();
         if (locale != null && !SUPPORTED_LOCALES.contains(locale)) {
@@ -115,26 +115,11 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (locale != null) {
             profile.setLocale(locale);
         }
-        if (request.notifyLootEarned() != null) {
-            profile.setNotifyLootEarned(request.notifyLootEarned());
+        if (request.notifyInApp() != null) {
+            profile.setNotifyInApp(request.notifyInApp());
         }
-        if (request.notifyAchievementUnlocked() != null) {
-            profile.setNotifyAchievementUnlocked(request.notifyAchievementUnlocked());
-        }
-        if (request.notifyStreakMilestone() != null) {
-            profile.setNotifyStreakMilestone(request.notifyStreakMilestone());
-        }
-        if (request.notifyCampaignDefeated() != null) {
-            profile.setNotifyCampaignDefeated(request.notifyCampaignDefeated());
-        }
-        if (request.emailAchievementUnlocked() != null) {
-            profile.setEmailAchievementUnlocked(request.emailAchievementUnlocked());
-        }
-        if (request.emailStreakMilestone() != null) {
-            profile.setEmailStreakMilestone(request.emailStreakMilestone());
-        }
-        if (request.emailCampaignDefeated() != null) {
-            profile.setEmailCampaignDefeated(request.emailCampaignDefeated());
+        if (request.emailNotifications() != null) {
+            profile.setEmailNotifications(request.emailNotifications());
         }
         return toDto(repository.save(profile));
     }
@@ -184,13 +169,8 @@ public class UserProfileServiceImpl implements UserProfileService {
                 p.getGlobalRank(),
                 p.isDarkTheme(),
                 p.getLocale(),
-                p.isNotifyLootEarned(),
-                p.isNotifyAchievementUnlocked(),
-                p.isNotifyStreakMilestone(),
-                p.isNotifyCampaignDefeated(),
-                p.isEmailAchievementUnlocked(),
-                p.isEmailStreakMilestone(),
-                p.isEmailCampaignDefeated()
+                p.isNotifyInApp(),
+                p.isEmailNotifications()
         );
     }
 }

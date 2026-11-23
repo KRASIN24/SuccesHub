@@ -7,11 +7,6 @@ package com.successhub.appdomain.dto;
 public record UpdatePreferencesRequest(
         Boolean darkTheme,
         String locale,
-        Boolean notifyLootEarned,
-        Boolean notifyAchievementUnlocked,
-        Boolean notifyStreakMilestone,
-        Boolean notifyCampaignDefeated,
-        Boolean emailAchievementUnlocked,
-        Boolean emailStreakMilestone,
-        Boolean emailCampaignDefeated
+        Boolean notifyInApp,
+        Boolean emailNotifications
 ) {}

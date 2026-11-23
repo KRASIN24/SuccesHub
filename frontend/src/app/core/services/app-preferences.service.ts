@@ -1,30 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 
-export type NotificationPrefKey =
-  | 'notifyLootEarned'
-  | 'notifyAchievementUnlocked'
-  | 'notifyStreakMilestone'
-  | 'notifyBossDefeated';
-
 export interface AppPreferences {
   /** Prefer dark orbital theme (only dark is fully styled today). */
   darkTheme: boolean;
   soundEffects: boolean;
   animationsEnabled: boolean;
-  /** In-app bell: loot box earned (achievement / weekly / manual grants). */
-  notifyLootEarned: boolean;
-  /** In-app bell: achievement unlocked. */
-  notifyAchievementUnlocked: boolean;
-  /** In-app bell: streak milestone cache. */
-  notifyStreakMilestone: boolean;
-  /** In-app bell: campaign defeated (legacy key name). */
-  notifyBossDefeated: boolean;
-  /** Milestone email: achievement unlocked. */
-  emailAchievementUnlocked: boolean;
-  /** Milestone email: streak milestone. */
-  emailStreakMilestone: boolean;
-  /** Milestone email: campaign defeated. */
-  emailCampaignDefeated: boolean;
+  /** Master switch for in-app game notifications (bell / toasts). */
+  notifyInApp: boolean;
+  /** Master switch for transactional game emails. */
+  emailNotifications: boolean;
   /** BCP 47 locale from {@link SUPPORTED_LOCALES}, e.g. en-US */
   locale: string;
 }
@@ -35,22 +19,9 @@ const DEFAULT_PREFS: AppPreferences = {
   darkTheme: true,
   soundEffects: true,
   animationsEnabled: true,
-  notifyLootEarned: true,
-  notifyAchievementUnlocked: true,
-  notifyStreakMilestone: true,
-  notifyBossDefeated: true,
-  emailAchievementUnlocked: true,
-  emailStreakMilestone: true,
-  emailCampaignDefeated: true,
+  notifyInApp: true,
+  emailNotifications: true,
   locale: 'en-US',
-};
-
-/** Maps API {@code NotificationType} to a Settings preference key. */
-export const NOTIFICATION_TYPE_PREF: Record<string, NotificationPrefKey> = {
-  LOOT_EARNED: 'notifyLootEarned',
-  ACHIEVEMENT_UNLOCKED: 'notifyAchievementUnlocked',
-  STREAK_MILESTONE: 'notifyStreakMilestone',
-  CAMPAIGN_DEFEATED: 'notifyBossDefeated',
 };
 
 /**
@@ -73,11 +44,18 @@ export class AppPreferencesService {
 
   /** Whether the navbar bell should surface this notification type. */
   isNotificationTypeEnabled(type: string): boolean {
-    const key = NOTIFICATION_TYPE_PREF[type];
-    if (!key) {
+    if (type === 'TASK_REMINDER') {
       return true;
     }
-    return this.prefsState()[key];
+    if (
+      type === 'LOOT_EARNED' ||
+      type === 'ACHIEVEMENT_UNLOCKED' ||
+      type === 'STREAK_MILESTONE' ||
+      type === 'CAMPAIGN_DEFEATED'
+    ) {
+      return this.prefsState().notifyInApp;
+    }
+    return true;
   }
 
   update(partial: Partial<AppPreferences>): AppPreferences {
@@ -104,18 +82,57 @@ export class AppPreferencesService {
           showStreakReminder?: boolean;
           dailyGoalReminder?: boolean;
           weeklySummary?: boolean;
+          notifyLootEarned?: boolean;
+          notifyAchievementUnlocked?: boolean;
+          notifyStreakMilestone?: boolean;
+          notifyBossDefeated?: boolean;
+          emailAchievementUnlocked?: boolean;
+          emailStreakMilestone?: boolean;
+          emailCampaignDefeated?: boolean;
         };
         const {
           compactView: _dropped,
           showStreakReminder,
           dailyGoalReminder: _daily,
           weeklySummary: _weekly,
+          notifyLootEarned,
+          notifyAchievementUnlocked,
+          notifyStreakMilestone,
+          notifyBossDefeated,
+          emailAchievementUnlocked,
+          emailStreakMilestone,
+          emailCampaignDefeated,
           ...rest
         } = parsed;
         const migrated: Partial<AppPreferences> = { ...rest };
-        // Old Settings “Streak Alert” → streak milestone bell preference.
-        if (rest.notifyStreakMilestone === undefined && showStreakReminder !== undefined) {
-          migrated.notifyStreakMilestone = showStreakReminder;
+        if (rest.notifyInApp === undefined) {
+          const legacyInApp = [
+            notifyLootEarned,
+            notifyAchievementUnlocked,
+            notifyStreakMilestone,
+            notifyBossDefeated,
+            showStreakReminder,
+          ].find((v) => v !== undefined);
+          if (legacyInApp !== undefined) {
+            migrated.notifyInApp =
+              (notifyLootEarned ?? true) ||
+              (notifyAchievementUnlocked ?? true) ||
+              (notifyStreakMilestone ?? showStreakReminder ?? true) ||
+              (notifyBossDefeated ?? true);
+          }
+        }
+        if (rest.emailNotifications === undefined) {
+          const legacyEmail = [
+            emailAchievementUnlocked,
+            emailStreakMilestone,
+            emailCampaignDefeated,
+          ].find((v) => v !== undefined);
+          if (legacyEmail !== undefined) {
+            migrated.emailNotifications =
+              (emailAchievementUnlocked ?? true) ||
+              (emailStreakMilestone ?? true) ||
+              (emailCampaignDefeated ?? true);
+          }
         }
         return { ...DEFAULT_PREFS, ...migrated };
       }

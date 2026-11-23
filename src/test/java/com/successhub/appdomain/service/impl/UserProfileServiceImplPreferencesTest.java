@@ -41,7 +41,7 @@ class UserProfileServiceImplPreferencesTest {
         when(repository.save(any(UserProfile.class))).thenAnswer(i -> i.getArgument(0));
 
         var dto = service.updatePreferences("kc-1", new UpdatePreferencesRequest(
-                false, "pl-PL", null, null, null, null, null, null, null));
+                false, "pl-PL", null, null));
 
         assertFalse(dto.darkTheme());
         assertEquals("pl-PL", dto.locale());
@@ -51,7 +51,7 @@ class UserProfileServiceImplPreferencesTest {
     void updatePreferences_rejectsUnsupportedLocale() {
         assertThrows(IllegalArgumentException.class,
                 () -> service.updatePreferences("kc-1", new UpdatePreferencesRequest(
-                        null, "de-DE", null, null, null, null, null, null, null)));
+                        null, "de-DE", null, null)));
     }
 
     @Test
@@ -60,18 +60,18 @@ class UserProfileServiceImplPreferencesTest {
         profile.setKeycloakId("kc-1");
         profile.setDarkTheme(false);
         profile.setLocale("pl-PL");
-        profile.setNotifyLootEarned(false);
-        profile.setEmailAchievementUnlocked(false);
+        profile.setNotifyInApp(false);
+        profile.setEmailNotifications(false);
         when(repository.findByKeycloakId("kc-1")).thenReturn(Optional.of(profile));
         when(repository.save(any(UserProfile.class))).thenAnswer(i -> i.getArgument(0));
 
         var dto = service.updatePreferences("kc-1", new UpdatePreferencesRequest(
-                null, null, null, null, null, null, null, null, null));
+                null, null, null, null));
 
         assertFalse(dto.darkTheme());
         assertEquals("pl-PL", dto.locale());
-        assertFalse(dto.notifyLootEarned());
-        assertFalse(dto.emailAchievementUnlocked());
+        assertFalse(dto.notifyInApp());
+        assertFalse(dto.emailNotifications());
     }
 
     @Test
@@ -82,17 +82,10 @@ class UserProfileServiceImplPreferencesTest {
         when(repository.save(any(UserProfile.class))).thenAnswer(i -> i.getArgument(0));
 
         var dto = service.updatePreferences("kc-1", new UpdatePreferencesRequest(
-                null, null,
-                false, false, false, false,
-                false, false, false));
+                null, null, false, false));
 
-        assertFalse(dto.notifyLootEarned());
-        assertFalse(dto.notifyAchievementUnlocked());
-        assertFalse(dto.notifyStreakMilestone());
-        assertFalse(dto.notifyCampaignDefeated());
-        assertFalse(dto.emailAchievementUnlocked());
-        assertFalse(dto.emailStreakMilestone());
-        assertFalse(dto.emailCampaignDefeated());
+        assertFalse(dto.notifyInApp());
+        assertFalse(dto.emailNotifications());
         assertTrue(profile.isDarkTheme());
     }
 }

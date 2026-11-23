@@ -13,11 +13,6 @@ public record ProfileDto(
         int globalRank,
         boolean darkTheme,
         String locale,
-        boolean notifyLootEarned,
-        boolean notifyAchievementUnlocked,
-        boolean notifyStreakMilestone,
-        boolean notifyCampaignDefeated,
-        boolean emailAchievementUnlocked,
-        boolean emailStreakMilestone,
-        boolean emailCampaignDefeated
+        boolean notifyInApp,
+        boolean emailNotifications
 ) {}
