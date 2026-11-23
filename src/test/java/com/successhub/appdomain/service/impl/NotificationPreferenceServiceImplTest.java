@@ -12,26 +12,30 @@ class NotificationPreferenceServiceImplTest {
     private final NotificationPreferenceServiceImpl service = new NotificationPreferenceServiceImpl();
 
     @Test
-    void inAppRespectsFlagsAndDefaultsTaskReminderOn() {
+    void inAppMasterSwitchGatesGameTypesAndKeepsTaskReminderOn() {
         UserProfile profile = new UserProfile();
-        profile.setNotifyLootEarned(false);
-        profile.setNotifyAchievementUnlocked(true);
+        profile.setNotifyInApp(false);
 
         assertFalse(service.isInAppEnabled(profile, NotificationType.LOOT_EARNED));
-        assertTrue(service.isInAppEnabled(profile, NotificationType.ACHIEVEMENT_UNLOCKED));
+        assertFalse(service.isInAppEnabled(profile, NotificationType.ACHIEVEMENT_UNLOCKED));
+        assertFalse(service.isInAppEnabled(profile, NotificationType.CAMPAIGN_DEFEATED));
         assertTrue(service.isInAppEnabled(profile, NotificationType.TASK_REMINDER));
+
+        profile.setNotifyInApp(true);
+        assertTrue(service.isInAppEnabled(profile, NotificationType.STREAK_MILESTONE));
     }
 
     @Test
-    void emailOnlyForMilestoneTypes() {
+    void emailMasterSwitchOnlyForMilestoneTypes() {
         UserProfile profile = new UserProfile();
-        profile.setEmailAchievementUnlocked(true);
-        profile.setEmailStreakMilestone(false);
-        profile.setEmailCampaignDefeated(true);
+        profile.setEmailNotifications(true);
 
         assertTrue(service.isEmailEnabled(profile, NotificationType.ACHIEVEMENT_UNLOCKED));
-        assertFalse(service.isEmailEnabled(profile, NotificationType.STREAK_MILESTONE));
+        assertTrue(service.isEmailEnabled(profile, NotificationType.STREAK_MILESTONE));
         assertTrue(service.isEmailEnabled(profile, NotificationType.CAMPAIGN_DEFEATED));
         assertFalse(service.isEmailEnabled(profile, NotificationType.LOOT_EARNED));
+
+        profile.setEmailNotifications(false);
+        assertFalse(service.isEmailEnabled(profile, NotificationType.ACHIEVEMENT_UNLOCKED));
     }
 }

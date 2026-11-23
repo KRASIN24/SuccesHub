@@ -151,42 +151,14 @@
           <div class="side-card side-card--checks">
             <p class="pref-row__hint">{{ 'settings.notifyHint' | translate }}</p>
             <app-glitch-checkbox
-              [label]="'settings.notifyLoot' | translate"
-              [checked]="preferences().notifyLootEarned"
-              (checkedChange)="setPreference('notifyLootEarned', $event)"
-            />
-            <p class="pref-row__label">{{ 'settings.notifyAchievements' | translate }}</p>
-            <app-glitch-checkbox
               [label]="'settings.notifyInApp' | translate"
-              [checked]="preferences().notifyAchievementUnlocked"
-              (checkedChange)="setPreference('notifyAchievementUnlocked', $event)"
+              [checked]="preferences().notifyInApp"
+              (checkedChange)="setPreference('notifyInApp', $event)"
             />
             <app-glitch-checkbox
               [label]="'settings.notifyEmail' | translate"
-              [checked]="preferences().emailAchievementUnlocked"
-              (checkedChange)="setPreference('emailAchievementUnlocked', $event)"
-            />
-            <p class="pref-row__label">{{ 'settings.notifyStreak' | translate }}</p>
-            <app-glitch-checkbox
-              [label]="'settings.notifyInApp' | translate"
-              [checked]="preferences().notifyStreakMilestone"
-              (checkedChange)="setPreference('notifyStreakMilestone', $event)"
-            />
-            <app-glitch-checkbox
-              [label]="'settings.notifyEmail' | translate"
-              [checked]="preferences().emailStreakMilestone"
-              (checkedChange)="setPreference('emailStreakMilestone', $event)"
-            />
-            <p class="pref-row__label">{{ 'settings.notifyBoss' | translate }}</p>
-            <app-glitch-checkbox
-              [label]="'settings.notifyInApp' | translate"
-              [checked]="preferences().notifyBossDefeated"
-              (checkedChange)="setPreference('notifyBossDefeated', $event)"
-            />
-            <app-glitch-checkbox
-              [label]="'settings.notifyEmail' | translate"
-              [checked]="preferences().emailCampaignDefeated"
-              (checkedChange)="setPreference('emailCampaignDefeated', $event)"
+              [checked]="preferences().emailNotifications"
+              (checkedChange)="setPreference('emailNotifications', $event)"
             />
           </div>
         </div>

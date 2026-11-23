@@ -17,23 +17,19 @@ public class NotificationPreferenceServiceImpl implements NotificationPreference
             return true;
         }
         return switch (type) {
-            case LOOT_EARNED -> profile.isNotifyLootEarned();
-            case ACHIEVEMENT_UNLOCKED -> profile.isNotifyAchievementUnlocked();
-            case STREAK_MILESTONE -> profile.isNotifyStreakMilestone();
-            case CAMPAIGN_DEFEATED -> profile.isNotifyCampaignDefeated();
+            case LOOT_EARNED, ACHIEVEMENT_UNLOCKED, STREAK_MILESTONE, CAMPAIGN_DEFEATED
+                    -> profile.isNotifyInApp();
             case TASK_REMINDER -> true;
         };
     }
 
     @Override
     public boolean isEmailEnabled(UserProfile profile, NotificationType type) {
-        if (profile == null || type == null) {
+        if (profile == null || type == null || !profile.isEmailNotifications()) {
             return false;
         }
         return switch (type) {
-            case ACHIEVEMENT_UNLOCKED -> profile.isEmailAchievementUnlocked();
-            case STREAK_MILESTONE -> profile.isEmailStreakMilestone();
-            case CAMPAIGN_DEFEATED -> profile.isEmailCampaignDefeated();
+            case ACHIEVEMENT_UNLOCKED, STREAK_MILESTONE, CAMPAIGN_DEFEATED -> true;
             case LOOT_EARNED, TASK_REMINDER -> false;
         };
     }

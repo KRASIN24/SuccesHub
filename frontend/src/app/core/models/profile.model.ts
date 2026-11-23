@@ -8,11 +8,6 @@ export interface UserProfile {
   globalRank: number;
   darkTheme: boolean;
   locale: string;
-  notifyLootEarned: boolean;
-  notifyAchievementUnlocked: boolean;
-  notifyStreakMilestone: boolean;
-  notifyCampaignDefeated: boolean;
-  emailAchievementUnlocked: boolean;
-  emailStreakMilestone: boolean;
-  emailCampaignDefeated: boolean;
+  notifyInApp: boolean;
+  emailNotifications: boolean;
 }

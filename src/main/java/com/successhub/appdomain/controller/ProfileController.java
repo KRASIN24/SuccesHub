@@ -80,7 +80,7 @@ public class ProfileController {
      */
     @Operation(
             summary = "Update UI preferences",
-            description = "Persists theme, locale, and independent in-app/email notification flags. Null fields are left unchanged. Password-reset and welcome mails are not controlled here."
+            description = "Persists theme, locale, and the in-app / email notification master switches. Null fields are left unchanged. Password-reset and welcome mails are not controlled here."
     )
     @ApiResponse(responseCode = "200", description = "Preferences updated")
     @ApiResponse(responseCode = "400", description = "Invalid locale or body")

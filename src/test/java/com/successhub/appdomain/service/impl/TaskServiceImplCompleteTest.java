@@ -69,7 +69,7 @@ class TaskServiceImplCompleteTest {
         profile = new UserProfile();
         profileDto = new ProfileDto(
                 "user-1", "Test", 1, 100, 200, 0, 0, true, "en-US",
-                true, true, true, true, true, true, true);
+                true, true);
         taskDto = new TaskDto.Response(
                 taskId, null, null, null, null, false, 0, "Title", "Desc", 0, 3, 30, 2,
                 false, null, "TODO", null, null, null, null, null, null);

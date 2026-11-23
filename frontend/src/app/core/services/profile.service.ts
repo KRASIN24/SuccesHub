@@ -47,13 +47,8 @@ export class ProfileService {
   updatePreferences(body: Partial<{
     darkTheme: boolean;
     locale: string;
-    notifyLootEarned: boolean;
-    notifyAchievementUnlocked: boolean;
-    notifyStreakMilestone: boolean;
-    notifyCampaignDefeated: boolean;
-    emailAchievementUnlocked: boolean;
-    emailStreakMilestone: boolean;
-    emailCampaignDefeated: boolean;
+    notifyInApp: boolean;
+    emailNotifications: boolean;
   }>): Observable<UserProfile> {
     return this.api
       .patch<UserProfile>('/profile/preferences', body)
@@ -94,13 +89,8 @@ export class ProfileService {
 
   private applyNotificationPrefs(profile: UserProfile): void {
     this.prefs.update({
-      notifyLootEarned: profile.notifyLootEarned ?? true,
-      notifyAchievementUnlocked: profile.notifyAchievementUnlocked ?? true,
-      notifyStreakMilestone: profile.notifyStreakMilestone ?? true,
-      notifyBossDefeated: profile.notifyCampaignDefeated ?? true,
-      emailAchievementUnlocked: profile.emailAchievementUnlocked ?? true,
-      emailStreakMilestone: profile.emailStreakMilestone ?? true,
-      emailCampaignDefeated: profile.emailCampaignDefeated ?? true,
+      notifyInApp: profile.notifyInApp ?? true,
+      emailNotifications: profile.emailNotifications ?? true,
     });
   }
 }

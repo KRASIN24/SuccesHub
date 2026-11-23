@@ -51,7 +51,7 @@ export class GamificationCelebrationService {
       error: (err) => console.error('Failed to refresh profile after close day', err),
     });
 
-    const showAchievements = this.prefs.preferences().notifyAchievementUnlocked;
+    const showAchievements = this.prefs.preferences().notifyInApp;
     if (showAchievements) {
       result.achievementsUnlocked.forEach((achievement, index) => {
         setTimeout(() => {
@@ -120,7 +120,7 @@ export class GamificationCelebrationService {
       }, 550);
     }
 
-    if (this.prefs.preferences().notifyAchievementUnlocked) {
+    if (this.prefs.preferences().notifyInApp) {
       reward.achievementsUnlocked.forEach((achievement, index) => {
         setTimeout(() => {
           this.achievementTrigger.set({ achievement, tick: ++this.sequence });
@@ -146,18 +146,17 @@ export class GamificationCelebrationService {
 
   /** Cache toast covers loot + streak-milestone grants (same UI). */
   private shouldShowCacheToast(): boolean {
-    const p = this.prefs.preferences();
-    return p.notifyLootEarned || p.notifyStreakMilestone;
+    return this.prefs.preferences().notifyInApp;
   }
 
   /**
-   * Damage ticks always show; slain toast respects Boss defeated preference.
+   * Damage ticks always show; slain toast respects the in-app notifications master switch.
    */
   private shouldShowBossToast(damage: BossDamage): boolean {
     if (!damage.goalCompleted) {
       return true;
     }
-    return this.prefs.preferences().notifyBossDefeated;
+    return this.prefs.preferences().notifyInApp;
   }
 
   private playBossSfx(damage: BossDamage): void {
