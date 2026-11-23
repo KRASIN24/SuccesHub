@@ -94,6 +94,29 @@ public class KeycloakAdminClient {
         return !searchUsers("email", email).isEmpty();
     }
 
+    /**
+     * Best-effort email lookup for transactional mail. Returns {@code null} when
+     * missing or when Admin API fails (caller should skip send).
+     *
+     * @param userId Keycloak user id ({@code sub})
+     * @return trimmed email or {@code null}
+     */
+    public String findEmail(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return null;
+        }
+        try {
+            Map<String, Object> user = getUser(userId);
+            Object email = user.get("email");
+            if (email instanceof String s && !s.isBlank()) {
+                return s.trim();
+            }
+            return null;
+        } catch (RuntimeException ex) {
+            return null;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> searchUsers(String param, String value) {
         if (value == null || value.isBlank()) {
