@@ -167,7 +167,7 @@ npm start
 | Spring | Streak milestone | `mail/streak-milestone` |
 | Keycloak | Forgot password | `successhub` email theme |
 
-Dark shell + gold accent matches the login theme. Milestone mails reuse `GameNotificationEvent` (skip loot / task reminders). If the realm already existed before Mailpit or the email theme, set Realm Settings → Email (host `mailpit`, port `1025`, from `noreply@successhub.local`, auth/SSL off) and Themes → Email theme = `successhub`, or re-import with `docker compose down -v`.
+Dark shell + gold accent matches the login theme. Milestone mails reuse `GameNotificationEvent` (skip loot / task reminders) and respect Settings in-app vs email toggles; password-reset and welcome mails always send. Spring mails are enqueued into `successhub.mail_outbox` (PENDING → SENT / FAILED with retries); a scheduler delivers them so request threads never wait on SMTP. Inspect status in Adminer, e.g. `SELECT status, count(*) FROM successhub.mail_outbox GROUP BY 1`. If the realm already existed before Mailpit or the email theme, set Realm Settings → Email (host `mailpit`, port `1025`, from `noreply@successhub.local`, auth/SSL off) and Themes → Email theme = `successhub`, or re-import with `docker compose down -v`.
 
 ### IntelliJ (preferred day-to-day)
 
