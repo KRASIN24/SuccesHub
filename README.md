@@ -112,6 +112,8 @@ Portfolio strategy (Notion): [SuccessHub hub](https://app.notion.com/p/SuccessHu
 | Profile vault | `/profile` | Equip cosmetics; streak calendar; shields / utility cards |
 | Login | Keycloak | Seed user for local demo |
 
+Task workflow details: [hierarchy, ordering, deletion, scheduling, and reminders](docs/task-board.md).
+
 ### How rewards work (short)
 
 - Completing an XP-enabled task goes through `GamificationEngine` (formula, daily cap, streak bonus, optional variable bonus, weekly-challenge bonus).  
@@ -222,7 +224,7 @@ Those live on the project’s Post-MVP backlog in Notion — not half-implemente
 | `src/main/resources/db/changelog/` | Liquibase migrations |
 | `frontend/` | Angular SPA |
 | `docker/` | Compose for Postgres / Keycloak / Adminer (+ optional `app` profile) |
-| `docs/images/` | README demo GIFs |
+| `docs/` | Technical guides and README demo GIFs |
 | `.run/` | IntelliJ shared run configurations |
 | `.github/workflows/` | PR CI |
 
