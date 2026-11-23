@@ -163,7 +163,7 @@ npm start
 |--------|------|------------------|
 | Spring | First profile create | `mail/welcome` |
 | Spring | Achievement unlocked | `mail/achievement` |
-| Spring | Boss defeated | `mail/boss-defeated` |
+| Spring | Campaign defeated | `mail/campaign-defeated` |
 | Spring | Streak milestone | `mail/streak-milestone` |
 | Keycloak | Forgot password | `successhub` email theme |
 

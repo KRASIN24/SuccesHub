@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+            http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        logicalFilePath="db/changelog/2026-11-23-02-rename-boss-defeated-notification.xml">
+
+    <changeSet id="2026-11-23-02-rename-boss-defeated-notification" author="krasin">
+        <update tableName="notification" schemaName="successhub">
+            <column name="type" value="CAMPAIGN_DEFEATED"/>
+            <where>type = 'BOSS_DEFEATED'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

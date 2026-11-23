@@ -27,7 +27,7 @@ public class GameEmailListener {
 
     private static final Set<NotificationType> EMAIL_TYPES = EnumSet.of(
             NotificationType.ACHIEVEMENT_UNLOCKED,
-            NotificationType.BOSS_DEFEATED,
+            NotificationType.CAMPAIGN_DEFEATED,
             NotificationType.STREAK_MILESTONE);
 
     private final MailService mailService;
@@ -54,7 +54,7 @@ public class GameEmailListener {
 
         String template = switch (event.type()) {
             case ACHIEVEMENT_UNLOCKED -> "mail/achievement";
-            case BOSS_DEFEATED -> "mail/boss-defeated";
+            case CAMPAIGN_DEFEATED -> "mail/campaign-defeated";
             case STREAK_MILESTONE -> "mail/streak-milestone";
             default -> null;
         };

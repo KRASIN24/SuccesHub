@@ -31,7 +31,7 @@
       "LOOT_EARNED": "Reward ready",
       "ACHIEVEMENT_UNLOCKED": "Achievement unlocked",
       "STREAK_MILESTONE": "Streak milestone",
-      "BOSS_DEFEATED": "Campaign defeated",
+      "CAMPAIGN_DEFEATED": "Campaign defeated",
       "TASK_REMINDER": "Task reminder"
     },
     "bossSlain": "{{name}} — Defeated.",

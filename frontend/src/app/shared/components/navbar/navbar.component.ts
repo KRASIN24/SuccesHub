@@ -145,7 +145,7 @@ export class NavbarComponent implements OnInit {
 
   notificationBody(row: AppNotification): string {
     switch (row.type) {
-      case 'BOSS_DEFEATED': {
+      case 'CAMPAIGN_DEFEATED': {
         const m = /^(.*) has been slain\.$/.exec(row.body);
         if (m) {
           return this.i18n.t('notifications.bossSlain', { name: m[1] });
@@ -210,7 +210,7 @@ export class NavbarComponent implements OnInit {
         return 'inventory_2';
       case 'ACHIEVEMENT_UNLOCKED':
         return 'military_tech';
-      case 'BOSS_DEFEATED':
+      case 'CAMPAIGN_DEFEATED':
         return 'swords';
       default:
         return 'notifications';

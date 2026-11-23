@@ -90,8 +90,8 @@ class GameEmailListenerTest {
 
         listener.onGameNotification(new GameNotificationEvent(
                 "kc-1",
-                NotificationType.BOSS_DEFEATED,
-                "Boss defeated",
+                NotificationType.CAMPAIGN_DEFEATED,
+                "Campaign defeated",
                 "fallen",
                 "/goals",
                 null));

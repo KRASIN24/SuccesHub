@@ -90,8 +90,8 @@ public class BossDamageServiceImpl implements BossDamageService {
         if (completed) {
             eventPublisher.publishEvent(new GameNotificationEvent(
                     userId,
-                    NotificationType.BOSS_DEFEATED,
-                    "Boss defeated",
+                    NotificationType.CAMPAIGN_DEFEATED,
+                    "Campaign defeated",
                     goal.getName() + " has been slain.",
                     "/goals",
                     goal.getId()));

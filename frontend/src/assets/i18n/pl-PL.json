@@ -31,7 +31,7 @@
       "LOOT_EARNED": "Nagroda gotowa",
       "ACHIEVEMENT_UNLOCKED": "Odblokowano osiągnięcie",
       "STREAK_MILESTONE": "Kamień milowy serii",
-      "BOSS_DEFEATED": "Kampania pokonana",
+      "CAMPAIGN_DEFEATED": "Kampania pokonana",
       "TASK_REMINDER": "Przypomnienie o zadaniu"
     },
     "bossSlain": "{{name}} — Pokonany.",

@@ -41,7 +41,7 @@ export const NOTIFICATION_TYPE_PREF: Record<string, NotificationPrefKey> = {
   LOOT_EARNED: 'notifyLootEarned',
   ACHIEVEMENT_UNLOCKED: 'notifyAchievementUnlocked',
   STREAK_MILESTONE: 'notifyStreakMilestone',
-  BOSS_DEFEATED: 'notifyBossDefeated',
+  CAMPAIGN_DEFEATED: 'notifyBossDefeated',
 };
 
 /**

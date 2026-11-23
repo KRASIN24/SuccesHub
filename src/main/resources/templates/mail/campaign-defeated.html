@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title th:text="${title} ?: 'Boss defeated'">Boss defeated</title>
+    <title th:text="${title} ?: 'Campaign defeated'">Campaign defeated</title>
 </head>
 <body style="margin:0;padding:0;background:#0a0a0c;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#e8e6e3;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0a0a0c;padding:40px 16px;">
@@ -19,12 +19,12 @@
                 <tr>
                     <td style="padding:8px 32px 32px;">
                         <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9b8f7b;">Campaign</p>
-                        <h1 th:text="${title} ?: 'Boss defeated'"
-                            style="margin:0 0 16px;font-size:24px;line-height:1.25;font-weight:600;color:#f5f3ef;">Boss defeated</h1>
+                        <h1 th:text="${title} ?: 'Campaign defeated'"
+                            style="margin:0 0 16px;font-size:24px;line-height:1.25;font-weight:600;color:#f5f3ef;">Campaign defeated</h1>
                         <p th:if="${displayName != null}" style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#d3c5af;">
                             Victory, <span th:text="${displayName}">commander</span>.
                         </p>
-                        <p th:text="${body}" style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#d3c5af;">A boss has fallen.</p>
+                        <p th:text="${body}" style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#d3c5af;">A campaign has fallen.</p>
                         <a th:if="${frontendBaseUrl != null and actionUrl != null}"
                            th:href="${frontendBaseUrl + actionUrl}"
                            style="display:inline-block;padding:12px 22px;background:linear-gradient(135deg,#f5be42,#d29f22);color:#402d00;text-decoration:none;border-radius:999px;font-size:14px;font-weight:600;">

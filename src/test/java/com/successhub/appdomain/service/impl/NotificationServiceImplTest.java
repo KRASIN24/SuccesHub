@@ -99,8 +99,8 @@ class NotificationServiceImplTest {
         Notification row = new Notification();
         row.setId(id);
         row.setUserId("user-1");
-        row.setType(NotificationType.BOSS_DEFEATED);
-        row.setTitle("Boss defeated");
+        row.setType(NotificationType.CAMPAIGN_DEFEATED);
+        row.setTitle("Campaign defeated");
         row.setBody("Hydra");
         row.setActionUrl("/goals");
         row.setRead(false);
