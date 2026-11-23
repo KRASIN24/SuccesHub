@@ -44,17 +44,24 @@ export class ProfileService {
       .pipe(tap((profile) => this.profileState.set(profile)));
   }
 
-  updatePreferences(body: {
-    darkTheme?: boolean;
-    locale?: string;
-  }): Observable<UserProfile> {
+  updatePreferences(body: Partial<{
+    darkTheme: boolean;
+    locale: string;
+    notifyLootEarned: boolean;
+    notifyAchievementUnlocked: boolean;
+    notifyStreakMilestone: boolean;
+    notifyCampaignDefeated: boolean;
+    emailAchievementUnlocked: boolean;
+    emailStreakMilestone: boolean;
+    emailCampaignDefeated: boolean;
+  }>): Observable<UserProfile> {
     return this.api
       .patch<UserProfile>('/profile/preferences', body)
       .pipe(
         tap((profile) => {
           this.profileState.set(profile);
-          // Already applied locally; keep prefs aligned with server response.
           this.hydrating = true;
+          this.applyNotificationPrefs(profile);
           this.prefs.update({
             darkTheme: profile.darkTheme,
             locale: profile.locale,
@@ -73,6 +80,7 @@ export class ProfileService {
     }
     this.hydrating = true;
     try {
+      this.applyNotificationPrefs(profile);
       this.prefs.update({
         darkTheme: profile.darkTheme ?? true,
         locale: profile.locale ?? 'en-US',
@@ -82,5 +90,17 @@ export class ProfileService {
     } finally {
       this.hydrating = false;
     }
+  }
+
+  private applyNotificationPrefs(profile: UserProfile): void {
+    this.prefs.update({
+      notifyLootEarned: profile.notifyLootEarned ?? true,
+      notifyAchievementUnlocked: profile.notifyAchievementUnlocked ?? true,
+      notifyStreakMilestone: profile.notifyStreakMilestone ?? true,
+      notifyBossDefeated: profile.notifyCampaignDefeated ?? true,
+      emailAchievementUnlocked: profile.emailAchievementUnlocked ?? true,
+      emailStreakMilestone: profile.emailStreakMilestone ?? true,
+      emailCampaignDefeated: profile.emailCampaignDefeated ?? true,
+    });
   }
 }

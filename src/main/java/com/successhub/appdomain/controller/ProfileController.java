@@ -76,11 +76,11 @@ public class ProfileController {
     }
 
     /**
-     * Updates dark/light theme and interface locale for the authenticated user.
+     * Updates UI theme, locale, and notification preferences for the authenticated user.
      */
     @Operation(
             summary = "Update UI preferences",
-            description = "Persists dark/light theme and interface locale on the user profile. Null fields are left unchanged."
+            description = "Persists theme, locale, and independent in-app/email notification flags. Null fields are left unchanged. Password-reset and welcome mails are not controlled here."
     )
     @ApiResponse(responseCode = "200", description = "Preferences updated")
     @ApiResponse(responseCode = "400", description = "Invalid locale or body")
@@ -92,10 +92,7 @@ public class ProfileController {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
-        ProfileDto dto = userProfileService.updatePreferences(
-                principal.getSubject(),
-                request.darkTheme(),
-                request.locale());
+        ProfileDto dto = userProfileService.updatePreferences(principal.getSubject(), request);
         return ResponseEntity.ok(dto);
     }
 }

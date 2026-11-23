@@ -1,16 +1,20 @@
 package com.successhub.appdomain.service.impl;
 
 import com.successhub.appdomain.dto.ProfileDto;
+import com.successhub.appdomain.dto.UpdatePreferencesRequest;
 import com.successhub.appdomain.entity.UserProfile;
 import com.successhub.appdomain.repository.UserProfileRepository;
 import com.successhub.appdomain.service.UserProfileService;
+import com.successhub.coreinfra.mail.MailLocales;
 import com.successhub.coreinfra.mail.MailService;
 import com.successhub.coreinfra.security.AuthProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +27,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final UserProfileRepository repository;
     private final MailService mailService;
     private final AuthProperties authProperties;
+    private final MessageSource messageSource;
 
     @Override
     @Transactional
@@ -45,14 +50,27 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         if (created) {
+            Locale locale = MailLocales.fromProfile(profile.getLocale());
+            String name = displayName != null && !displayName.isBlank()
+                    && !"commander".equalsIgnoreCase(displayName.trim())
+                    ? displayName.trim()
+                    : null;
             Map<String, Object> vars = new HashMap<>();
-            vars.put("displayName", displayName != null ? displayName : "commander");
+            vars.put("kicker", messageSource.getMessage("mail.welcome.kicker", null, locale));
+            vars.put("heading", name != null
+                    ? messageSource.getMessage("mail.welcome.titleNamed", new Object[]{name}, locale)
+                    : messageSource.getMessage("mail.welcome.titleAnon", null, locale));
+            vars.put("lead", messageSource.getMessage("mail.welcome.lead", null, locale));
+            vars.put("ctaLabel", messageSource.getMessage("mail.welcome.cta", null, locale));
+            vars.put("footer", messageSource.getMessage("mail.footer", null, locale));
             vars.put("frontendBaseUrl", authProperties.frontendOrigin());
             mailService.sendTemplateMail(
                     email,
-                    "Welcome to SuccessHub",
+                    messageSource.getMessage("mail.welcome.subject", null, locale),
                     "mail/welcome",
-                    vars);
+                    vars,
+                    keycloakId,
+                    locale);
         }
 
         return toDto(profile);
@@ -75,7 +93,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @Transactional
-    public ProfileDto updatePreferences(String keycloakId, Boolean darkTheme, String locale) {
+    public ProfileDto updatePreferences(String keycloakId, UpdatePreferencesRequest request) {
+        if (request == null) {
+            request = new UpdatePreferencesRequest(null, null, null, null, null, null, null, null, null);
+        }
+        String locale = request.locale();
         if (locale != null && !SUPPORTED_LOCALES.contains(locale)) {
             throw new IllegalArgumentException("Unsupported locale: " + locale);
         }
@@ -87,11 +109,32 @@ public class UserProfileServiceImpl implements UserProfileService {
                     return repository.save(p);
                 });
 
-        if (darkTheme != null) {
-            profile.setDarkTheme(darkTheme);
+        if (request.darkTheme() != null) {
+            profile.setDarkTheme(request.darkTheme());
         }
         if (locale != null) {
             profile.setLocale(locale);
+        }
+        if (request.notifyLootEarned() != null) {
+            profile.setNotifyLootEarned(request.notifyLootEarned());
+        }
+        if (request.notifyAchievementUnlocked() != null) {
+            profile.setNotifyAchievementUnlocked(request.notifyAchievementUnlocked());
+        }
+        if (request.notifyStreakMilestone() != null) {
+            profile.setNotifyStreakMilestone(request.notifyStreakMilestone());
+        }
+        if (request.notifyCampaignDefeated() != null) {
+            profile.setNotifyCampaignDefeated(request.notifyCampaignDefeated());
+        }
+        if (request.emailAchievementUnlocked() != null) {
+            profile.setEmailAchievementUnlocked(request.emailAchievementUnlocked());
+        }
+        if (request.emailStreakMilestone() != null) {
+            profile.setEmailStreakMilestone(request.emailStreakMilestone());
+        }
+        if (request.emailCampaignDefeated() != null) {
+            profile.setEmailCampaignDefeated(request.emailCampaignDefeated());
         }
         return toDto(repository.save(profile));
     }
@@ -140,7 +183,14 @@ public class UserProfileServiceImpl implements UserProfileService {
                 p.getCurrentStreak(),
                 p.getGlobalRank(),
                 p.isDarkTheme(),
-                p.getLocale()
+                p.getLocale(),
+                p.isNotifyLootEarned(),
+                p.isNotifyAchievementUnlocked(),
+                p.isNotifyStreakMilestone(),
+                p.isNotifyCampaignDefeated(),
+                p.isEmailAchievementUnlocked(),
+                p.isEmailStreakMilestone(),
+                p.isEmailCampaignDefeated()
         );
     }
 }

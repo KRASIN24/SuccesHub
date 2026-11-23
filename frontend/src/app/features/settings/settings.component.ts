@@ -103,7 +103,44 @@ export class SettingsComponent implements OnInit {
 
   setPreference(key: keyof AppPreferences, value: boolean): void {
     this.prefsService.update({ [key]: value });
-    this.flashSuccess(this.i18n.t('settings.prefsSaved'));
+
+    const serverBody = this.toServerPreferencePatch(key, value);
+    if (!serverBody) {
+      this.flashSuccess(this.i18n.t('settings.prefsSaved'));
+      return;
+    }
+
+    this.profileService.updatePreferences(serverBody).subscribe({
+      next: () => this.flashSuccess(this.i18n.t('settings.prefsSaved')),
+      error: () => {
+        this.saveError.set(this.i18n.t('settings.prefsSaveFailed'));
+        this.profileService.refreshProfile().subscribe();
+      },
+    });
+  }
+
+  private toServerPreferencePatch(
+    key: keyof AppPreferences,
+    value: boolean
+  ): Parameters<ProfileService['updatePreferences']>[0] | null {
+    switch (key) {
+      case 'notifyLootEarned':
+        return { notifyLootEarned: value };
+      case 'notifyAchievementUnlocked':
+        return { notifyAchievementUnlocked: value };
+      case 'notifyStreakMilestone':
+        return { notifyStreakMilestone: value };
+      case 'notifyBossDefeated':
+        return { notifyCampaignDefeated: value };
+      case 'emailAchievementUnlocked':
+        return { emailAchievementUnlocked: value };
+      case 'emailStreakMilestone':
+        return { emailStreakMilestone: value };
+      case 'emailCampaignDefeated':
+        return { emailCampaignDefeated: value };
+      default:
+        return null;
+    }
   }
 
   setDarkTheme(dark: boolean): void {
