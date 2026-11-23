@@ -19,6 +19,7 @@
   --sh-outline-variant: #c9c0b0;
   --sh-on-primary: #402d00;
   --sh-error: #c94a35;
+  --sh-success: #2e7d4f;
   --sh-font: "Inter", "Helvetica Neue", Arial, sans-serif;
   --sh-font-display: "Space Grotesk", "Inter", sans-serif;
   --sh-page-radial: radial-gradient(circle at 50% 38%, rgba(210, 159, 34, 0.10) 0%, transparent 60%);
@@ -42,6 +43,7 @@ html.app-dark,
   --sh-outline-variant: #4f4635;
   --sh-on-primary: #402d00;
   --sh-error: #ffb4ab;
+  --sh-success: #81c995;
 }
 
 /* inline SVG icons */
@@ -597,10 +599,11 @@ a:hover,
   margin-top: 1.5rem;
 }
 
-/* ---- Error / alert feedback ---- */
+/* ---- Alert / field feedback ---- */
 .sh-error,
-.kc-feedback-text,
-#input-error {
+#input-error,
+.alert-error .kc-feedback-text,
+.pf-m-danger .kc-feedback-text {
   display: flex !important;
   align-items: center;
   gap: 0.4rem;
@@ -615,6 +618,16 @@ a:hover,
   height: 0.95rem;
 }
 
+.kc-feedback-text {
+  display: flex !important;
+  align-items: center;
+  gap: 0.4rem;
+  color: inherit !important;
+  font-size: 0.875rem !important;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .alert,
 .pf-c-alert {
   border-radius: 0.75rem !important;
@@ -626,6 +639,15 @@ a:hover,
 .pf-m-danger {
   border-color: rgba(255, 180, 171, 0.4) !important;
   color: var(--sh-error) !important;
+}
+.alert-success,
+.pf-m-success {
+  border-color: color-mix(in srgb, var(--sh-success) 45%, transparent) !important;
+  color: var(--sh-success) !important;
+}
+.alert-success .kc-feedback-text,
+.pf-m-success .kc-feedback-text {
+  color: var(--sh-success) !important;
 }
 
 .pf-c-form-control[aria-invalid="true"],
