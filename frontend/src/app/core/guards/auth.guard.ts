@@ -1,19 +1,30 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { StateStorageService } from '../services/state-storage.service';
 
 /**
  * Allows navigation only when there is an active session. The session state is
  * resolved once at startup (see APP_INITIALIZER in app.config.ts), so this is a
- * synchronous check. When unauthenticated, it kicks off the OIDC login redirect
- * (or registration when {@code ?register=1} is present).
+ * synchronous check. When unauthenticated, it stores the intended SPA URL then
+ * kicks off the OIDC login redirect (or registration when {@code ?register=1}
+ * is present).
  */
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
+  const router = inject(Router);
+  const stateStorage = inject(StateStorageService);
 
   if (auth.isLoggedIn()) {
     return true;
   }
+
+  const snapshotUrl = router.routerState.snapshot.url;
+  const fallbackUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.pathname}${window.location.search}${window.location.hash}`
+      : '';
+  stateStorage.storeUrl(snapshotUrl || fallbackUrl);
 
   // Prefer registration when Create account bounced through the SPA with ?register=1
   // so we never race into login() and send the user back to the Keycloak login page.

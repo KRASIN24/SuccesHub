@@ -1,10 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ThemeService } from './theme.service';
 import { AppPreferencesService } from './app-preferences.service';
+import { StateStorageService } from './state-storage.service';
 
 export interface User {
   id: string;
@@ -26,8 +28,10 @@ export interface User {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   private readonly theme = inject(ThemeService);
   private readonly prefs = inject(AppPreferencesService);
+  private readonly stateStorage = inject(StateStorageService);
 
   private readonly _currentUser = signal<User | null>(null);
 
@@ -58,12 +62,33 @@ export class AuthService {
         } catch {
           /* ignore */
         }
+        this.restorePostLoginRedirect();
       }),
       catchError(() => {
         this._currentUser.set(null);
         return of(null);
       })
     );
+  }
+
+  /**
+   * After OIDC returns to the SPA root, navigate to the URL stored by authGuard
+   * (e.g. an email deep link). Cleared on consume so a normal F5 does not bounce.
+   */
+  private restorePostLoginRedirect(): void {
+    const redirect = this.stateStorage.getUrl();
+    this.stateStorage.clearUrl();
+    if (!redirect) {
+      return;
+    }
+    const current =
+      typeof window !== 'undefined'
+        ? `${window.location.pathname}${window.location.search}${window.location.hash}`
+        : this.router.url;
+    if (redirect === current || redirect === this.router.url) {
+      return;
+    }
+    void this.router.navigateByUrl(redirect);
   }
 
   /** Starts the OIDC login by redirecting the whole browser to the backend. */
