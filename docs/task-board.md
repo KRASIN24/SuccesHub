@@ -22,7 +22,7 @@ The feature spans:
 
 ### Campaign view
 
-Open tasks linked to active goals are grouped by goal, with an additional **Unlinked** section. Tasks linked to inactive goals are omitted. If an active goal has category subscriptions and a task is outside them, the UI can move it into a valid category.
+Open tasks linked to active goals are grouped by goal, with an additional **Unlinked** section. Tasks linked to inactive goals are omitted. If an active goal has category subscriptions and a root task is outside them, the UI can move it into a valid category. The same action fails for a subtask because it cannot change category independently of its parent.
 
 This view is derived from the same task data. Editing still happens in the task editor sheet.
 
@@ -158,7 +158,7 @@ Browser writes require the BFF session and CSRF header. Angular supplies these f
 | Category remains after deletion | A root deletion or the final category deletion failed | Reload, inspect the inline error, and retry with current data |
 | A task due today is absent from Dashboard | `dueDate` was set without `scheduledDate`, the task is not `TODO`, or its schedule does not match the backend's effective today | Edit the saved task and select **Today**; confirm its status |
 | Reminder did not appear immediately | Polling can take about 60 seconds, the task is complete, the reminder already fired, or the notification panel has stale data | Confirm task status and reminder time, allow one poll interval, then reopen the panel or refresh |
-| Campaign view shows a category mismatch | The task's goal has subscriptions that exclude its current category | Use **Move to campaign category** and select an allowed category |
+| Campaign view shows a category mismatch | The task's goal has subscriptions that exclude its current category | For a root, use **Move to campaign category**. For a subtask, move its parent in Category view so the category cascades to its children |
 
 ## Code map
 
@@ -169,7 +169,7 @@ Browser writes require the BFF session and CSRF header. Angular supplies these f
 - Task invariants and moves: `TaskServiceImpl`
 - Category ordering and deletion: `TaskCategoryServiceImpl`
 - Reminder polling: `TaskReminderScheduler`
-- Schema rules: `2026-06-14-03-create-task.xml` and `2026-10-04-01-task-google-ux-columns.xml`
+- Schema rules: `2026-06-14-03-create-task.xml`, `2026-06-18-01-gamification-task-columns.xml`, `2026-10-04-01-task-google-ux-columns.xml`, and `2026-10-04-02-task-reminder.xml`
 - Focused tests: `TasksComponent` spec and `TaskServiceImplGoogleUxTest`
 
 ## Verification
