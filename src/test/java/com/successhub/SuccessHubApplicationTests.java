@@ -14,6 +14,7 @@ import com.successhub.appdomain.repository.UserLootBoxRepository;
 import com.successhub.appdomain.repository.UserProfileRepository;
 import com.successhub.appdomain.repository.XpEventRepository;
 import com.successhub.appdomain.repository.NotificationRepository;
+import com.successhub.coreinfra.mail.MailOutboxRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -69,6 +70,8 @@ class SuccessHubApplicationTests {
 	private StreakDayOverrideRepository streakDayOverrideRepository;
 	@MockitoBean
 	private NotificationRepository notificationRepository;
+	@MockitoBean
+	private MailOutboxRepository mailOutboxRepository;
 
 	@Test
 	void contextLoads() {

@@ -11,6 +11,10 @@ successhub:
     admin-client-secret: ${SUCCESSHUB_KEYCLOAK_ADMIN_CLIENT_SECRET:admin-changeme}
   mail:
     from: ${SUCCESSHUB_MAIL_FROM:noreply@successhub.local}
+    outbox-poll-ms: ${SUCCESSHUB_MAIL_OUTBOX_POLL_MS:5000}
+    outbox-batch-size: ${SUCCESSHUB_MAIL_OUTBOX_BATCH_SIZE:20}
+    outbox-max-attempts: ${SUCCESSHUB_MAIL_OUTBOX_MAX_ATTEMPTS:5}
+    outbox-backoff-seconds: ${SUCCESSHUB_MAIL_OUTBOX_BACKOFF_SECONDS:5}
 
 spring:
   application:
