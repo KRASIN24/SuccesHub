@@ -17,8 +17,14 @@ export interface AppPreferences {
   notifyAchievementUnlocked: boolean;
   /** In-app bell: streak milestone cache. */
   notifyStreakMilestone: boolean;
-  /** In-app bell: boss / goal slain. */
+  /** In-app bell: campaign defeated (legacy key name). */
   notifyBossDefeated: boolean;
+  /** Milestone email: achievement unlocked. */
+  emailAchievementUnlocked: boolean;
+  /** Milestone email: streak milestone. */
+  emailStreakMilestone: boolean;
+  /** Milestone email: campaign defeated. */
+  emailCampaignDefeated: boolean;
   /** BCP 47 locale from {@link SUPPORTED_LOCALES}, e.g. en-US */
   locale: string;
 }
@@ -33,6 +39,9 @@ const DEFAULT_PREFS: AppPreferences = {
   notifyAchievementUnlocked: true,
   notifyStreakMilestone: true,
   notifyBossDefeated: true,
+  emailAchievementUnlocked: true,
+  emailStreakMilestone: true,
+  emailCampaignDefeated: true,
   locale: 'en-US',
 };
 
@@ -41,11 +50,11 @@ export const NOTIFICATION_TYPE_PREF: Record<string, NotificationPrefKey> = {
   LOOT_EARNED: 'notifyLootEarned',
   ACHIEVEMENT_UNLOCKED: 'notifyAchievementUnlocked',
   STREAK_MILESTONE: 'notifyStreakMilestone',
-  BOSS_DEFEATED: 'notifyBossDefeated',
+  CAMPAIGN_DEFEATED: 'notifyBossDefeated',
 };
 
 /**
- * Client-side app preferences persisted in localStorage.
+ * Client-side app preferences persisted in localStorage and hydrated from the profile API.
  * Shared so Settings and feature code (loot SFX, notification bell) read the same flags.
  */
 @Injectable({ providedIn: 'root' })

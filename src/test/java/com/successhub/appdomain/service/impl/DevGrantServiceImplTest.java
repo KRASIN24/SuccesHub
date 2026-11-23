@@ -94,7 +94,9 @@ class DevGrantServiceImplTest {
     @Test
     void addXp_delegatesToProfileService() {
         // Arrange
-        ProfileDto dto = new ProfileDto(USER, "A", 2, 100, 1200, 0, 1, true, "en-US");
+        ProfileDto dto = new ProfileDto(
+                USER, "A", 2, 100, 1200, 0, 1, true, "en-US",
+                true, true, true, true, true, true, true);
         when(profileService.addXp(USER, 50)).thenReturn(dto);
 
         // Act
@@ -117,7 +119,9 @@ class DevGrantServiceImplTest {
         when(profileRepository.save(any(UserProfile.class))).thenAnswer(inv -> inv.getArgument(0));
         when(profileService.mapToDto(any(UserProfile.class))).thenAnswer(inv -> {
             UserProfile p = inv.getArgument(0);
-            return new ProfileDto(USER, null, p.getLevel(), p.getCurrentXp(), p.getNextLevelXp(), 0, 1, true, "en-US");
+            return new ProfileDto(
+                    USER, null, p.getLevel(), p.getCurrentXp(), p.getNextLevelXp(), 0, 1, true, "en-US",
+                    true, true, true, true, true, true, true);
         });
 
         // Act
@@ -156,7 +160,9 @@ class DevGrantServiceImplTest {
         when(profileService.requireProfile(USER)).thenReturn(profile);
         when(profileRepository.save(any(UserProfile.class))).thenAnswer(inv -> inv.getArgument(0));
         when(profileService.mapToDto(any(UserProfile.class))).thenReturn(
-                new ProfileDto(USER, null, 1, 0, 1000, 0, 1, true, "en-US"));
+                new ProfileDto(
+                        USER, null, 1, 0, 1000, 0, 1, true, "en-US",
+                        true, true, true, true, true, true, true));
 
         // Act
         service.setCombatState(USER, new DevCombatStateRequest(3, true, false));

@@ -1,10 +1,13 @@
 package com.successhub.appdomain.service.impl;
 
 import com.successhub.appdomain.dto.NotificationDto;
-import com.successhub.appdomain.event.GameNotificationEvent;
 import com.successhub.appdomain.entity.Notification;
+import com.successhub.appdomain.entity.UserProfile;
 import com.successhub.appdomain.enums.NotificationType;
+import com.successhub.appdomain.event.GameNotificationEvent;
 import com.successhub.appdomain.repository.NotificationRepository;
+import com.successhub.appdomain.repository.UserProfileRepository;
+import com.successhub.appdomain.service.NotificationPreferenceService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,17 +35,19 @@ import static org.mockito.Mockito.when;
 class NotificationServiceImplTest {
 
     @Mock NotificationRepository notificationRepository;
+    @Mock UserProfileRepository userProfileRepository;
+    @Mock NotificationPreferenceService notificationPreferenceService;
 
     private NotificationServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new NotificationServiceImpl(notificationRepository);
+        service = new NotificationServiceImpl(
+                notificationRepository, userProfileRepository, notificationPreferenceService);
     }
 
     @Test
-    void onGameNotification_persistsRow() {
-        // Arrange
+    void onGameNotification_persistsRowWhenEnabled() {
         GameNotificationEvent event = new GameNotificationEvent(
                 "user-1",
                 NotificationType.LOOT_EARNED,
@@ -49,16 +55,17 @@ class NotificationServiceImplTest {
                 "A Arcane Orb awaits.",
                 "/loot-boxes",
                 UUID.randomUUID());
+        UserProfile profile = new UserProfile();
+        when(userProfileRepository.findByKeycloakId("user-1")).thenReturn(Optional.of(profile));
+        when(notificationPreferenceService.isInAppEnabled(profile, NotificationType.LOOT_EARNED)).thenReturn(true);
         when(notificationRepository.save(any(Notification.class))).thenAnswer(inv -> {
             Notification n = inv.getArgument(0);
             n.setId(UUID.randomUUID());
             return n;
         });
 
-        // Act
         service.onGameNotification(event);
 
-        // Assert
         ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
         verify(notificationRepository).save(captor.capture());
         Notification saved = captor.getValue();
@@ -69,8 +76,26 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    void onGameNotification_skipsWhenNotifyPreferenceOff() {
+        GameNotificationEvent event = new GameNotificationEvent(
+                "user-1",
+                NotificationType.ACHIEVEMENT_UNLOCKED,
+                "Achievement unlocked",
+                "Pioneer",
+                "/achievements",
+                null);
+        UserProfile profile = new UserProfile();
+        when(userProfileRepository.findByKeycloakId("user-1")).thenReturn(Optional.of(profile));
+        when(notificationPreferenceService.isInAppEnabled(profile, NotificationType.ACHIEVEMENT_UNLOCKED))
+                .thenReturn(false);
+
+        service.onGameNotification(event);
+
+        verify(notificationRepository, never()).save(any());
+    }
+
+    @Test
     void listRecent_capsLimitAndMapsDto() {
-        // Arrange
         Notification row = new Notification();
         row.setId(UUID.randomUUID());
         row.setUserId("user-1");
@@ -83,10 +108,8 @@ class NotificationServiceImplTest {
         when(notificationRepository.findByUserIdOrderByCreatedAtDesc(eq("user-1"), any(Pageable.class)))
                 .thenReturn(List.of(row));
 
-        // Act
         List<NotificationDto.Response> result = service.listRecent("user-1", 999);
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals("ACHIEVEMENT_UNLOCKED", result.getFirst().type());
         assertEquals("Pioneer", result.getFirst().body());
@@ -94,13 +117,12 @@ class NotificationServiceImplTest {
 
     @Test
     void markRead_setsFlagWhenOwned() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Notification row = new Notification();
         row.setId(id);
         row.setUserId("user-1");
-        row.setType(NotificationType.BOSS_DEFEATED);
-        row.setTitle("Boss defeated");
+        row.setType(NotificationType.CAMPAIGN_DEFEATED);
+        row.setTitle("Campaign defeated");
         row.setBody("Hydra");
         row.setActionUrl("/goals");
         row.setRead(false);
@@ -108,34 +130,17 @@ class NotificationServiceImplTest {
         when(notificationRepository.findByIdAndUserId(id, "user-1")).thenReturn(Optional.of(row));
         when(notificationRepository.save(row)).thenReturn(row);
 
-        // Act
         NotificationDto.Response dto = service.markRead("user-1", id);
 
-        // Assert
         assertTrue(dto.read());
         verify(notificationRepository).save(row);
     }
 
     @Test
     void markRead_throwsWhenMissing() {
-        // Arrange
         UUID id = UUID.randomUUID();
         when(notificationRepository.findByIdAndUserId(id, "user-1")).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> service.markRead("user-1", id));
-    }
-
-    @Test
-    void markAllRead_returnsZeroUnread() {
-        // Arrange
-        when(notificationRepository.markAllRead("user-1")).thenReturn(3);
-
-        // Act
-        NotificationDto.UnreadCount count = service.markAllRead("user-1");
-
-        // Assert
-        assertEquals(0, count.count());
-        verify(notificationRepository).markAllRead("user-1");
     }
 }

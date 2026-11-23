@@ -1,7 +1,7 @@
 package com.successhub.appdomain.dto;
 
 /**
- * Dashboard profile snapshot including UI theme and locale preferences.
+ * Dashboard profile snapshot including UI theme, locale, and notification preferences.
  */
 public record ProfileDto(
         String keycloakId,
@@ -12,5 +12,12 @@ public record ProfileDto(
         int currentStreak,
         int globalRank,
         boolean darkTheme,
-        String locale
+        String locale,
+        boolean notifyLootEarned,
+        boolean notifyAchievementUnlocked,
+        boolean notifyStreakMilestone,
+        boolean notifyCampaignDefeated,
+        boolean emailAchievementUnlocked,
+        boolean emailStreakMilestone,
+        boolean emailCampaignDefeated
 ) {}

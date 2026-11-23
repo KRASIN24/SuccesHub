@@ -1,9 +1,12 @@
 package com.successhub.appdomain.service.impl;
 
 import com.successhub.appdomain.dto.NotificationDto;
-import com.successhub.appdomain.event.GameNotificationEvent;
 import com.successhub.appdomain.entity.Notification;
+import com.successhub.appdomain.entity.UserProfile;
+import com.successhub.appdomain.event.GameNotificationEvent;
 import com.successhub.appdomain.repository.NotificationRepository;
+import com.successhub.appdomain.repository.UserProfileRepository;
+import com.successhub.appdomain.service.NotificationPreferenceService;
 import com.successhub.appdomain.service.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,8 @@ public class NotificationServiceImpl implements NotificationService {
     private static final int DEFAULT_LIMIT = 20;
 
     private final NotificationRepository notificationRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final NotificationPreferenceService notificationPreferenceService;
 
     @Override
     @Transactional(readOnly = true)
@@ -63,13 +68,22 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * Creates a notification row when a game event is published in-transaction.
+     * Creates a notification row when a game event is published in-transaction,
+     * unless the user's in-app preference for that type is off.
      *
-     * @param event publish request from loot / achievement / streak / boss paths
+     * @param event publish request from loot / achievement / streak / campaign paths
      */
     @EventListener
     @Transactional
     public void onGameNotification(GameNotificationEvent event) {
+        if (event == null || event.userId() == null || event.type() == null) {
+            return;
+        }
+        UserProfile profile = userProfileRepository.findByKeycloakId(event.userId()).orElse(null);
+        if (profile != null && !notificationPreferenceService.isInAppEnabled(profile, event.type())) {
+            return;
+        }
+
         Notification notification = new Notification();
         notification.setUserId(event.userId());
         notification.setType(event.type());

@@ -1,6 +1,7 @@
 package com.successhub.appdomain.service;
 
 import com.successhub.appdomain.dto.ProfileDto;
+import com.successhub.appdomain.dto.UpdatePreferencesRequest;
 import com.successhub.appdomain.entity.UserProfile;
 
 /**
@@ -10,13 +11,15 @@ public interface UserProfileService {
 
     /**
      * Returns the profile for the given Keycloak subject ID.
-     * Creates a new profile row on first access.
+     * Creates a new profile row on first access and sends a best-effort welcome email
+     * when {@code email} is present.
      *
      * @param keycloakId  OIDC subject ({@code sub}) from the authenticated session
      * @param displayName human-readable name synced from Keycloak; may be {@code null}
+     * @param email       OIDC email for welcome mail on create; may be {@code null} or blank
      * @return current profile state exposed to the dashboard
      */
-    ProfileDto getOrCreateProfile(String keycloakId, String displayName);
+    ProfileDto getOrCreateProfile(String keycloakId, String displayName, String email);
 
     /**
      * Sets a user-chosen display name from Settings. Marks the profile so Keycloak
@@ -29,16 +32,15 @@ public interface UserProfileService {
     ProfileDto updateDisplayName(String keycloakId, String displayName);
 
     /**
-     * Updates UI theme and/or interface locale on the profile.
-     * Null arguments leave the existing value unchanged.
+     * Updates UI theme, locale, and/or notification preferences on the profile.
+     * Null fields in {@code request} leave existing values unchanged.
      *
      * @param keycloakId OIDC subject ({@code sub}) of the authenticated user
-     * @param darkTheme  when non-null, prefer dark ({@code true}) or light ({@code false})
-     * @param locale     when non-null, BCP 47 code from the allow-list ({@code en-US}, {@code pl-PL})
+     * @param request    partial preference update
      * @return updated profile snapshot
      * @throws IllegalArgumentException when {@code locale} is non-null and not allow-listed
      */
-    ProfileDto updatePreferences(String keycloakId, Boolean darkTheme, String locale);
+    ProfileDto updatePreferences(String keycloakId, UpdatePreferencesRequest request);
 
     /**
      * Adds XP to the user's profile and applies any resulting level-ups.
